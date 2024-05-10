@@ -1,23 +1,26 @@
 import logo from "./logo.svg";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { routes } from "./routes";
 import "./App.css";
 
 function App() {
+  const getComponent = (component) => {
+    return React.createElement(component, {});
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          <h1 className="text-3xl font-bold underline bg-cadetblue">Hello world!</h1>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={getComponent(route.component)}
+            />
+          ))}
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
