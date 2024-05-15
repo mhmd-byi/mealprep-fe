@@ -1,12 +1,12 @@
 import React from "react";
-import headerStyle from "./header.css";
+import "./header.css";
 import logo from "../../../assets/images/logo/mp-logo.png";
 import userProfileImg from "../../../assets/images/user/user-profile.png";
 import logoutButton from "../../../assets/images/logout.png";
 
 const userName = 'John Smith'
 
-const Header = () => {
+export const Header = () => {
   return (
     <header className="flex justify-between items-center px-10 py-6 bg-white text-black">
       <div className="text-xl font-bold app-logo">
@@ -28,5 +28,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

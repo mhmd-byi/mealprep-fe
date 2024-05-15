@@ -1,16 +1,9 @@
 import { ForgotPassword, ResetPassword, Signup } from "./pages";
 import ResetPasswordSuccess from "./pages/Password-Reset-Success/resetPasswordSuccess";
 import Login from "./pages/login/login";
-import LoginSignUpScreen from "./pages/main/main";
-
 export const routes = [
   {
     path: "/",
-    component: LoginSignUpScreen,
-    exact: true,
-  },
-  {
-    path: "/login",
     component: Login,
     exact: true,
   },

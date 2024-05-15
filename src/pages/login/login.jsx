@@ -1,10 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSubmitLogin } from "./useSubmitLogin";
+import { Button, Input} from '../../components'
 
 const Login = () => {
   const navigate = useNavigate();
   const navigateToSignup = () => navigate("/signup");
   const navigateToForgotPassword = () => navigate("/forgot-password");
+  const { onSubmit } = useSubmitLogin();
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
@@ -16,31 +19,25 @@ const Login = () => {
               please log in.
             </p>
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6" action="#" method="POST">
+              <form class="space-y-6" onSubmit={onSubmit}>
                 <div>
                   <div class="mt-2">
-                    <input
-                      id="user-credentials"
-                      name="user-credentials"
-                      type="text"
-                      // autocomplete="email"
-                      required
-                      placeholder="Email of Phone Number"
-                      class="block w-full h-12 rounded-lg border-0 px-5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:theme-color-1 sm:text-sm sm:leading-6"
+                    <Input 
+                      id="email"
+                      name='email'
+                      type="email"
+                      placeholder="Email Address"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div class="mt-2">
-                    <input
-                      id="password"
-                      name="passsword"
+                    <Input
+                      id={'password'}
+                      name={'password'}
                       type="password"
-                      // autocomplete="password"
-                      required
-                      placeholder="Enter Password"
-                      class="block w-full h-12 rounded-lg border-0 px-5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:theme-color-1 sm:text-sm sm:leading-6"
+                      placeholder={'Enter password'}
                     />
                   </div>
                 </div>
@@ -59,12 +56,16 @@ const Login = () => {
                 </div>
 
                 <div>
-                  <button
+                <Button 
+                id={'login'}
+                children={'Submit'}
+                />
+                 {/* <button
                     type="submit"
                     class="flex w-full justify-center rounded-md bg-theme-color-1 px-5 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
+                  > 
                     Sign in
-                  </button>
+  </button>*/}
                 </div>
               </form>
 
