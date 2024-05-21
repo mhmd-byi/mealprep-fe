@@ -10,7 +10,8 @@ module.exports = {
         'theme-bg-2': "url('/src/assets/images/theme-bg.png')",
       },
       colors: {
-        'theme-color-1' : '#3C9B62'
+        'theme-color-1' : '#3C9B62',
+        'sidebar-color-1' : '#242424'
       },
       borderRadius: {
         'theme-radius' : '1.9rem',
@@ -18,6 +19,8 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
 

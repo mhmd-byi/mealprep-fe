@@ -1,6 +1,7 @@
 import { ForgotPassword, ResetPassword, Signup } from "./pages";
 import ResetPasswordSuccess from "./pages/Password-Reset-Success/resetPasswordSuccess";
 import Login from "./pages/login/login";
+import Profile from "./pages/Profile";
 export const routes = [
   {
     path: "/",
@@ -26,5 +27,10 @@ export const routes = [
     path: "/reset-password",
     component: ResetPassword,
     exact: true,
-  }
+  },
+  {
+    path: "/dashboard/profile",
+    component: Profile,
+    exact: true,
+  },
 ];
