@@ -32,7 +32,7 @@
     {
       "name": "Subscribe your Meal Plan",
       "icon": "BellSnoozeIcon",
-      "path": "/"
+      "path": "/dashboard/plans"
     },
     {
       "name": "Help",

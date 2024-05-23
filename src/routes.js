@@ -3,6 +3,7 @@ import ResetPasswordSuccess from "./pages/Password-Reset-Success/resetPasswordSu
 import Login from "./pages/login/login";
 import Profile from "./pages/Profile";
 import FoodMenu from "./pages/Food-Menu";
+import SubscriptionPlans from "./pages/Plans";
 export const routes = [
   {
     path: "/",
@@ -39,4 +40,9 @@ export const routes = [
     component: FoodMenu,
     exact: true,
   },
+  {
+    path: "/dashboard/plans",
+    component: SubscriptionPlans,
+    exact: true,
+  }
 ];

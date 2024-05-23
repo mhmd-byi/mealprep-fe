@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import sidebarData from "./data.json";
-import { ArrowPathRoundedSquareIcon } from "@heroicons/react/24/outline";
 const Sidebar = () => {
   const navigate = useNavigate();
 
