@@ -1,0 +1,52 @@
+[
+    {
+      "name": "Profile",
+      "icon": "UserCircleIcon",
+      "path": "/dashboard/profile"
+    },
+    {
+      "name": "Food Menu",
+      "icon": "DocumentMinusIcon",
+      "path": "/dashboard/food-menu"
+    },
+    {
+      "name": "Meal Calendar",
+      "icon": "CalendarDaysIcon",
+      "path": "/"
+    },
+    {
+      "name": "Change Request",
+      "icon": "ArrowPathIcon",
+      "path": "/"
+    },
+    {
+      "name": "Customize your Meal",
+      "icon": "PuzzlePieceIcon",
+      "path": "/"
+    },
+    {
+      "name": "My billing",
+      "icon": "DocumentTextIcon",
+      "path": "/"
+    },
+    {
+      "name": "Subscribe your Meal Plan",
+      "icon": "BellSnoozeIcon",
+      "path": "/"
+    },
+    {
+      "name": "Help",
+      "icon": "QuestionMarkCircleIcon",
+      "path": "/"
+    },
+    {
+      "name": "Chat on WhatsApp",
+      "icon": "ChatBubbleLeftIcon",
+      "path": "/"
+    },
+    {
+      "name": "Feedback",
+      "icon": "HandThumbUpIcon",
+      "path": "/"
+    }
+  ]

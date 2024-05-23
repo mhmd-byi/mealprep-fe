@@ -1,0 +1,92 @@
+{
+    "Monday": {
+      "proteins": [
+        { "name": "Chicken Seekh Kebab", "veg": false },
+        { "name": "Garlic Chicken", "veg": false },
+        { "name": "Chicken Creamy Coconut", "veg": false },
+        { "name": "Tender And Juicy Chicken Breasts With Light And Flavourful Salads", "veg": false },
+        { "name": "Veg Seekh Kebab", "veg": true },
+        { "name": "Garlic Cottage Cheese", "veg": true },
+        { "name": "Chana Masala", "veg": true }
+      ],
+      "carbs": [
+        { "name": "Cumin Garlic Quinoa", "veg": true },
+        { "name": "Authentic Bombay Biryani Rice", "veg": true }
+      ],
+      "salads": [
+        { "name": "Authentic Indian Kachumber Salad", "veg": true }
+      ]
+    },
+    "Tuesday": {
+      "proteins": [
+        { "name": "Paneer Tikka", "veg": true },
+        { "name": "Fish Tikka", "veg": false }
+      ],
+      "carbs": [
+        { "name": "Saffron Rice", "veg": true }
+      ],
+      "salads": [
+        { "name": "Green Salad with Citrus Dressing", "veg": true }
+      ]
+    },
+    "Wednesday": {
+      "proteins": [
+        { "name": "Tofu Stir Fry", "veg": true },
+        { "name": "Pork Sausages", "veg": false }
+      ],
+      "carbs": [
+        { "name": "Buttered Parsley Potatoes", "veg": false }
+      ],
+      "salads": [
+        { "name": "Roasted Beetroot Salad", "veg": true }
+      ]
+    },
+    "Thursday": {
+      "proteins": [
+        { "name": "Beef Steak", "veg": false },
+        { "name": "Mushroom Stroganoff", "veg": true }
+      ],
+      "carbs": [
+        { "name": "Pasta Alfredo", "veg": false }
+      ],
+      "salads": [
+        { "name": "Caesar Salad", "veg": false }
+      ]
+    },
+    "Friday": {
+      "proteins": [
+        { "name": "Lamb Kofta", "veg": false },
+        { "name": "Vegetable Kebab", "veg": true }
+      ],
+      "carbs": [
+        { "name": "Biryani Rice", "veg": false }
+      ],
+      "salads": [
+        { "name": "Cucumber Raita", "veg": true }
+      ]
+    },
+    "Saturday": {
+      "proteins": [
+        { "name": "Grilled Salmon", "veg": false },
+        { "name": "Falafel", "veg": true }
+      ],
+      "carbs": [
+        { "name": "Couscous with Vegetables", "veg": true }
+      ],
+      "salads": [
+        { "name": "Tabouleh", "veg": true }
+      ]
+    },
+    "Sunday": {
+      "proteins": [
+        { "name": "Barbecue Ribs", "veg": false },
+        { "name": "Stuffed Bell Peppers", "veg": true }
+      ],
+      "carbs": [
+        { "name": "Cornbread", "veg": true }
+      ],
+      "salads": [
+        { "name": "Southwest Chipotle Salad", "veg": true }
+      ]
+    }
+  }
