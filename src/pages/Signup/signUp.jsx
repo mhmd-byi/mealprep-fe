@@ -4,7 +4,7 @@ import { Button, Input } from "../../components";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const navigateToSignin = () => navigate("/");
+  const navigateToSignin = () => navigate("/login");
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">

@@ -1,28 +1,28 @@
 import React from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import data from "./data.json"; // Ensure the path to your JSON file is correct
+import data from "./data.json";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-5 w-full h-full my-auto">
-        <div className="bg-white shadow-md rounded-theme-radius-15 px-14 py-4 overflow-hidden max-w-[1500px] w-[1200px] ">
-          <h3 className="text-3xl text-black text-center">
+      <div className="flex flex-col justify-center items-center p-5 w-full lg:h-full my-auto">
+        <div className="bg-white shadow-md rounded-theme-radius-15 px-4 lg:px-14 py-4 w-fit lg:max-w-[1500px] lg:w-[1200px]">
+          <h3 className="text-2xl lg:text-3xl text-black text-center">
             Subscribe Your Meal Plans
           </h3>
         </div>
-        <div className="bg-white shadow-md rounded-theme-radius p-20 flex flex-row overflow-hidden max-w-[1500px] w-[1200px] mt-7">
+        <div className="lg:bg-white shadow-md rounded-theme-radius p-0 lg:p-20 flex flex-col lg:flex-row gap-4 lg:gap-0 max-w-[1500px] lg:w-[1200px] mt-7">
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`border-r-2 border-grey-500 p-5 basis-1/3 ${
-                index === plans.length - 1 ? "border-r-0" : ""
+              className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-theme-radius lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${
+                index === plans.length - 1 ? "lg:border-r-0" : ""
               }`}
             >
-              <div className="border-b-2 border-grey-500 pb-5">
+              <div className="pb-5">
                 <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">
                   {plan.name}
                 </h2>
@@ -36,9 +36,9 @@ const SubscriptionPlans = () => {
                 <Button children={"Select"} />
               </div>
               <div className="mt-5">
-                <ul className="text-left">
+                <ul className="text-left space-y-2">
                   {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center mt-2">
+                    <li key={featureIndex} className="flex items-center">
                       <svg
                         width="16"
                         height="16"
@@ -56,7 +56,6 @@ const SubscriptionPlans = () => {
                           fill="#3C9B62"
                         />
                       </svg>
-
                       {feature}
                     </li>
                   ))}

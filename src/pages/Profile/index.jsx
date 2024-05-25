@@ -7,10 +7,10 @@ const UserName = "John Doe";
 const Profile = () => {
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-5 w-full h-full">
-        <div className="bg-white shadow-md rounded-theme-radius p-20 flex gap-20 overflow-hidden max-w-[1500px] mx-auto my-auto">
+      <div className="flex flex-col justify-center items-center p-5 w-full h-auto lg:h-full ">
+        <div className="bg-white shadow-md rounded-theme-radius p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
           {/* Image container */}
-          <div className="w-2/6 p-5">
+          <div className="w-fit lg:w-2/6 p-0 md:p-2 lg:p-5">
             <img
               src={UserImage}
               alt="User"
@@ -23,7 +23,7 @@ const Profile = () => {
             </a>
           </div>
           {/* Form container */}
-          <div className="w-4/6 p-12">
+          <div className="w-fit mt-5 lg:w-4/6 lg:p-12">
             <form className="space-y-6">
               {/* Input fields structured with Tailwind CSS */}
               <div className="flex flex-wrap -mx-3 mb-6">
@@ -74,7 +74,7 @@ const Profile = () => {
               />
               <Button
                 type={"submit"}
-                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="w-full text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
                 children={"Update"}
               />
             </form>

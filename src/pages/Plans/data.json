@@ -15,7 +15,7 @@
       {
         "name": "Weekly Plan",
         "price": 1750,
-        "duration": "7 days",
+        "duration": "28 days",
         "description": "Perfect to try out weeks recipe",
         "features": [
           "7 Days plan",
@@ -27,7 +27,7 @@
       {
         "name": "Monthly Plan",
         "price": 5700,
-        "duration": "26 days",
+        "duration": "365 days",
         "description": "Go healthy for a month",
         "features": [
           "26 Days Meal Plan",
