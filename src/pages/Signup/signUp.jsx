@@ -4,11 +4,11 @@ import { Button, Input } from "../../components";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const navigateToSignin = () => navigate("/login");
+  const navigateToSignin = () => navigate("/");
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
-        <div className="flex max-h-[680px] px-12 py-8 shadow-md bg-white rounded-lg">
+        <div className="flex px-12 py-8 shadow-md bg-white rounded-lg">
           <div className="content">
             <h2 className="text-center font-medium text-5xl">Sign Up</h2>
             <p className="mt-10 text-center text-lg">
@@ -39,11 +39,12 @@ const Signup = () => {
                 </div>
                 <div class="w-full">
                   <Input
+                    id={"register-phone-number"}
+                    name={"register-phone-number"}
+                    type={"tel"}
+                    // autocomplete="email"
                     required={true}
-                    id={"address"}
-                    name={"address"}
-                    type={"text"}
-                    placeholder={"Address"}
+                    placeholder={"Phone Number"}
                   />
                 </div>
                 <div class="w-full">
@@ -56,16 +57,38 @@ const Signup = () => {
                     placeholder={"Email Address"}
                   />
                 </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <Input
+                      id={"password"}
+                      name={"password"}
+                      type={"password"}
+                      // autocomplete="email"
+                      required={true}
+                      placeholder={"Enter Password"}
+                    />
+                  </div>
+                  <div class="w-full md:w-1/2 px-3">
+                    <Input
+                      id={"confirm-password"}
+                      name={"confirm-password"}
+                      type={"password"}
+                      // autocomplete="email"
+                      required={true}
+                      placeholder={"Confirm Password"}
+                    />
+                  </div>
+                </div>
                 <div class="w-full">
                   <Input
-                    id={"register-phone-number"}
-                    name={"register-phone-number"}
-                    type={"tel"}
-                    // autocomplete="email"
                     required={true}
-                    placeholder={"Phone Number"}
+                    id={"address"}
+                    name={"address"}
+                    type={"text"}
+                    placeholder={"Address"}
                   />
                 </div>
+
                 <Button type={"submit"} children={"Submit"} />
               </form>
               <p class="mt-10 text-center text-sm text-gray-500">

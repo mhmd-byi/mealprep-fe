@@ -6,7 +6,7 @@ import FoodMenu from "./pages/Food-Menu";
 import SubscriptionPlans from "./pages/Plans";
 export const routes = [
   {
-    path: "/login",
+    path: "/",
     component: Login,
     exact: true,
   },
@@ -36,7 +36,7 @@ export const routes = [
     exact: true,
   },
   {
-    path: "/",
+    path: "/dashboard/food-menu",
     component: FoodMenu,
     exact: true,
   },
