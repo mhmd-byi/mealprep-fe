@@ -1,25 +1,31 @@
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import { useState } from "react";
-import UserImage from "../../assets/images/user/user-image.png";
 import { Button, Input } from "../../components";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useRef } from "react";
 import Popup from "../../components/common/Popup/Popup";
-
-const UserName = "John Doe";
+import useProfile from "./useProfile";
+import usePasswordValidation from "../../hooks/usePasswordValidation";
 
 const Profile = () => {
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const {
+    formData,
+    showPopup,
+    setShowPopup,
+    handleUpdateProfilePhoto,
+    handleFileChange,
+    profileImageUrl,
+    handleSubmit,
+    handleInputChange,
+  } = useProfile();
 
-  const handleUpdateProfilePhoto = () => {
-    // Perform update action here with selectedFile
-    console.log("Selected file:", selectedFile);
-    setShowPopup(false);
-  };
+  const UserName = formData.firstName + " " + formData.lastName;
 
-  const handleFileChange = (file) => {
-    setSelectedFile(file);
-  };
+  const formRef = useRef(null);
+  const { ValidationMessage } = usePasswordValidation(
+    formRef,
+    "newPassword",
+    "confirmNewPassword"
+  );
 
   return (
     <DashboardLayoutComponent>
@@ -53,13 +59,15 @@ const Profile = () => {
       />
       <div className="flex flex-col justify-center items-center p-5 w-full h-auto lg:h-full ">
         <div className="bg-white shadow-md rounded-theme-radius p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
-          <div className="w-fit lg:w-2/6 p-0 md:p-2 lg:p-5">
+          <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-start justify-center">
             <img
-              src={UserImage}
+              src={profileImageUrl}
               alt="User"
-              className="w-full h-auto object-cover rounded-lg"
+              className="w-40 h-40 lg:w-60 lg:h-60 object-cover rounded-lg"
             />
-            <h1 className="text-2xl mt-3">{UserName}</h1>
+            <h1 className="text-2xl mt-3 text-center lg:text-left">
+              {UserName}
+            </h1>
             <a
               className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6]"
               onClick={() => setShowPopup(true)}
@@ -69,36 +77,42 @@ const Profile = () => {
             </a>
           </div>
           <div className="w-fit mt-5 lg:w-4/6 lg:p-12">
-            <form className="space-y-6">
+            <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
               <div className="flex flex-wrap -mx-3 mb-6">
                 <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                   <Input
                     type={"text"}
-                    name={"first-name"}
-                    id={"first-name"}
+                    name={"firstName"}
+                    id={"firstName"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"First Name"}
                     required={true}
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
                   <Input
                     type={"text"}
-                    name={"last-name"}
-                    id={"last-name"}
+                    name={"lastName"}
+                    id={"lastName"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Last Name"}
                     required={true}
+                    value={formData.lastName}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
               <Input
                 type={"number"}
-                name={"whatsapp_number"}
-                id={"whatsapp_number"}
+                name={"whatsappNumber"}
+                id={"whatsappNumber"}
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"WhatsApp Number"}
                 required={true}
+                value={formData.whatsappNumber}
+                onChange={handleInputChange}
               />
               <Input
                 type={"email"}
@@ -107,14 +121,45 @@ const Profile = () => {
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"Email Address"}
                 required
+                value={formData.email}
+                onChange={handleInputChange}
               />
+              <div className="flex flex-wrap -mx-3 mb-6">
+                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                  <Input
+                    type={"text"}
+                    name={"newPassword"}
+                    id={"newPassword"}
+                    className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    placeholder={"Enter Password"}
+                    required={true}
+                    value={formData.newPassword}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="w-full md:w-1/2 px-3">
+                  <Input
+                    type={"text"}
+                    name={"confirmNewPassword"}
+                    id={"confirmNewPassword"}
+                    className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    placeholder={"Confirm Password"}
+                    required={true}
+                    value={formData.confirmNewPassword}
+                    onChange={handleInputChange}
+                  />
+                  <ValidationMessage />
+                </div>
+              </div>
               <Input
                 type={"text"}
-                name={"postal_address"}
+                name={"postalAddress"}
                 id={"postal_address"}
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"Postal Address"}
                 required={true}
+                value={formData.postalAddress}
+                onChange={handleInputChange}
               />
               <Button
                 type={"submit"}

@@ -1,10 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Input } from "../../components";
+import { useSignup } from "./useSignup";
+
 
 const Signup = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate("/");
+  const { formData, handleChange, handleSubmit } = useSignup();
+
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
@@ -16,45 +20,53 @@ const Signup = () => {
               If you already have an account, please log in instead.
             </p>
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6">
+              <form class="space-y-6" onSubmit={handleSubmit}>
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <Input
                       id={"first-name"}
-                      name={"first-name"}
+                      name={"firstName"}
                       type={"text"}
                       placeholder={"First Name"}
                       required={true}
+                      value={formData.firstName}
+                      onChange={handleChange}
                     />
                   </div>
                   <div class="w-full md:w-1/2 px-3">
                     <Input
                       id={"last-name"}
-                      name={"last-name"}
+                      name={"lastName"}
                       type={"text"}
                       placeholder={"Last Name"}
                       required={true}
+                      value={formData.lastName}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
                 <div class="w-full">
                   <Input
                     id={"register-phone-number"}
-                    name={"register-phone-number"}
+                    name={"mobile"}
                     type={"tel"}
                     // autocomplete="email"
                     required={true}
                     placeholder={"Phone Number"}
+                    value={formData.mobile}
+                      onChange={handleChange}
                   />
                 </div>
                 <div class="w-full">
                   <Input
                     id={"register-email"}
-                    name={"register-email"}
+                    name={"email"}
                     type={"email"}
                     // autocomplete="email"
                     required={true}
                     placeholder={"Email Address"}
+                    value={formData.email}
+                      onChange={handleChange}
                   />
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
@@ -66,16 +78,20 @@ const Signup = () => {
                       // autocomplete="email"
                       required={true}
                       placeholder={"Enter Password"}
+                      value={formData.password}
+                      onChange={handleChange}
                     />
                   </div>
                   <div class="w-full md:w-1/2 px-3">
                     <Input
                       id={"confirm-password"}
-                      name={"confirm-password"}
+                      name={"confirmPassword"}
                       type={"password"}
                       // autocomplete="email"
                       required={true}
                       placeholder={"Confirm Password"}
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -83,9 +99,11 @@ const Signup = () => {
                   <Input
                     required={true}
                     id={"address"}
-                    name={"address"}
+                    name={"postalAddress"}
                     type={"text"}
                     placeholder={"Address"}
+                    value={formData.postalAddress}
+                      onChange={handleChange}
                   />
                 </div>
 

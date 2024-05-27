@@ -1,13 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useSubmitLogin } from "./useSubmitLogin";
-import { Button, Input} from '../../components'
+import { useLogin } from "./useLogin";
+import { Button, Input } from "../../components";
 
 const Login = () => {
   const navigate = useNavigate();
   const navigateToSignup = () => navigate("/signup");
+  const navigatetoDashboardProfile = () => navigate('/dashboard/profile');
   const navigateToForgotPassword = () => navigate("/forgot-password");
-  const { onSubmit } = useSubmitLogin();
+
+  const { handleChange, handleSubmit, formData, loaderState, errMsg } =
+    useLogin();
+
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
@@ -19,14 +23,16 @@ const Login = () => {
               please log in.
             </p>
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6" onSubmit={onSubmit}>
+              <form class="space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <div class="mt-2">
-                    <Input 
+                    <Input
                       id="email"
-                      name='email'
+                      name="email"
                       type="email"
                       placeholder="Email Address"
+                      value={formData.email}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -34,10 +40,12 @@ const Login = () => {
                 <div>
                   <div class="mt-2">
                     <Input
-                      id={'password'}
-                      name={'password'}
+                      id={"password"}
+                      name={"password"}
                       type="password"
-                      placeholder={'Enter password'}
+                      placeholder={"Enter password"}
+                      value={formData.password}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -56,11 +64,8 @@ const Login = () => {
                 </div>
 
                 <div>
-                <Button 
-                id={'login'}
-                children={'Submit'}
-                />
-                 {/* <button
+                  <Button type="submit" id={"login"} > {loaderState ? 'Logging in...' : 'Login'}</Button>
+                  {/* <button
                     type="submit"
                     class="flex w-full justify-center rounded-md bg-theme-color-1 px-5 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   > 

@@ -1,12 +1,14 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import sidebarData from "./data.json";
-import userProfileImg from "../../../assets/images/user/user-profile.png";
 import logoutButton from "../../../assets/images/logout.png";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
-import { XMarkIcon } from "@heroicons/react/24/outline"; // Ensure you have this import
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import useProfile from "../../../pages/Profile/useProfile";
 
 const Sidebar = ({ closeSidebar }) => {
+  const { profileImageUrl, formData } = useProfile();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,11 +27,11 @@ const Sidebar = ({ closeSidebar }) => {
       </div>
       <div className="flex md:hidden items-center space-x-3 p-2">
         <img
-          src={userProfileImg}
+          src={profileImageUrl}
           alt="Profile"
           className="h-12 w-12 rounded-full"
         />
-        <span>Hi, John</span>
+        <span>Hi, {formData.firstName}</span>
       </div>
       {sidebarData.map((item, index) => (
         <button
