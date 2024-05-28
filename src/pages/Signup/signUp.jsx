@@ -2,12 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Input } from "../../components";
 import { useSignup } from "./useSignup";
-
+import { Alert } from "@mui/material";
 
 const Signup = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate("/");
-  const { formData, handleChange, handleSubmit } = useSignup();
+  const { formData, handleChange, handleSubmit, errMsg } = useSignup();
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
@@ -54,7 +54,7 @@ const Signup = () => {
                     required={true}
                     placeholder={"Phone Number"}
                     value={formData.mobile}
-                      onChange={handleChange}
+                    onChange={handleChange}
                   />
                 </div>
                 <div class="w-full">
@@ -66,7 +66,7 @@ const Signup = () => {
                     required={true}
                     placeholder={"Email Address"}
                     value={formData.email}
-                      onChange={handleChange}
+                    onChange={handleChange}
                   />
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
@@ -103,9 +103,11 @@ const Signup = () => {
                     type={"text"}
                     placeholder={"Address"}
                     value={formData.postalAddress}
-                      onChange={handleChange}
+                    onChange={handleChange}
                   />
                 </div>
+
+                {errMsg.length > 1 && <Alert severity="error">{errMsg}</Alert>}
 
                 <Button type={"submit"} children={"Submit"} />
               </form>

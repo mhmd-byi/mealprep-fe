@@ -2,11 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "./useLogin";
 import { Button, Input } from "../../components";
+import { Alert } from "@mui/material";
 
 const Login = () => {
   const navigate = useNavigate();
   const navigateToSignup = () => navigate("/signup");
-  const navigatetoDashboardProfile = () => navigate('/dashboard/profile');
+  const navigatetoDashboardProfile = () => navigate("/dashboard/profile");
   const navigateToForgotPassword = () => navigate("/forgot-password");
 
   const { handleChange, handleSubmit, formData, loaderState, errMsg } =
@@ -64,14 +65,14 @@ const Login = () => {
                 </div>
 
                 <div>
-                  <Button type="submit" id={"login"} > {loaderState ? 'Logging in...' : 'Login'}</Button>
-                  {/* <button
-                    type="submit"
-                    class="flex w-full justify-center rounded-md bg-theme-color-1 px-5 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  > 
-                    Sign in
-  </button>*/}
+                  {errMsg.length > 1 && (
+                    <Alert severity="error">{errMsg}</Alert>
+                  )}
                 </div>
+                <Button type="submit" id={"login"}>
+                  {" "}
+                  {loaderState ? "Logging in..." : "Login"}
+                </Button>
               </form>
 
               <p class="mt-10 text-center text-sm text-gray-500">
