@@ -3,13 +3,12 @@ import logo from "../../../assets/images/logo/mp-logo.png";
 import userProfileImg from "../../../assets/images/user/user-profile.png";
 import logoutButton from "../../../assets/images/logout.png";
 import { useNavigate } from "react-router-dom";
-import useProfile from "../../../pages/Profile/useProfile";
-
+import { useDashboard } from "../Dashboard/useDashboard";
 const Header = ({ toggleSidebar }) => {
-  const { profileImageUrl, formData } = useProfile();
-
+const { userDetails } = useDashboard();
   const navigate = useNavigate();
   const navigationToLogin = () => navigate("/");
+  const fetchUserProfileImage = userDetails.profileImageUrl
 
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-md">
@@ -23,12 +22,12 @@ const Header = ({ toggleSidebar }) => {
       </div>
       <div className="hidden md:flex items-center space-x-4">
         <img
-          src={profileImageUrl}
+          src={ fetchUserProfileImage || userProfileImg }
           alt="Profile"
           className="h-12 w-12 rounded-full"
         />
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
-          Hi, {formData.firstName}
+          Hi, {userDetails.firstName}
         </span>
         <button
           className="flex items-center space-x-1"

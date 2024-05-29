@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
-const useProfile = (initialProfileImage) => {
+const useProfile = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     whatsappNumber: "",
-    newPassword: "",
-    confirmNewPassword: "",
+    password: "",
+    confirmPassword: "",
     email: "",
     postalAddress: "",
+    profileImageUrl: "",
   });
 
-  const [profileImageUrl, setProfileImageUrl] = useState(initialProfileImage);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const token = sessionStorage.getItem("token");
+  const userId = sessionStorage.getItem("userId");
   const [showPopup, setShowPopup] = useState(false);
 
   const S3_BUCKET = process.env.REACT_APP_API_S3_BUCKET_NAME;
@@ -28,40 +30,6 @@ const useProfile = (initialProfileImage) => {
     region: REGION,
   });
   const s3 = new AWS.S3();
-
-  useEffect(() => {
-    // Store Form data
-    const storedFormData = localStorage.getItem("formData");
-    if (storedFormData) {
-      setFormData(JSON.parse(storedFormData));
-    }
-
-    // Store profile image
-    const storedProfileImageUrl = localStorage.getItem("profileImageUrl");
-    if (storedProfileImageUrl) {
-      setProfileImageUrl(storedProfileImageUrl);
-    }
-  }, []);
-
-  const handleUpdateProfilePhoto = async () => {
-    try {
-      if (selectedFile) {
-        const fileUrl = await uploadFileToS3(selectedFile);
-        if (fileUrl) {
-          setProfileImageUrl(fileUrl);
-          localStorage.setItem("profileImageUrl", fileUrl);
-          console.log("File uploaded successfully:", fileUrl);
-        } else {
-          console.error("Failed to upload file.");
-        }
-      }
-    } catch (error) {
-      console.error("Error updating profile photo:", error);
-    } finally {
-      setShowPopup(false);
-      setSelectedFile(null);
-    }
-  };
 
   const uploadFileToS3 = async (file) => {
     if (!file) {
@@ -78,6 +46,10 @@ const useProfile = (initialProfileImage) => {
 
     try {
       const data = await s3.upload(params).promise();
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        profileImageUrl: data.Location,
+      }));
       return data.Location;
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -85,35 +57,61 @@ const useProfile = (initialProfileImage) => {
     }
   };
 
-  const handleFileChange = (file) => {
-    setSelectedFile(file);
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    await uploadFileToS3(file);
   };
 
-  const handleInputChange = (event) => {
+  const handlePopupSubmit = () => {
+    if (formData.profileImageUrl) {
+      handleSubmit();
+    } else {
+      alert("Please upload an image first.");
+    }
+  };
+
+  const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    if (formData.newPassword === formData.confirmNewPassword) {
-      localStorage.setItem("formData", JSON.stringify(formData));
-      console.log("Form data saved to localStorage:", formData);
+    if (event) {
+      event.preventDefault();
+    }
+    if (formData.password === formData.confirmPassword) {
+      try {
+        axios({
+          method: "PATCH",
+          url: `${process.env.REACT_APP_API_URL}user/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: formData,
+        })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((e) => {
+            console.log("this is an error", e);
+          });
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      alert("Passwords do not match.");
     }
   };
 
   return {
     formData,
     setFormData,
-    profileImageUrl,
-    setProfileImageUrl,
     showPopup,
     setShowPopup,
-    selectedFile,
-    handleUpdateProfilePhoto,
-    handleFileChange,
-    handleInputChange,
+    handleChange,
     handleSubmit,
+    handleFileChange,
+    handlePopupSubmit,
   };
 };
 

@@ -5,20 +5,24 @@ import { useRef } from "react";
 import Popup from "../../components/common/Popup/Popup";
 import useProfile from "./useProfile";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
+import userProfilePhoto from "../../assets/images/user/user-image.png";
+import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 
 const Profile = () => {
+  const { userDetails } = useDashboard();
+
   const {
     formData,
     showPopup,
     setShowPopup,
-    handleUpdateProfilePhoto,
-    handleFileChange,
-    profileImageUrl,
     handleSubmit,
-    handleInputChange,
+    handleChange,
+    handleFileChange,
+    handlePopupSubmit,
   } = useProfile();
 
-  const UserName = formData.firstName + " " + formData.lastName;
+  const UserName = userDetails.firstName + " " + userDetails.lastName;
+  const fetchUserProfileImage = userDetails.profileImageUrl;
 
   const formRef = useRef(null);
   const { ValidationMessage } = usePasswordValidation(
@@ -38,7 +42,7 @@ const Profile = () => {
             <Input
               type="file"
               accept="image/*"
-              onChange={(e) => handleFileChange(e.target.files[0])}
+              onChange={handleFileChange}
               className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
@@ -51,7 +55,7 @@ const Profile = () => {
           },
           {
             label: "Update Profile Photo",
-            onClick: handleUpdateProfilePhoto,
+            onClick: handlePopupSubmit,
             className:
               "flex justify-center rounded-md bg-theme-color-1 px-5 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
           },
@@ -61,7 +65,7 @@ const Profile = () => {
         <div className="bg-white shadow-md rounded-theme-radius p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
           <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-start justify-center">
             <img
-              src={profileImageUrl}
+              src={fetchUserProfileImage || userProfilePhoto}
               alt="User"
               className="w-40 h-40 lg:w-60 lg:h-60 object-cover rounded-lg"
             />
@@ -88,7 +92,7 @@ const Profile = () => {
                     placeholder={"First Name"}
                     required={true}
                     value={formData.firstName}
-                    onChange={handleInputChange}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
@@ -100,7 +104,7 @@ const Profile = () => {
                     placeholder={"Last Name"}
                     required={true}
                     value={formData.lastName}
-                    onChange={handleInputChange}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -112,7 +116,7 @@ const Profile = () => {
                 placeholder={"WhatsApp Number"}
                 required={true}
                 value={formData.whatsappNumber}
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
               <Input
                 type={"email"}
@@ -122,7 +126,7 @@ const Profile = () => {
                 placeholder={"Email Address"}
                 required
                 value={formData.email}
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
               <div className="flex flex-wrap -mx-3 mb-6">
                 <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -133,8 +137,8 @@ const Profile = () => {
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Enter Password"}
                     required={true}
-                    value={formData.newPassword}
-                    onChange={handleInputChange}
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
@@ -145,8 +149,8 @@ const Profile = () => {
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Confirm Password"}
                     required={true}
-                    value={formData.confirmNewPassword}
-                    onChange={handleInputChange}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                   />
                   <ValidationMessage />
                 </div>
@@ -159,7 +163,7 @@ const Profile = () => {
                 placeholder={"Postal Address"}
                 required={true}
                 value={formData.postalAddress}
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
               <Button
                 type={"submit"}

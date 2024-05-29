@@ -5,9 +5,13 @@ import logoutButton from "../../../assets/images/logout.png";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import useProfile from "../../../pages/Profile/useProfile";
+import { useDashboard } from "../Dashboard/useDashboard";
 
 const Sidebar = ({ closeSidebar }) => {
   const { profileImageUrl, formData } = useProfile();
+  const { userDetails } = useDashboard();
+
+  const fetchUserProfileImage = userDetails.profileImageUrl;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +31,7 @@ const Sidebar = ({ closeSidebar }) => {
       </div>
       <div className="flex md:hidden items-center space-x-3 p-2">
         <img
-          src={profileImageUrl}
+          src={fetchUserProfileImage || profileImageUrl}
           alt="Profile"
           className="h-12 w-12 rounded-full"
         />

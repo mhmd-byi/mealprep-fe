@@ -39,7 +39,7 @@ export const useSignup = () => {
       .then((res) => {
         setLoaderState(false);
         sessionStorage.setItem("token", res.data.tokens.access.token);
-        sessionStorage.setItem("userId", res.data.user.id);
+        sessionStorage.setItem("userId", res.data.user._id);
         navigate("/dashboard/profile");
       })
       .catch((err) => {

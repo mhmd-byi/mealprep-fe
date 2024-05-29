@@ -24,7 +24,7 @@ const Signup = () => {
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <Input
-                      id={"first-name"}
+                      id={"firstName"}
                       name={"firstName"}
                       type={"text"}
                       placeholder={"First Name"}
@@ -35,7 +35,7 @@ const Signup = () => {
                   </div>
                   <div class="w-full md:w-1/2 px-3">
                     <Input
-                      id={"last-name"}
+                      id={"lastName"}
                       name={"lastName"}
                       type={"text"}
                       placeholder={"Last Name"}
@@ -47,10 +47,9 @@ const Signup = () => {
                 </div>
                 <div class="w-full">
                   <Input
-                    id={"register-phone-number"}
+                    id={"mobile"}
                     name={"mobile"}
                     type={"tel"}
-                    // autocomplete="email"
                     required={true}
                     placeholder={"Phone Number"}
                     value={formData.mobile}
@@ -59,10 +58,9 @@ const Signup = () => {
                 </div>
                 <div class="w-full">
                   <Input
-                    id={"register-email"}
+                    id={"email"}
                     name={"email"}
                     type={"email"}
-                    // autocomplete="email"
                     required={true}
                     placeholder={"Email Address"}
                     value={formData.email}
@@ -75,7 +73,6 @@ const Signup = () => {
                       id={"password"}
                       name={"password"}
                       type={"password"}
-                      // autocomplete="email"
                       required={true}
                       placeholder={"Enter Password"}
                       value={formData.password}
@@ -84,10 +81,9 @@ const Signup = () => {
                   </div>
                   <div class="w-full md:w-1/2 px-3">
                     <Input
-                      id={"confirm-password"}
+                      id={"confirmPassword"}
                       name={"confirmPassword"}
                       type={"password"}
-                      // autocomplete="email"
                       required={true}
                       placeholder={"Confirm Password"}
                       value={formData.confirmPassword}

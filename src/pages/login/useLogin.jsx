@@ -27,7 +27,6 @@ export const useLogin = () => {
       },
     })
       .then((res) => {
-        console.log(res);
         setLoaderState(false);
         sessionStorage.setItem("token", res.data.tokens.access.token);
         sessionStorage.setItem(
@@ -38,12 +37,9 @@ export const useLogin = () => {
         navigate("/dashboard/profile");
       })
       .catch((err) => {
-        console.log("check error ", err);
         setLoaderState(false);
         setErrMsg("Invalid email or password");
       });
-
-    console.log("Login Submit data", formData);
   };
 
   return {
