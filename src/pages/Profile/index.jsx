@@ -131,8 +131,8 @@ const Profile = () => {
               <div className="flex flex-wrap -mx-3 mb-6">
                 <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                   <Input
-                    type={"text"}
-                    name={"newPassword"}
+                    type={"password"}
+                    name={"password"}
                     id={"newPassword"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Enter Password"}
@@ -143,8 +143,8 @@ const Profile = () => {
                 </div>
                 <div className="w-full md:w-1/2 px-3">
                   <Input
-                    type={"text"}
-                    name={"confirmNewPassword"}
+                    type={"password"}
+                    name={"confirmPassword"}
                     id={"confirmNewPassword"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Confirm Password"}

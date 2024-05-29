@@ -1,4 +1,3 @@
-// usePasswordValidation.js
 import React, { useState, useEffect } from "react";
 import {
   CheckCircleIcon,
@@ -13,11 +12,14 @@ const usePasswordValidation = (
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const form = formRef.current;
-    if (!form) return;
+    if (!formRef.current) return; // Ensure the form reference exists
 
+    const form = formRef.current;
     const passwordInput = form.elements[passwordFieldName];
     const confirmPasswordInput = form.elements[confirmPasswordFieldName];
+
+    // Ensure both input fields are available before adding event listeners
+    if (!passwordInput || !confirmPasswordInput) return;
 
     const validatePasswords = () => {
       if (!confirmPasswordInput.value) {
@@ -43,8 +45,10 @@ const usePasswordValidation = (
     confirmPasswordInput.addEventListener("input", validatePasswords);
 
     return () => {
-      passwordInput.removeEventListener("input", validatePasswords);
-      confirmPasswordInput.removeEventListener("input", validatePasswords);
+      if (passwordInput && confirmPasswordInput) {
+        passwordInput.removeEventListener("input", validatePasswords);
+        confirmPasswordInput.removeEventListener("input", validatePasswords);
+      }
     };
   }, [formRef, passwordFieldName, confirmPasswordFieldName]);
 

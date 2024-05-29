@@ -3,11 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Button, Input } from "../../components";
 import { useSignup } from "./useSignup";
 import { Alert } from "@mui/material";
+import usePasswordValidation from "../../hooks/usePasswordValidation";
+import { useRef } from "react";
 
 const Signup = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate("/");
   const { formData, handleChange, handleSubmit, errMsg } = useSignup();
+
+  const formRef = useRef(null);
+  const { ValidationMessage } = usePasswordValidation(
+    formRef,
+    "newPassword",
+    "confirmNewPassword"
+  );
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
@@ -20,7 +29,7 @@ const Signup = () => {
               If you already have an account, please log in instead.
             </p>
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6" onSubmit={handleSubmit}>
+              <form class="space-y-6" onSubmit={handleSubmit} ref={formRef}>
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <Input
@@ -90,6 +99,7 @@ const Signup = () => {
                       onChange={handleChange}
                     />
                   </div>
+                  <ValidationMessage />
                 </div>
                 <div class="w-full">
                   <Input

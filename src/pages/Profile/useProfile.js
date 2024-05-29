@@ -62,11 +62,25 @@ const useProfile = () => {
     await uploadFileToS3(file);
   };
 
-  const handlePopupSubmit = () => {
-    if (formData.profileImageUrl) {
-      handleSubmit();
-    } else {
-      alert("Please upload an image first.");
+  const handlePopupSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      axios({
+        method: "PATCH",
+        url: `${process.env.REACT_APP_API_URL}user/${userId}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          profileImageUrl: formData.profileImageUrl,
+        },
+      }).then((res) => {
+        console.log("Image URL updated in database successfully", res);
+      });
+      setShowPopup(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating image URL:", error);
     }
   };
 
@@ -75,31 +89,28 @@ const useProfile = () => {
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
-    if (event) {
-      event.preventDefault();
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { profileImageUrl, ...otherData } = formData;
+    const updatedFormData = profileImageUrl
+      ? { ...formData }
+      : { ...otherData };
+
     if (formData.password === formData.confirmPassword) {
       try {
-        axios({
+        const response = await axios({
           method: "PATCH",
           url: `${process.env.REACT_APP_API_URL}user/${userId}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          data: formData,
-        })
-          .then(() => {
-            window.location.reload();
-          })
-          .catch((e) => {
-            console.log("this is an error", e);
-          });
-      } catch (e) {
-        console.error(e);
+          data: updatedFormData,
+        });
+        console.log("Profile updated successfully", response);
+        window.location.reload();
+      } catch (error) {
+        console.error("Error submitting profile:", error);
       }
-    } else {
-      alert("Passwords do not match.");
     }
   };
 

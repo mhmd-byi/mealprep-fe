@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useForgotPassword } from "./useForgotPassword";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate('/login');
+  const { handleSubmit } = useForgotPassword();
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
@@ -17,7 +19,7 @@ const ForgotPassword = () => {
               your password
             </p>
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6">
+              <form class="space-y-6" onSubmit={handleSubmit}>
                 <div class="w-full">
                   <input
                     id="recoverd-email-address"
