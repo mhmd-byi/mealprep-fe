@@ -1,17 +1,17 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import sidebarData from "./data.json";
-import logoutButton from "../../../assets/images/logout.png";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import useProfile from "../../../pages/Profile/useProfile";
 import { useDashboard } from "../Dashboard/useDashboard";
+import { Logout, Close } from "@mui/icons-material";
 
 const Sidebar = ({ closeSidebar }) => {
-  const { profileImageUrl, formData } = useProfile();
+  const { profileImageUrl } = useProfile();
   const { userDetails } = useDashboard();
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
+  const fetchUserName = userDetails.firstName;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +26,7 @@ const Sidebar = ({ closeSidebar }) => {
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
-          <XMarkIcon className="h-6 w-6 text-white" />
+          <Close className="h-6 w-6 text-white" />
         </button>
       </div>
       <div className="flex md:hidden items-center space-x-3 p-2">
@@ -35,7 +35,7 @@ const Sidebar = ({ closeSidebar }) => {
           alt="Profile"
           className="h-12 w-12 rounded-full"
         />
-        <span>Hi, {formData.firstName}</span>
+        <span>Hi, {fetchUserName}</span>
       </div>
       {sidebarData.map((item, index) => (
         <button
@@ -47,17 +47,14 @@ const Sidebar = ({ closeSidebar }) => {
           }`}
           onClick={() => handleNavigate(item.path)}
         >
-          {React.createElement(
-            require(`@heroicons/react/24/outline`)[item.icon],
-            {
-              className: "h-6 w-6",
-            }
-          )}
+          {React.createElement(require(`@mui/icons-material`)[item.icon], {
+            className: "h-6 w-6",
+          })}
           <span>{item.name}</span>
         </button>
       ))}
       <div className="mt-auto flex md:hidden items-center space-x-3 p-2">
-        <img src={logoutButton} alt="Log out" className="h-6" />
+        <Logout />
         <span>Log out</span>
       </div>
     </div>

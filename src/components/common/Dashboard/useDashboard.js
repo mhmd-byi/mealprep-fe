@@ -8,6 +8,9 @@ export const useDashboard = () => {
     mobile: "",
     email: "",
     profileImageUrl: "",
+    postalAddress: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const token = sessionStorage.getItem("token");
@@ -29,6 +32,9 @@ export const useDashboard = () => {
         mobile: res.data.mobile,
         email: res.data.email,
         profileImageUrl: res.data.profileImageUrl,
+        postalAddress: res.data.postalAddress,
+        password: res.data.password,
+        confirmPassword: res.data.confirmPassword,
       });
     });
     return false;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import menudata from "./data.json";
 
 const Days = [
@@ -20,7 +20,7 @@ const FoodMenu = () => {
 
   const handleDayClick = (day) => {
     setCurrentDay(day);
-    setIsDropdownOpen(false); // Close dropdown on selection
+    setIsDropdownOpen(false);
   };
 
   const currentDayMenu = menuData[currentDay];
@@ -36,9 +36,9 @@ const FoodMenu = () => {
             >
               {currentDay}{" "}
               {isDropdownOpen ? (
-                <ChevronUpIcon className="h-5 w-5 ml-2" />
+                <ExpandLess className="h-5 w-5 ml-2" />
               ) : (
-                <ChevronDownIcon className="h-5 w-5 ml-2" />
+                <ExpandMore className="h-5 w-5 ml-2" />
               )}
             </button>
             {isDropdownOpen && (
@@ -70,9 +70,9 @@ const FoodMenu = () => {
                 >
                   {day.slice(0, 3)}
                   {currentDay === day ? (
-                    <ChevronUpIcon className="h-5 w-5 ml-2" />
+                    <ExpandLess className="h-5 w-5 ml-2" />
                   ) : (
-                    <ChevronDownIcon className="h-5 w-5 ml-2 " />
+                    <ExpandMore className="h-5 w-5 ml-2 " />
                   )}
                 </a>
               </li>

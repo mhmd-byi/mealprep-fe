@@ -1,9 +1,10 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
 import logo from "../../../assets/images/logo/mp-logo.png";
 import userProfileImg from "../../../assets/images/user/user-profile.png";
 import logoutButton from "../../../assets/images/logout.png";
 import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../Dashboard/useDashboard";
+import { Menu } from "@mui/icons-material";
+
 const Header = ({ toggleSidebar }) => {
 const { userDetails } = useDashboard();
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const { userDetails } = useDashboard();
       </div>
       <div className="md:hidden">
         <button onClick={toggleSidebar}>
-          <Bars3Icon className="h-6 w-6" />
+          <Menu className="h-6 w-6" />
         </button>
       </div>
       <div className="hidden md:flex items-center space-x-4">

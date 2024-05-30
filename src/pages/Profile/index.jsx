@@ -1,18 +1,17 @@
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../components";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useRef } from "react";
 import Popup from "../../components/common/Popup/Popup";
 import useProfile from "./useProfile";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
 import userProfilePhoto from "../../assets/images/user/user-image.png";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
+import { Edit } from "@mui/icons-material";
 
 const Profile = () => {
   const { userDetails } = useDashboard();
 
   const {
-    formData,
     showPopup,
     setShowPopup,
     handleSubmit,
@@ -39,12 +38,7 @@ const Profile = () => {
         title="Update Profile Photo"
         content={
           <div>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
+            <Input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
         }
         buttons={[
@@ -63,7 +57,7 @@ const Profile = () => {
       />
       <div className="flex flex-col justify-center items-center p-5 w-full h-auto lg:h-full ">
         <div className="bg-white shadow-md rounded-theme-radius p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
-          <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-start justify-center">
+          <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-center justify-center">
             <img
               src={fetchUserProfileImage || userProfilePhoto}
               alt="User"
@@ -73,11 +67,10 @@ const Profile = () => {
               {UserName}
             </h1>
             <a
-              className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6]"
+              className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6] cursor-pointer"
               onClick={() => setShowPopup(true)}
             >
-              Change Profile Picture{" "}
-              {<PencilSquareIcon className="h-4 w-4 ml-2" />}
+              Change Profile Picture {<Edit className="h-1 w-1 ml-2" />}
             </a>
           </div>
           <div className="w-fit mt-5 lg:w-4/6 lg:p-12">
@@ -90,8 +83,7 @@ const Profile = () => {
                     id={"firstName"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"First Name"}
-                    required={true}
-                    value={formData.firstName}
+                    value={userDetails.firstName}
                     onChange={handleChange}
                   />
                 </div>
@@ -102,20 +94,18 @@ const Profile = () => {
                     id={"lastName"}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Last Name"}
-                    required={true}
-                    value={formData.lastName}
+                    value={userDetails.lastName}
                     onChange={handleChange}
                   />
                 </div>
               </div>
               <Input
                 type={"number"}
-                name={"whatsappNumber"}
-                id={"whatsappNumber"}
+                name={"mobile"}
+                id={"mobile"}
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"WhatsApp Number"}
-                required={true}
-                value={formData.whatsappNumber}
+                value={userDetails.mobile}
                 onChange={handleChange}
               />
               <Input
@@ -124,8 +114,7 @@ const Profile = () => {
                 id={"email"}
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"Email Address"}
-                required
-                value={formData.email}
+                value={userDetails.email}
                 onChange={handleChange}
               />
               <div className="flex flex-wrap -mx-3 mb-6">
@@ -134,10 +123,10 @@ const Profile = () => {
                     type={"password"}
                     name={"password"}
                     id={"newPassword"}
+                    autocomplete={true}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Enter Password"}
-                    required={true}
-                    value={formData.password}
+                    value={userDetails.confirmPassword}
                     onChange={handleChange}
                   />
                 </div>
@@ -146,10 +135,10 @@ const Profile = () => {
                     type={"password"}
                     name={"confirmPassword"}
                     id={"confirmNewPassword"}
+                    autocomplete={true}
                     className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                     placeholder={"Confirm Password"}
-                    required={true}
-                    value={formData.confirmPassword}
+                    value={userDetails.confirmPassword}
                     onChange={handleChange}
                   />
                   <ValidationMessage />
@@ -161,8 +150,7 @@ const Profile = () => {
                 id={"postal_address"}
                 className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 placeholder={"Postal Address"}
-                required={true}
-                value={formData.postalAddress}
+                value={userDetails.postalAddress}
                 onChange={handleChange}
               />
               <Button

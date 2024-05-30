@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/solid";
+import { CheckCircle, ErrorOutline } from "@mui/icons-material";
 
 const usePasswordValidation = (
   formRef,
@@ -30,13 +27,13 @@ const usePasswordValidation = (
         setMessage({
           text: "Passwords match!",
           color: "text-green-500",
-          icon: <CheckCircleIcon className="h-5 w-5 text-green-500" />,
+          icon: <CheckCircle className="h-5 w-5 text-green-500" />,
         });
       } else {
         setMessage({
           text: "Passwords do not match!",
           color: "text-red-500",
-          icon: <ExclamationCircleIcon className="h-5 w-5 text-red-500" />,
+          icon: <ErrorOutline className="h-5 w-5 text-red-500" />,
         });
       }
     };

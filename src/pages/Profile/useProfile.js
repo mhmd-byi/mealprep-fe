@@ -7,7 +7,7 @@ const useProfile = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    whatsappNumber: "",
+    mobile: "",
     password: "",
     confirmPassword: "",
     email: "",

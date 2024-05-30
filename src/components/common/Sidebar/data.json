@@ -1,52 +1,52 @@
 [
     {
       "name": "Profile",
-      "icon": "UserCircleIcon",
+      "icon": "AccountCircle",
       "path": "/dashboard/profile"
     },
     {
       "name": "Food Menu",
-      "icon": "DocumentMinusIcon",
+      "icon": "RestaurantMenu",
       "path": "/dashboard/food-menu"
     },
     {
       "name": "Meal Calendar",
-      "icon": "CalendarDaysIcon",
+      "icon": "CalendarMonth",
       "path": "/"
     },
     {
       "name": "Change Request",
-      "icon": "ArrowPathIcon",
+      "icon": "PublishedWithChanges",
       "path": "/"
     },
     {
       "name": "Customize your Meal",
-      "icon": "PuzzlePieceIcon",
+      "icon": "DashboardCustomize",
       "path": "/"
     },
     {
       "name": "My billing",
-      "icon": "DocumentTextIcon",
+      "icon": "Receipt",
       "path": "/"
     },
     {
       "name": "Subscribe your Meal Plan",
-      "icon": "BellSnoozeIcon",
+      "icon": "NotificationsActive",
       "path": "/dashboard/plans"
     },
     {
       "name": "Help",
-      "icon": "QuestionMarkCircleIcon",
+      "icon": "Help",
       "path": "/"
     },
     {
       "name": "Chat on WhatsApp",
-      "icon": "ChatBubbleLeftIcon",
+      "icon": "WhatsApp",
       "path": "/"
     },
     {
       "name": "Feedback",
-      "icon": "HandThumbUpIcon",
+      "icon": "ThumbUpSharp",
       "path": "/"
     }
   ]
