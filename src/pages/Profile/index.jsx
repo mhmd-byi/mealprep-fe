@@ -7,6 +7,7 @@ import usePasswordValidation from "../../hooks/usePasswordValidation";
 import userProfilePhoto from "../../assets/images/user/user-image.png";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Edit } from "@mui/icons-material";
+import { Helmet } from "react-helmet";
 
 const Profile = () => {
   const { userDetails } = useDashboard();
@@ -32,6 +33,9 @@ const Profile = () => {
 
   return (
     <DashboardLayoutComponent>
+      <Helmet>
+        <title> {UserName} | Mealprep Profile </title>
+      </Helmet>
       <Popup
         isOpen={showPopup}
         onClose={() => setShowPopup(false)}
@@ -45,7 +49,7 @@ const Profile = () => {
           {
             label: "Cancel",
             onClick: () => setShowPopup(false),
-            className: "bg-gray-300 text-gray-700",
+            className: "bg-black text-gray-700",
           },
           {
             label: "Update Profile Photo",
@@ -70,7 +74,7 @@ const Profile = () => {
               className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6] cursor-pointer"
               onClick={() => setShowPopup(true)}
             >
-              Change Profile Picture {<Edit className="h-1 w-1 ml-2" />}
+              Change Profile Picture {<Edit className="max-h-[16px]  max-w-[16px] h-[16px] w-[16px] ml-2" />}
             </a>
           </div>
           <div className="w-fit mt-5 lg:w-4/6 lg:p-12">

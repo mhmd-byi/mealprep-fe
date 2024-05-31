@@ -1,15 +1,18 @@
-import logo from "./logo.svg";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import "./App.css";
+import { Helmet } from "react-helmet";
 
 function App() {
   const getComponent = (component) => {
     return React.createElement(component, {});
-  }
+  };
   return (
     <div className="App">
+      <Helmet>
+        <title> Mealprep | Prepare Your Desire Meals </title>
+      </Helmet>
       <BrowserRouter>
         <Routes>
           {routes.map((route, index) => (

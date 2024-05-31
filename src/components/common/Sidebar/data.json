@@ -12,41 +12,41 @@
     {
       "name": "Meal Calendar",
       "icon": "CalendarMonth",
-      "path": "/"
+      "path": "#"
     },
     {
       "name": "Change Request",
       "icon": "PublishedWithChanges",
-      "path": "/"
+      "path": "#"
     },
     {
       "name": "Customize your Meal",
       "icon": "DashboardCustomize",
-      "path": "/"
+      "path": "#"
     },
     {
       "name": "My billing",
       "icon": "Receipt",
-      "path": "/"
+      "path": "#"
     },
     {
-      "name": "Subscribe your Meal Plan",
+      "name": "My Subscribed Plan",
       "icon": "NotificationsActive",
       "path": "/dashboard/plans"
     },
     {
       "name": "Help",
       "icon": "Help",
-      "path": "/"
+      "path": "#"
     },
     {
       "name": "Chat on WhatsApp",
       "icon": "WhatsApp",
-      "path": "/"
+      "path": "#"
     },
     {
       "name": "Feedback",
       "icon": "ThumbUpSharp",
-      "path": "/"
+      "path": "#"
     }
   ]

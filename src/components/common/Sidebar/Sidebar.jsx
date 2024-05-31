@@ -5,10 +5,12 @@ import whiteLogo from "../../../assets/images/logo/white-logo.png";
 import useProfile from "../../../pages/Profile/useProfile";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Logout, Close } from "@mui/icons-material";
+import { useHeader } from "../Header/useHeader";
 
 const Sidebar = ({ closeSidebar }) => {
   const { profileImageUrl } = useProfile();
   const { userDetails } = useDashboard();
+  const { logout } = useHeader();
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
@@ -53,7 +55,10 @@ const Sidebar = ({ closeSidebar }) => {
           <span>{item.name}</span>
         </button>
       ))}
-      <div className="mt-auto flex md:hidden items-center space-x-3 p-2">
+      <div
+        className="mt-auto flex md:hidden items-center space-x-3 p-2"
+        onClick={logout}
+      >
         <Logout />
         <span>Log out</span>
       </div>
