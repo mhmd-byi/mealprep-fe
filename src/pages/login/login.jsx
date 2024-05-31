@@ -1,13 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "./useLogin";
-import { Button, Input } from "../../components";
+import { Button, Input, MealprepLogo } from "../../components";
 import { Alert } from "@mui/material";
-
 const Login = () => {
   const navigate = useNavigate();
   const navigateToSignup = () => navigate("/signup");
-  const navigatetoDashboardProfile = () => navigate("/dashboard/profile");
   const navigateToForgotPassword = () => navigate("/forgot-password");
 
   const { handleChange, handleSubmit, formData, loaderState, errMsg } =
@@ -18,7 +16,10 @@ const Login = () => {
       <div className="flex justify-center">
         <div className="login-box max-h-[680px] px-12 py-8 shadow-md bg-white rounded-lg">
           <div className="content">
-            <h2 className="text-center font-medium text-5xl">Login</h2>
+            <div className="flex flex-col justify-center items-center">
+              <MealprepLogo classes={"text-center justify-center"} />
+              <h2 className="text-center font-medium text-4xl text-slate-950">Login</h2>
+            </div>
             <p className="mt-10 text-center text-lg">
               If you have an account with us, <br />
               please log in.

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input } from "../../components";
+import { Button, Input, MealprepLogo } from "../../components";
 import { useSignup } from "./useSignup";
 import { Alert } from "@mui/material";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
@@ -23,7 +23,10 @@ const Signup = () => {
       <div className="flex justify-center">
         <div className="flex px-12 py-8 shadow-md bg-white rounded-lg">
           <div className="content">
-            <h2 className="text-center font-medium text-5xl">Sign Up</h2>
+          <div className="flex flex-col justify-center items-center">
+          <MealprepLogo />
+          <h2 className="text-center font-medium text-4xl">Sign Up</h2>
+          </div>
             <p className="mt-10 text-center text-lg">
               Enter your information below to proceed. <br />
               If you already have an account, please log in instead.

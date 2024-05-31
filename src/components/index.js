@@ -1,5 +1,5 @@
-import { Button, Input } from "./shared";
+import { Button, Input, MealprepLogo } from "./shared";
 
 export {
-    Button, Input
+    Button, Input, MealprepLogo
 }

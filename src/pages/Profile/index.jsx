@@ -49,7 +49,7 @@ const Profile = () => {
           {
             label: "Cancel",
             onClick: () => setShowPopup(false),
-            className: "bg-black text-gray-700",
+            className: "bg-black text-white hover:bg-theme-color-1",
           },
           {
             label: "Update Profile Photo",
@@ -65,7 +65,7 @@ const Profile = () => {
             <img
               src={fetchUserProfileImage || userProfilePhoto}
               alt="User"
-              className="w-40 h-40 lg:w-60 lg:h-60 object-cover rounded-lg"
+              className="lg:w-60 lg:h-60 object-cover rounded-theme-radius lg:rounded-lg"
             />
             <h1 className="text-2xl mt-3 text-center lg:text-left">
               {UserName}
@@ -74,7 +74,10 @@ const Profile = () => {
               className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6] cursor-pointer"
               onClick={() => setShowPopup(true)}
             >
-              Change Profile Picture {<Edit className="max-h-[16px]  max-w-[16px] h-[16px] w-[16px] ml-2" />}
+              Change Profile Picture{" "}
+              {
+                <Edit className="max-h-[16px]  max-w-[16px] h-[16px] w-[16px] ml-2" />
+              }
             </a>
           </div>
           <div className="w-fit mt-5 lg:w-4/6 lg:p-12">

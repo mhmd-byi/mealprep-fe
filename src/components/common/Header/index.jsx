@@ -1,8 +1,8 @@
-import logo from "../../../assets/images/logo/mp-logo.png";
 import userProfileImg from "../../../assets/images/user/user-profile.png";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Menu, ExitToAppRounded } from "@mui/icons-material";
 import { useHeader } from "./useHeader";
+import { MealprepLogo } from "../../shared";
 
 const Header = ({ toggleSidebar }) => {
   const { userDetails } = useDashboard();
@@ -12,7 +12,7 @@ const Header = ({ toggleSidebar }) => {
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-md">
       <div className="flex items-center">
-        <img src={logo} alt="Mealprep Logo" />
+      <MealprepLogo alt={'Meal Prep Logo'}/>
       </div>
       <div className="md:hidden">
         <button onClick={toggleSidebar}>
