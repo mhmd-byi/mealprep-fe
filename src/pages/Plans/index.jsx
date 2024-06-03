@@ -2,9 +2,11 @@ import React from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import data from "./data.json";
+import { useSubscription } from "./useSubscription";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
+  const { handleSubscribe } = useSubscription();
 
   return (
     <DashboardLayoutComponent>
@@ -33,7 +35,12 @@ const SubscriptionPlans = () => {
                   {plan.description} <br />
                   Valid for {plan.duration}
                 </p>
-                <Button children={"Select"} />
+                <Button
+                  onClick={() => handleSubscribe(plan.name)}
+                  type="button"
+                >
+                  Select
+                </Button>
               </div>
               <div className="mt-5">
                 <ul className="text-left space-y-2">
