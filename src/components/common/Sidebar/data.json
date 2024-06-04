@@ -1,52 +1,62 @@
 [
-    {
-      "name": "Profile",
-      "icon": "AccountCircle",
-      "path": "/dashboard/profile"
-    },
-    {
-      "name": "Food Menu",
-      "icon": "RestaurantMenu",
-      "path": "/dashboard/food-menu"
-    },
-    {
-      "name": "Meal Calendar",
-      "icon": "CalendarMonth",
-      "path": "#"
-    },
-    {
-      "name": "Change Request",
-      "icon": "PublishedWithChanges",
-      "path": "#"
-    },
-    {
-      "name": "Customize your Meal",
-      "icon": "DashboardCustomize",
-      "path": "#"
-    },
-    {
-      "name": "My billing",
-      "icon": "Receipt",
-      "path": "#"
-    },
-    {
-      "name": "My Subscribed Plan",
-      "icon": "NotificationsActive",
-      "path": "/dashboard/plans"
-    },
-    {
-      "name": "Help",
-      "icon": "Help",
-      "path": "#"
-    },
-    {
-      "name": "Chat on WhatsApp",
-      "icon": "WhatsApp",
-      "path": "#"
-    },
-    {
-      "name": "Feedback",
-      "icon": "ThumbUpSharp",
-      "path": "#"
-    }
-  ]
+  {
+    "name": "Profile",
+    "icon": "AccountCircle",
+    "path": "/dashboard/profile",
+    "requiresSubscription": false
+  },
+  {
+    "name": "Food Menu",
+    "icon": "RestaurantMenu",
+    "path": "/dashboard/food-menu",
+    "requiresSubscription": false
+  },
+  {
+    "name": "Meal Calendar",
+    "icon": "CalendarMonth",
+    "path": "#",
+    "requiresSubscription": true
+  },
+  {
+    "name": "Change Request",
+    "icon": "PublishedWithChanges",
+    "path": "#",
+    "requiresSubscription": true
+  },
+  {
+    "name": "Customize your Meal",
+    "icon": "DashboardCustomize",
+    "path": "#",
+    "requiresSubscription": true
+  },
+  {
+    "name": "My billing",
+    "icon": "Receipt",
+    "path": "#",
+    "requiresSubscription": true
+  },
+  {
+    "name": "My Subscribed Plan",
+    "icon": "NotificationsActive",
+    "path": "/dashboard/plans",
+    "requiresSubscription": false
+  },
+  {
+    "name": "Help",
+    "icon": "Help",
+    "path": "#",
+    "requiresSubscription": false
+  },
+  {
+    "name": "Chat on WhatsApp",
+    "icon": "WhatsApp",
+    "path": "#",
+    "requiresSubscription": false
+  },
+  {
+    "name": "Feedback",
+    "icon": "ThumbUpSharp",
+    "path": "#",
+    "requiresSubscription": false
+  }
+]

@@ -6,11 +6,13 @@ import useProfile from "../../../pages/Profile/useProfile";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Logout, Close } from "@mui/icons-material";
 import { useHeader } from "../Header/useHeader";
+import useSubscription from "../../../pages/Plans/useSubscription";
 
 const Sidebar = ({ closeSidebar }) => {
   const { profileImageUrl } = useProfile();
   const { userDetails } = useDashboard();
   const { logout } = useHeader();
+  const { isSubscribed } = useSubscription();
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
@@ -24,7 +26,7 @@ const Sidebar = ({ closeSidebar }) => {
   };
 
   return (
-    <div className="bg-black text-white w-fit h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
+    <div className="bg-black text-white w-64 h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
@@ -40,20 +42,22 @@ const Sidebar = ({ closeSidebar }) => {
         <span>Hi, {fetchUserName}</span>
       </div>
       {sidebarData.map((item, index) => (
-        <button
-          key={index}
-          className={`flex items-center space-x-3 p-2 rounded ${
-            location.pathname === item.path
-              ? "bg-gray-800"
-              : "hover:bg-gray-800"
-          }`}
-          onClick={() => handleNavigate(item.path)}
-        >
-          {React.createElement(require(`@mui/icons-material`)[item.icon], {
-            className: "h-6 w-6",
-          })}
-          <span>{item.name}</span>
-        </button>
+        (!item.requiresSubscription || isSubscribed) && (
+          <button
+            key={index}
+            className={`flex items-center space-x-3 p-2 rounded ${
+              location.pathname === item.path
+                ? "bg-gray-800"
+                : "hover:bg-gray-800"
+            }`}
+            onClick={() => handleNavigate(item.path)}
+          >
+            {React.createElement(require(`@mui/icons-material`)[item.icon], {
+              className: "h-6 w-6",
+            })}
+            <span>{item.name}</span>
+          </button>
+        )
       ))}
       <div
         className="mt-auto flex md:hidden items-center space-x-3 p-2"

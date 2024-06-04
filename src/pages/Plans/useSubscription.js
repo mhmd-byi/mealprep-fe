@@ -1,6 +1,32 @@
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 export const useSubscription = () => {
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    const fetchSubscriptionStatus = async () => {
+      const userId = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("token");
+
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}user/${userId}/subscription`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsSubscribed(response.data.isSubscribed);
+      } catch (error) {
+        console.error("Error fetching subscription status:", error);
+      }
+    };
+
+    fetchSubscriptionStatus();
+  }, []);
+
   const handleSubscribe = (planName) => {
     const userId = sessionStorage.getItem("userId");
     const token = sessionStorage.getItem("token");
@@ -20,6 +46,7 @@ export const useSubscription = () => {
       })
         .then((res) => {
           console.log("res", res);
+          setIsSubscribed(true);
         })
         .catch((err) => {
           console.log("this is err", err);
@@ -35,6 +62,9 @@ export const useSubscription = () => {
   };
 
   return {
+    isSubscribed,
     handleSubscribe,
   };
 };
+
+export default useSubscription;
