@@ -9,13 +9,12 @@ const usePasswordValidation = (
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!formRef.current) return; // Ensure the form reference exists
+    if (!formRef.current) return;
 
     const form = formRef.current;
     const passwordInput = form.elements[passwordFieldName];
     const confirmPasswordInput = form.elements[confirmPasswordFieldName];
 
-    // Ensure both input fields are available before adding event listeners
     if (!passwordInput || !confirmPasswordInput) return;
 
     const validatePasswords = () => {

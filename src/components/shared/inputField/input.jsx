@@ -109,7 +109,7 @@ export const Input = ({
           className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
         >
           {showPassword ? (
-            <Visibility className="h-3 w-3" />
+            <Visibility className="h-3 w-3 text-theme-color-1" />
           ) : (
             <VisibilityOff className="h-3 w-3" />
           )}

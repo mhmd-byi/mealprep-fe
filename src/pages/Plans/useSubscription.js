@@ -46,13 +46,12 @@ export const useSubscription = () => {
       })
         .then((res) => {
           console.log("res", res);
+          window.location.reload();
           setIsSubscribed(true);
         })
         .catch((err) => {
           console.log("this is err", err);
         });
-
-      alert(`You are now subscribed to the ${planName}!`);
     } catch (error) {
       console.error("Error subscribing:", error);
       alert(
