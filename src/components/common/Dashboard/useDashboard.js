@@ -39,8 +39,16 @@ export const useDashboard = () => {
     });
     return false;
   };
+  
+  const getInitials = () => {
+    if (!userDetails.profileImageUrl && userDetails.firstName && userDetails.lastName) {
+      return userDetails.firstName.charAt(0) + userDetails.lastName.charAt(0);
+    }
+    return '';
+  };
 
   return {
     userDetails,
+    getInitials
   };
 };
