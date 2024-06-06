@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import data from "./data.json";
@@ -6,7 +6,14 @@ import { useSubscription } from "./useSubscription";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
-  const { handleSubscribe } = useSubscription();
+  const { handleSubscribe, isSubscribedTo } = useSubscription();
+  const [errorMessages, setErrorMessages] = useState({}); // Changed to an object
+
+  const handlePlanSubscribe = (planName) => {
+    handleSubscribe(planName, (message) => {
+      setErrorMessages({ ...errorMessages, [planName]: message }); // Set the error message for this plan
+    });
+  };
 
   return (
     <DashboardLayoutComponent>
@@ -35,12 +42,20 @@ const SubscriptionPlans = () => {
                   {plan.description} <br />
                   Valid for {plan.duration}
                 </p>
-                <Button
-                  onClick={() => handleSubscribe(plan.name)}
-                  type="button"
-                >
-                  Select
-                </Button>
+                {isSubscribedTo(plan.name) ? (
+                  <p className="text-theme-color-1 font-bold py-3 border-2 rounded-md border-theme-color-1">
+                    You are subscribed to this plan
+                  </p>
+                ) : (
+                  <Button onClick={() => handlePlanSubscribe(plan.name)}>
+                    Select
+                  </Button>
+                )}
+                {errorMessages[plan.name] && (
+                  <p className="mt-1 error text-red-500">
+                    {errorMessages[plan.name]}
+                  </p>
+                )}
               </div>
               <div className="mt-5">
                 <ul className="text-left space-y-2">
