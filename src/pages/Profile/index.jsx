@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Popup from "../../components/common/Popup/Popup";
 import useProfile from "./useProfile";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
-import userProfilePhoto from "../../assets/images/user/user-image.png";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Edit } from "@mui/icons-material";
 import { Helmet } from "react-helmet";
@@ -70,9 +69,7 @@ const Profile = () => {
                 className="lg:w-60 lg:h-60 object-cover rounded-theme-radius lg:rounded-lg"
               />
             ) : (
-              <div
-                className="lg:w-60 lg:h-60 flex items-center justify-center rounded-theme-radius lg:rounded-lg text-white font-bold text-6xl bg-theme-color-1"
-              >
+              <div className="lg:w-60 lg:h-60 flex items-center justify-center rounded-theme-radius lg:rounded-lg text-white font-bold text-6xl bg-theme-color-1">
                 {initials}
               </div>
             )}

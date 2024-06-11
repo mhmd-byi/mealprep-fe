@@ -1,5 +1,3 @@
 import { Button, Input, MealprepLogo } from "./shared";
-
-export {
-    Button, Input, MealprepLogo
-}
+import { Loader } from "./shared/loader";
+export { Button, Input, MealprepLogo, Loader };

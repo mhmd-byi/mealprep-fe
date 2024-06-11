@@ -21,7 +21,7 @@ const useProfile = () => {
 
   const S3_BUCKET = process.env.REACT_APP_API_S3_BUCKET_NAME;
   const REGION = process.env.REACT_APP_API_S3_REGION;
-  const ACCESS_KEY = process.env.REACT_APP_API_S3_ACCESS_kEY;
+  const ACCESS_KEY = process.env.REACT_APP_API_S3_ACCESS_KEY;
   const SECRET_ACCESS_KEY = process.env.REACT_APP_API_S3_SECRET_ACCESS_KEY;
 
   AWS.config.update({
@@ -29,6 +29,7 @@ const useProfile = () => {
     secretAccessKey: SECRET_ACCESS_KEY,
     region: REGION,
   });
+
   const s3 = new AWS.S3();
 
   const uploadFileToS3 = async (file) => {
@@ -46,10 +47,6 @@ const useProfile = () => {
 
     try {
       const data = await s3.upload(params).promise();
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        profileImageUrl: data.Location,
-      }));
       return data.Location;
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -59,31 +56,35 @@ const useProfile = () => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    await uploadFileToS3(file);
+    if (file) {
+      const imageUrl = await uploadFileToS3(file);
+      if (imageUrl) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          profileImageUrl: imageUrl,
+        }));
+        console.log("File uploaded to S3 and URL set in state", imageUrl);
+        updateProfileImageInDatabase(imageUrl);
+      }
+    }
   };
 
-  const handlePopupSubmit = async (event) => {
-    event.preventDefault();
-    const { profileImageUrl } = formData;
-    console.log(profileImageUrl)
-
-    if (profileImageUrl) {
-      try {
-        await axios({
-          method: "PATCH",
-          url: `${process.env.REACT_APP_API_URL}user/${userId}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: {
-            profileImageUrl,
-          },
-        });
-        console.log("Image URL updated in database successfully");
-        setShowPopup(false);
-      } catch (error) {
-        console.error("Error updating image URL:", error);
-      }
+  const updateProfileImageInDatabase = async (imageUrl) => {
+    try {
+      await axios({
+        method: "PATCH",
+        url: `${process.env.REACT_APP_API_URL}user/${userId}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          profileImageUrl: imageUrl,
+        },
+      });
+      console.log("Image URL updated in database successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating image URL:", error);
     }
   };
 
@@ -94,11 +95,7 @@ const useProfile = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const { profileImageUrl, ...otherData } = formData;
-    const updatedFormData = profileImageUrl
-      ? { ...formData }
-      : { ...otherData };
-
+    const updatedFormData = { ...formData };
     if (formData.password === formData.confirmPassword) {
       try {
         const response = await axios({
@@ -125,7 +122,7 @@ const useProfile = () => {
     handleChange,
     handleSubmit,
     handleFileChange,
-    handlePopupSubmit,
+    updateProfileImageInDatabase,
   };
 };
 
