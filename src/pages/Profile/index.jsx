@@ -24,7 +24,6 @@ const Profile = () => {
   const initials = getInitials();
 
   const UserName = userDetails.firstName + " " + userDetails.lastName;
-  const fetchUserProfileImage = userDetails.profileImageUrl;
 
   const formRef = useRef(null);
   const { ValidationMessage } = usePasswordValidation(

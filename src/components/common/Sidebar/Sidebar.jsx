@@ -26,7 +26,7 @@ const Sidebar = ({ closeSidebar }) => {
   };
 
   return (
-    <div className="bg-black text-white w-80 h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
+    <div className="bg-black text-white w-80 lg:w-fit h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
@@ -37,28 +37,29 @@ const Sidebar = ({ closeSidebar }) => {
         <img
           src={fetchUserProfileImage || profileImageUrl}
           alt="Profile"
-          className="h-12 w-12 rounded-full"
+          className="h-12 w-12 rounded-full object-fill"
         />
         <span>Hi, {fetchUserName}</span>
       </div>
-      {sidebarData.map((item, index) => (
-        (!item.requiresSubscription || isSubscribed) && (
-          <button
-            key={index}
-            className={`flex items-center space-x-3 p-2 rounded ${
-              location.pathname === item.path
-                ? "bg-gray-800"
-                : "hover:bg-gray-800"
-            }`}
-            onClick={() => handleNavigate(item.path)}
-          >
-            {React.createElement(require(`@mui/icons-material`)[item.icon], {
-              className: "h-6 w-6",
-            })}
-            <span>{item.name}</span>
-          </button>
-        )
-      ))}
+      {sidebarData.map(
+        (item, index) =>
+          (!item.requiresSubscription || isSubscribed) && (
+            <button
+              key={index}
+              className={`flex items-center space-x-3 p-2 rounded ${
+                location.pathname === item.path
+                  ? "bg-gray-800"
+                  : "hover:bg-gray-800"
+              }`}
+              onClick={() => handleNavigate(item.path)}
+            >
+              {React.createElement(require(`@mui/icons-material`)[item.icon], {
+                className: "h-6 w-6",
+              })}
+              <span>{item.name}</span>
+            </button>
+          )
+      )}
       <div
         className="mt-auto flex md:hidden items-center space-x-3 p-2"
         onClick={logout}

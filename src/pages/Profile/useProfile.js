@@ -64,23 +64,26 @@ const useProfile = () => {
 
   const handlePopupSubmit = async (event) => {
     event.preventDefault();
-    try {
-      axios({
-        method: "PATCH",
-        url: `${process.env.REACT_APP_API_URL}user/${userId}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          profileImageUrl: formData.profileImageUrl,
-        },
-      }).then((res) => {
-        console.log("Image URL updated in database successfully", res);
-      });
-      setShowPopup(false);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating image URL:", error);
+    const { profileImageUrl } = formData;
+    console.log(profileImageUrl)
+
+    if (profileImageUrl) {
+      try {
+        await axios({
+          method: "PATCH",
+          url: `${process.env.REACT_APP_API_URL}user/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            profileImageUrl,
+          },
+        });
+        console.log("Image URL updated in database successfully");
+        setShowPopup(false);
+      } catch (error) {
+        console.error("Error updating image URL:", error);
+      }
     }
   };
 
