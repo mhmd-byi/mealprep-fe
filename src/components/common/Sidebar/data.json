@@ -36,7 +36,7 @@
     "requiresSubscription": true
   },
   {
-    "name": "My Subscribed Plan",
+    "name": "Plans",
     "icon": "NotificationsActive",
     "path": "/dashboard/plans",
     "requiresSubscription": false
@@ -57,6 +57,6 @@
     "name": "Feedback",
     "icon": "ThumbUpSharp",
     "path": "#",
-    "requiresSubscription": false
+    "requiresSubscription": true
   }
 ]
