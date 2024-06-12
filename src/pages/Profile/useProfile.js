@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
-const useProfile = () => {
+const useProfile = (setUserDetails) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,6 +18,8 @@ const useProfile = () => {
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
   const [showPopup, setShowPopup] = useState(false);
+  const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const S3_BUCKET = process.env.REACT_APP_API_S3_BUCKET_NAME;
   const REGION = process.env.REACT_APP_API_S3_REGION;
@@ -32,17 +34,17 @@ const useProfile = () => {
 
   const s3 = new AWS.S3();
 
-  const uploadFileToS3 = async (file) => {
-    if (!file) {
+  const uploadFileToS3 = async (fileToUpload) => {
+    if (!fileToUpload) {
       alert("Please choose a file first!");
       return null;
     }
 
-    const fileName = `${uuidv4()}-${file.name}`;
+    const fileName = `${uuidv4()}-${fileToUpload.name}`;
     const params = {
       Bucket: S3_BUCKET,
       Key: fileName,
-      Body: file,
+      Body: fileToUpload,
     };
 
     try {
@@ -54,37 +56,38 @@ const useProfile = () => {
     }
   };
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = await uploadFileToS3(file);
-      if (imageUrl) {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          profileImageUrl: imageUrl,
-        }));
-        console.log("File uploaded to S3 and URL set in state", imageUrl);
-        updateProfileImageInDatabase(imageUrl);
-      }
-    }
+  const handleFileChange = (event) => {
+    const fileToUpload = event.target.files[0];
+    setFile(fileToUpload);
   };
 
-  const updateProfileImageInDatabase = async (imageUrl) => {
-    try {
-      await axios({
-        method: "PATCH",
-        url: `${process.env.REACT_APP_API_URL}user/${userId}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
+  const handlePopupSubmit = async () => {
+    setIsLoading(true);
+    const imageUrl = await uploadFileToS3(file);
+    if (imageUrl) {
+      try {
+        await axios({
+          method: "PATCH",
+          url: `${process.env.REACT_APP_API_URL}user/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            profileImageUrl: imageUrl,
+          },
+        });
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,
           profileImageUrl: imageUrl,
-        },
-      });
-      console.log("Image URL updated in database successfully");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating image URL:", error);
+        }));
+        setShowPopup(false);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error updating image URL:", error);
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -107,7 +110,7 @@ const useProfile = () => {
           data: updatedFormData,
         });
         console.log("Profile updated successfully", response);
-        window.location.reload();
+        setFormData(response.data);
       } catch (error) {
         console.error("Error submitting profile:", error);
       }
@@ -122,7 +125,9 @@ const useProfile = () => {
     handleChange,
     handleSubmit,
     handleFileChange,
-    updateProfileImageInDatabase,
+    handlePopupSubmit,
+    setIsLoading,
+    isLoading,
   };
 };
 
