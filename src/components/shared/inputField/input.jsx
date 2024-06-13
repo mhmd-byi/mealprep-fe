@@ -5,6 +5,7 @@ export const Input = ({
   type = "text",
   onChange,
   id,
+  disabled = false,
   name,
   value,
   placeholder,
@@ -101,6 +102,7 @@ export const Input = ({
         placeholder={placeholder}
         className={classes}
         autoComplete={autocomplete ? "on" : "off"}
+        disabled={disabled}
       />
       {type === "password" && (
         <button

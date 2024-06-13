@@ -4,6 +4,7 @@ import Login from "./pages/login/login";
 import Profile from "./pages/Profile";
 import FoodMenu from "./pages/Food-Menu";
 import SubscriptionPlans from "./pages/Plans";
+import { Feedback } from "./pages/feedback";
 export const routes = [
   {
     path: "/",
@@ -43,6 +44,11 @@ export const routes = [
   {
     path: "/dashboard/plans",
     component: SubscriptionPlans,
+    exact: true,
+  },
+  {
+    path: "/dashboard/feedback",
+    component: Feedback,
     exact: true,
   }
 ];

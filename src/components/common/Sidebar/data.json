@@ -56,7 +56,7 @@
   {
     "name": "Feedback",
     "icon": "ThumbUpSharp",
-    "path": "#",
+    "path": "/dashboard/feedback",
     "requiresSubscription": true
   }
 ]
