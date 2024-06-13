@@ -20,6 +20,7 @@ const useProfile = (setUserDetails) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [oldImageUrl, setOldImageUrl] = useState(null);
 
   const S3_BUCKET = process.env.REACT_APP_API_S3_BUCKET_NAME;
   const REGION = process.env.REACT_APP_API_S3_REGION;
@@ -33,6 +34,23 @@ const useProfile = (setUserDetails) => {
   });
 
   const s3 = new AWS.S3();
+
+  const deleteFileFromS3 = async (url) => {
+    if (!url) return;
+
+    const fileName = decodeURIComponent(url.split('/').pop().split('?')[0]);
+    const params = {
+      Bucket: S3_BUCKET,
+      Key: fileName,
+    };
+
+    try {
+      await s3.deleteObject(params).promise();
+      console.log("File deleted successfully:", fileName);
+    } catch (err) {
+      console.error("Error deleting file:", err);
+    }
+  };
 
   const uploadFileToS3 = async (fileToUpload) => {
     if (!fileToUpload) {
@@ -49,6 +67,7 @@ const useProfile = (setUserDetails) => {
 
     try {
       const data = await s3.upload(params).promise();
+      console.log("File uploaded successfully:", data.Location);
       return data.Location;
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -63,23 +82,29 @@ const useProfile = (setUserDetails) => {
 
   const handlePopupSubmit = async () => {
     setIsLoading(true);
-    const imageUrl = await uploadFileToS3(file);
-    if (imageUrl) {
+    const newImageUrl = await uploadFileToS3(file);
+    if (newImageUrl) {
       try {
-        await axios({
+        if (oldImageUrl) {
+          await deleteFileFromS3(oldImageUrl);
+        }
+
+        const response = await axios({
           method: "PATCH",
           url: `${process.env.REACT_APP_API_URL}user/${userId}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
           data: {
-            profileImageUrl: imageUrl,
+            profileImageUrl: newImageUrl,
           },
         });
+
         setUserDetails((prevDetails) => ({
           ...prevDetails,
-          profileImageUrl: imageUrl,
+          profileImageUrl: newImageUrl,
         }));
+        setOldImageUrl(newImageUrl);
         setShowPopup(false);
         setIsLoading(false);
       } catch (error) {
@@ -109,11 +134,13 @@ const useProfile = (setUserDetails) => {
           },
           data: updatedFormData,
         });
-        console.log("Profile updated successfully", response);
+        console.log("Profile updated successfully:", response);
         setFormData(response.data);
       } catch (error) {
         console.error("Error submitting profile:", error);
       }
+    } else {
+      console.error("Passwords do not match");
     }
   };
 
