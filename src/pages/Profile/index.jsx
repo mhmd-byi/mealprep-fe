@@ -68,16 +68,16 @@ const Profile = () => {
           ]}
         />
         <div className="flex flex-col justify-center items-center p-5 w-full h-auto lg:h-full ">
-          <div className="bg-white shadow-md rounded-theme-radius p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
+          <div className="bg-white shadow-md rounded-lg p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
             <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-center justify-center">
               {userDetails.profileImageUrl ? (
                 <img
                   src={userDetails.profileImageUrl}
                   alt="User"
-                  className="lg:w-60 lg:h-60 object-cover rounded-theme-radius lg:rounded-lg"
+                  className="lg:w-60 lg:h-60 object-cover rounded-lg"
                 />
               ) : (
-                <div className="lg:w-60 lg:h-60 flex items-center justify-center rounded-theme-radius lg:rounded-lg text-white font-bold text-6xl bg-theme-color-1">
+                <div className="lg:w-60 lg:h-60 flex items-center justify-center rounded-lg text-white font-bold text-6xl bg-theme-color-1">
                   {initials}
                 </div>
               )}

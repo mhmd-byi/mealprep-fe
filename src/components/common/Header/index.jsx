@@ -10,7 +10,7 @@ const Header = ({ toggleSidebar }) => {
   const { logout } = useHeader();
 
   return (
-    <header className="bg-white py-3 px-5 flex justify-between items-center shadow-md">
+    <header className="bg-white py-3 px-5 flex justify-between items-center shadow-lg">
       <div className="flex items-center">
       <MealprepLogo alt={'Meal Prep Logo'}/>
       </div>

@@ -31,7 +31,7 @@ const FoodMenu = () => {
         <div className="max-w-[1500px] w-full">
           <div className="lg:hidden mb-4">
             <button
-              className="bg-white px-4 py-2 rounded-xl flex justify-between items-center w-full text-xl font-medium text-black"
+              className="bg-white px-4 py-2 rounded-lg flex justify-between items-center w-full text-xl font-medium text-black"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               {currentDay}{" "}
@@ -42,7 +42,7 @@ const FoodMenu = () => {
               )}
             </button>
             {isDropdownOpen && (
-              <ul className="bg-white mt-2 rounded-xl shadow-lg">
+              <ul className="bg-white mt-2 rounded-lg shadow-lg">
                 {Days.map((day, index) => (
                   <li key={index} className="border-b last:border-none">
                     <a
@@ -61,12 +61,11 @@ const FoodMenu = () => {
             {Days.map((day, index) => (
               <li
                 key={index}
-                className="me-2 bg-white px-7 rounded-xl flex justify-center items-center"
+                className="me-2 bg-white px-7 w-40 rounded-lg flex justify-between items-center"
               >
                 <a
-                  href="#"
                   onClick={() => handleDayClick(day)}
-                  className="inline-flex items-center justify-center p-4 border-b-2 border-transparent group"
+                  className="cursor-pointer inline-flex items-center justify-center p-4 border-b-2 border-transparent group"
                 >
                   {day.slice(0, 3)}
                   {currentDay === day ? (
@@ -79,7 +78,7 @@ const FoodMenu = () => {
             ))}
           </ul>
         </div>
-        <div className="lg:max-w-[1500px] lg:w-[1300px] min-h-[500px] block lg:flex lg:flex-row gap-10 bg-white p-4 lg:p-20 mt-5 rounded-theme-radius">
+        <div className="lg:max-w-[1500px] lg:w-[1300px] min-h-[500px] block lg:flex lg:flex-row gap-10 bg-white p-4 lg:p-20 mt-5 rounded-lg">
           {["Proteins", "Carbs", "Salads"].map((section, index) => (
             <div
               key={section}

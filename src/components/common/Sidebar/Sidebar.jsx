@@ -30,7 +30,7 @@ const Sidebar = ({ closeSidebar }) => {
     : sidebarData;
 
   return (
-    <div className="bg-black text-white w-80 lg:w-[250px] h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
+    <aside className="bg-black text-white w-80 lg:w-[250px] h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
@@ -79,7 +79,7 @@ const Sidebar = ({ closeSidebar }) => {
         <Logout />
         <span>Log out</span>
       </div>
-    </div>
+    </aside>
   );
 };
 

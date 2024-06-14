@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import Header from "../Header";
 import { ProtectedRoute } from "../../security/protectedRoute";
+import { Footer } from "../footer";
 
 const DashboardLayoutComponent = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,6 +35,9 @@ const DashboardLayoutComponent = ({ children }) => {
           >
             {children}
           </main>
+        </div>
+        <div className="block lg:hidden">
+        <Footer />
         </div>
       </div>
     </ProtectedRoute>
