@@ -34,7 +34,7 @@ export const useLogin = () => {
           res.data.tokens.access.expires
         );
         sessionStorage.setItem("userId", res.data.userId);
-        navigate("/dashboard/profile");
+        navigate("/dashboard");
       })
       .catch((err) => {
         setLoaderState(false);

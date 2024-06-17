@@ -12,7 +12,7 @@ const Sidebar = ({ closeSidebar }) => {
   const { profileImageUrl } = useProfile();
   const { userDetails } = useDashboard();
   const { logout } = useHeader();
-  const { isSubscribed, isSubscriptionExpired } = useSubscription();
+  const { isSubscribed } = useSubscription();
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
@@ -25,12 +25,8 @@ const Sidebar = ({ closeSidebar }) => {
     closeSidebar();
   };
 
-  const filteredSidebarData = isSubscriptionExpired()
-    ? sidebarData.filter((item) => !item.requiresSubscription)
-    : sidebarData;
-
   return (
-    <aside className="bg-black text-white w-80 lg:w-[250px] h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
+    <div className="bg-black text-white w-80 lg:w-fit h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
@@ -45,7 +41,7 @@ const Sidebar = ({ closeSidebar }) => {
         />
         <span>Hi, {fetchUserName}</span>
       </div>
-      {filteredSidebarData.map(
+      {sidebarData.map(
         (item, index) =>
           (!item.requiresSubscription || isSubscribed) && (
             <button
@@ -60,15 +56,7 @@ const Sidebar = ({ closeSidebar }) => {
               {React.createElement(require(`@mui/icons-material`)[item.icon], {
                 className: "h-6 w-6",
               })}
-              <span>
-                {item.name === "Plans"
-                  ? isSubscribed
-                    ? isSubscriptionExpired()
-                      ? "Plans"
-                      : `My Plan`
-                    : "Plans"
-                  : item.name}
-              </span>
+              <span>{item.name}</span>
             </button>
           )
       )}
@@ -79,7 +67,7 @@ const Sidebar = ({ closeSidebar }) => {
         <Logout />
         <span>Log out</span>
       </div>
-    </aside>
+    </div>
   );
 };
 

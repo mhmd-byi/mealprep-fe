@@ -5,6 +5,7 @@ import Profile from "./pages/Profile";
 import FoodMenu from "./pages/Food-Menu";
 import SubscriptionPlans from "./pages/Plans";
 import { Feedback } from "./pages/feedback";
+import { DashboardPage } from "./pages/Dashboard";
 export const routes = [
   {
     path: "/",
@@ -49,6 +50,11 @@ export const routes = [
   {
     path: "/dashboard/feedback",
     component: Feedback,
+    exact: true,
+  },
+  {
+    path: "/dashboard",
+    component: DashboardPage,
     exact: true,
   }
 ];

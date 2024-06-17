@@ -4,7 +4,7 @@ import Header from "../Header";
 import { ProtectedRoute } from "../../security/protectedRoute";
 import { Footer } from "../footer";
 
-const DashboardLayoutComponent = ({ children }) => {
+const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -18,13 +18,15 @@ const DashboardLayoutComponent = ({ children }) => {
             isSidebarOpen ? "bg-gray-900 bg-opacity-50" : ""
           }`}
         >
-          <div
-            className={`fixed inset-y-0 left-0 transform z-40 ${
-              isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-            } transition-transform duration-300 ease-in-out md:relative md:translate-x-0`}
-          >
-            <Sidebar closeSidebar={toggleSidebar} />
-          </div>
+          {showSidebar && (
+            <div
+              className={`fixed inset-y-0 left-0 transform z-40 ${
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+              } transition-transform duration-300 ease-in-out md:relative md:translate-x-0`}
+            >
+              <Sidebar closeSidebar={toggleSidebar} />
+            </div>
+          )}
           <main
             className={`flex-1 items-center justify-center overflow-auto bg-theme-bg-2 bg-no-repeat bg-cover ml-0 ${
               isSidebarOpen
@@ -37,7 +39,7 @@ const DashboardLayoutComponent = ({ children }) => {
           </main>
         </div>
         <div className="block lg:hidden">
-        <Footer />
+          <Footer />
         </div>
       </div>
     </ProtectedRoute>

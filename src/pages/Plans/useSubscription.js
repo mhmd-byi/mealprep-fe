@@ -19,7 +19,7 @@ export const useSubscription = () => {
             },
           }
         );
-        setIsSubscribed(!!response.data.subscription); // Set isSubscribed based on the presence of a subscription
+        setIsSubscribed(response.data.isSubscribed);
         setCurrentPlan(response.data.subscription);
       } catch (error) {
         console.error("Error fetching subscription status:", error);
@@ -78,20 +78,10 @@ export const useSubscription = () => {
     );
   };
 
-  const isSubscriptionExpired = () => {
-    if (currentPlan) {
-      const subscriptionEndDate = new Date(currentPlan.subscriptionEndDate);
-      const now = new Date();
-      return now > subscriptionEndDate;
-    }
-    return false;
-  };
-
   return {
     isSubscribed,
     handleSubscribe,
     isSubscribedTo,
-    isSubscriptionExpired,
   };
 };
 
