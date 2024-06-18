@@ -1,133 +1,151 @@
 import {
-    RestaurantMenu,
-    CalendarMonth,
-    OpenInNew,
-    PublishedWithChanges,
-    DashboardCustomize,
-    Receipt,
-    NotificationsActive,
-  } from "@mui/icons-material";
+  RestaurantMenu,
+  CalendarMonth,
+  PublishedWithChanges,
+  DashboardCustomize,
+  Receipt,
+  NotificationsActive,
+  Help,
+  WhatsApp,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-
+import { useMediaQuery } from "@mui/material";
 export const Services = () => {
-    const navigation = useNavigate();
-  const items = [
-    {
-      icon: (
-        <RestaurantMenu
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "Food Menu",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "/dashboard/food-menu",
-      },
-    },
-    {
-      icon: (
-        <CalendarMonth
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "Meal Calendar",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "#",
-      },
-    },
-    {
-      icon: (
-        <PublishedWithChanges
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "Change Request",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "#",
-      },
-    },
-    {
-      icon: (
-        <DashboardCustomize
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "Customize your Meal",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "#",
-      },
-    },
-    {
-      icon: (
-        <Receipt
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "My billing",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "#",
-      },
-    },
-    {
-      icon: (
-        <NotificationsActive
-          className="mb-2 text-theme-color-1"
-          sx={{ fontSize: "28px" }}
-        />
-      ),
-      title: "Plans",
-      description:
-        "Go to this step by step guideline process on how to certify for your weekly benefits:",
-      link: {
-        text: "Click here",
-        path: "/dashboard/plans",
-      },
-    },
-  ];
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const navigation = useNavigate();
   return (
-    <section className="mb-20 mx-auto grid grid-cols-3 gap-10 lg:max-w-[1500px]">
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="text-left max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow"
-        >
-          {item.icon}
-          <a href={item.link.path}>
-            <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-              {item.title}
-            </h5>
-          </a>
-          <p className="mb-3 font-normal text-gray-500">{item.description}</p>
-          <a
-            onClick={() => navigation(item.link.path)}
-            className="inline-flex font-medium items-center text-theme-color-1 hover:underline cursor-pointer"
-          >
-            {item.link.text}
-            <OpenInNew
-              sx={{ fontSize: "15px", fontWeight: "bold", marginLeft: "2px" }}
-            />
-          </a>
+    <div className="px-4">
+      <section className="mb-10 flex justify-center">
+        <div className="bg-[#D5ECDB] p-4 rounded-lg w-fit">
+          <p className="text-4xl sm:text-2xl">Our Services</p>
         </div>
-      ))}
-    </section>
+      </section>
+      <section
+        className={`mb-20 mx-auto grid ${
+          isSmallScreen ? "grid-cols-2 gap-4" : "grid-cols-4 gap-10"
+        } max-w-[1500px]`}
+      >
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <RestaurantMenu
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Food Menu
+          </p>
+        </div>
+        <div
+          className=" flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <CalendarMonth
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Meal Calendar
+          </p>
+        </div>
+        <div
+          className=" flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <PublishedWithChanges
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Change Request
+          </p>
+        </div>
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <DashboardCustomize
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Custoomized Meal
+          </p>
+        </div>
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <Receipt
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Receipt
+          </p>
+        </div>
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <NotificationsActive
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Subscription Plans
+          </p>
+        </div>
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <Help
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Help
+          </p>
+        </div>
+        <div
+          className="flex flex-col w-full h-[150px] sm:w-[200px] sm:h-[200px] p-2 sm:p-5 gap-2 sm:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
+          onClick={() => navigation()}
+        >
+          <WhatsApp
+            className="mb-2 text-theme-color-1 group-hover:text-white"
+            sx={{ fontSize: isSmallScreen ? "60px" : "100px" }}
+          />
+          <p
+            className="text-sm sm:text-2xl text-black group-hover:text-white cursor-pointer text-center"
+            onClick={() => navigation()}
+          >
+            Chat on WhatsApp
+          </p>
+        </div>
+      </section>
+    </div>
   );
 };

@@ -3,7 +3,7 @@ import { HeroSlider } from "./slider";
 import { Services } from "./services";
 export const DashboardPage = () => {
   return (
-    <DashboardLayoutComponent showSidebar={false}>
+    <DashboardLayoutComponent>
       <HeroSlider />
       <Services />
     </DashboardLayoutComponent>
