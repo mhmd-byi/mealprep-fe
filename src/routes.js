@@ -6,6 +6,7 @@ import FoodMenu from "./pages/Food-Menu";
 import SubscriptionPlans from "./pages/Plans";
 import { Feedback } from "./pages/feedback";
 import { DashboardPage } from "./pages/Dashboard";
+import { MealCalendar } from "./pages/Meal-Calendar";
 export const routes = [
   {
     path: "/",
@@ -56,5 +57,10 @@ export const routes = [
     path: "/dashboard",
     component: DashboardPage,
     exact: true,
-  }
+  },
+  {
+    path: "/meal-calendar",
+    component: MealCalendar,
+    exact: true,
+  },
 ];

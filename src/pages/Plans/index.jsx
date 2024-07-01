@@ -18,16 +18,16 @@ const SubscriptionPlans = () => {
   return (
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-center items-center p-5 w-full lg:h-full my-auto">
-        <div className="bg-white shadow-md rounded-theme-radius-15 px-4 lg:px-14 py-4 w-fit lg:max-w-[1500px] lg:w-[1200px]">
+        <div className="bg-white shadow-md rounded px-4 lg:px-14 py-4 w-fit lg:max-w-[1500px] lg:w-[1200px]">
           <h3 className="text-2xl lg:text-3xl text-black text-center">
             Subscribe Your Meal Plans
           </h3>
         </div>
-        <div className="lg:bg-white shadow-md rounded-theme-radius p-0 lg:p-20 flex flex-col lg:flex-row gap-4 lg:gap-0 max-w-[1500px] lg:w-[1200px] mt-7">
+        <div className="lg:bg-white shadow-md rounded-lg p-0 lg:p-20 flex flex-col lg:flex-row gap-4 lg:gap-0 max-w-[1500px] lg:w-[1200px] mt-7">
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-theme-radius lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${index === plans.length - 1 ? "lg:border-r-0" : ""}`}
+              className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${index === plans.length - 1 ? "lg:border-r-0" : ""}`}
             >
               <div className="pb-5">
                 <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">

@@ -14,7 +14,7 @@
   {
     "name": "Meal Calendar",
     "icon": "CalendarMonth",
-    "path": "#",
+    "path": "/meal-calendar",
     "requiresSubscription": true
   },
   {
