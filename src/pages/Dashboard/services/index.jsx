@@ -24,7 +24,7 @@ export const Services = () => {
         <div className="flex flex-row justify-between gap-2 lg:gap-10 lg:max-w-[1500px] lg:mx-auto">
           <div
             className="w-[calc(25%-0.5rem)] lg:w-[200px] lg:h-[200px] p-2 lg:p-5 flex flex-col gap-1 lg:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
-            onClick={() => navigation()}
+            onClick={() => navigation("/dashboard/food-menu")}
           >
             <RestaurantMenu
               className="mb-2 text-theme-color-1 group-hover:text-white"
@@ -32,14 +32,14 @@ export const Services = () => {
             />
             <p
               className="text-[10px] sm:text-lg text-black group-hover:text-white cursor-pointer text-center"
-              onClick={() => navigation()}
+              onClick={() => navigation("/dashboard/food-menu")}
             >
               Food Menu
             </p>
           </div>
           <div
             className="w-[calc(25%-0.5rem)] h-fit lg:w-[200px] lg:h-[200px] p-2 lg:p-5 flex flex-col gap-2 lg:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
-            onClick={() => navigation()}
+            onClick={() => navigation("meal-calendar")}
           >
             <CalendarMonth
               className="mb-2 text-theme-color-1 group-hover:text-white"
@@ -47,7 +47,7 @@ export const Services = () => {
             />
             <p
               className="text-[10px] sm:text-lg text-black group-hover:text-white cursor-pointer text-center"
-              onClick={() => navigation()}
+              onClick={() => navigation("meal-calendar")}
             >
               Meal Calendar
             </p>
@@ -101,7 +101,7 @@ export const Services = () => {
           </div>
           <div
             className="w-[calc(25%-0.5rem)] h-fit lg:w-[200px] lg:h-[200px] p-2 lg:p-5 flex flex-col gap-2 lg:gap-5 justify-center items-center bg-white rounded group hover:bg-theme-color-1 shadow-md cursor-pointer"
-            onClick={() => navigation()}
+            onClick={() => navigation("/dashboard/plans")}
           >
             <NotificationsActive
               className="mb-2 text-theme-color-1 group-hover:text-white"
@@ -109,7 +109,7 @@ export const Services = () => {
             />
             <p
               className="text-[10px] sm:text-lg text-black group-hover:text-white cursor-pointer text-center"
-              onClick={() => navigation()}
+              onClick={() => navigation("/dashboard/plans")}
             >
               Subscription Plans
             </p>
