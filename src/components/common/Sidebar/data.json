@@ -1,5 +1,11 @@
 [
   {
+    "name": "Dashboard",
+    "icon": "AccountCircle",
+    "path": "/dashboard",
+    "requiresSubscription": false
+  },
+  {
     "name": "Profile",
     "icon": "AccountCircle",
     "path": "/dashboard/profile",
