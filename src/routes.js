@@ -59,7 +59,7 @@ export const routes = [
     exact: true,
   },
   {
-    path: "/meal-calendar",
+    path: "dashboard/meal-calendar",
     component: MealCalendar,
     exact: true,
   },
