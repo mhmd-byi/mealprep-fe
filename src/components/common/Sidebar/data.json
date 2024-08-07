@@ -1,7 +1,7 @@
 [
   {
     "name": "Dashboard",
-    "icon": "AccountCircle",
+    "icon": "Home",
     "path": "/dashboard",
     "requiresSubscription": false
   },
@@ -20,7 +20,7 @@
   {
     "name": "Meal Calendar",
     "icon": "CalendarMonth",
-    "path": "meal-calendar",
+    "path": "/dashboard/meal-calendar",
     "requiresSubscription": true
   },
   {
@@ -38,7 +38,7 @@
   {
     "name": "My billing",
     "icon": "Receipt",
-    "path": "#",
+    "path": "/dashboard/my-billing",
     "requiresSubscription": true
   },
   {
@@ -50,7 +50,7 @@
   {
     "name": "Help",
     "icon": "Help",
-    "path": "#",
+    "path": "/dashboard/help",
     "requiresSubscription": false
   },
   {
