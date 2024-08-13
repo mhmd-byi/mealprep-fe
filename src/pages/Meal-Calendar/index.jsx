@@ -1,38 +1,14 @@
-import { useState } from "react";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ArrowForwardIos, ArrowBackIos, MoreVert, DeleteOutline } from "@mui/icons-material";
+import { useState, useEffect } from "react";
+import { Menu } from "@headlessui/react";
+import {
+  ArrowForwardIos,
+  ArrowBackIos,
+  MoreVert,
+  DeleteOutline,
+} from "@mui/icons-material";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-
-const generateDummyMeals = (date) => {
-  const meals = [
-    { id: 1, name: "Vegetable Stir Fry", isVeg: true, time: "12:00 PM" },
-    { id: 2, name: "Grilled Chicken Salad", isVeg: false, time: "2:00 PM" },
-    { id: 3, name: "Lentil Soup", isVeg: true, time: "6:00 PM" },
-    {
-      id: 4,
-      name: "Salmon with Roasted Vegetables",
-      isVeg: false,
-      time: "8:00 PM",
-    },
-    {
-      id: 5,
-      name: "Vegetable Stir-Fry with Tofu",
-      isVeg: true,
-      time: "6:00 PM",
-    },
-    { id: 6, name: "Paneer Butter Masala", isVeg: true, time: "6:00 PM" },
-    {
-      id: 7,
-      name: "Chickpea and Spinach Curry",
-      isVeg: false,
-      time: "6:00 PM",
-    },
-    { id: 8, name: "Vegetable Lasagna", isVeg: true, time: "6:00 PM" },
-    { id: 9, name: "Stuffed Bell Peppers", isVeg: false, time: "6:00 PM" },
-  ];
-  const day = new Date(date).getDate();
-  return meals.filter((_, index) => index % day !== 0);
-};
+import axios from "axios";
+import { useMealCalendar } from "./useMealCalendar";
 
 const generateCalendarDays = (year, month) => {
   const firstDay = new Date(year, month, 1);
@@ -69,63 +45,53 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const VegNonVegIcon = ({ isVeg }) => (
+  <svg
+    width="15"
+    height="16"
+    className="inline-block ml-2"
+    viewBox="0 0 15 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="0.5"
+      y="1"
+      width="14"
+      height="14"
+      stroke={isVeg ? "#007F0D" : "#FE0D0D"}
+    />
+    <circle cx="7.5" cy="8" r="3.75" fill={isVeg ? "#007F0D" : "#FE0D0D"} />
+    <title>{isVeg ? "Vegetarian" : "Non-Vegetarian"}</title>
+  </svg>
+);
+
 export const MealCalendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [meals, setMeals] = useState(generateDummyMeals(selectedDate));
+  const {
+    currentDate,
+    selectedDate,
+    meals,
+    loading,
+    error,
+    handlePrevMonth,
+    handleNextMonth,
+    handleDateClick,
+    handleRemoveItem,
+    isPastDate,
+  } = useMealCalendar();
 
   const days = generateCalendarDays(
     currentDate.getFullYear(),
     currentDate.getMonth()
   );
 
-  const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
-  };
-
-  const handleDateClick = (date) => {
-    setSelectedDate(date);
-    setMeals(generateDummyMeals(date));
-  };
-
-  const handleRemoveMeal = (id) => {
-    setMeals(meals.filter((meal) => meal.id !== id));
-  };
-
-  const isPastDate = (date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return new Date(date) < today;
-  };
-  const VegNonVegIcon = ({ isVeg }) => (
-    <svg
-      width="15"
-      height="16"
-      className="inline-block ml-2"
-      viewBox="0 0 15 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect
-        x="0.5"
-        y="1"
-        width="14"
-        height="14"
-        stroke={isVeg ? "#007F0D" : "#FE0D0D"}
-      />
-      <circle cx="7.5" cy="8" r="3.75" fill={isVeg ? "#007F0D" : "#FE0D0D"} />
-    </svg>
-  );
+  const groupedMeals = meals.reduce((acc, meal) => {
+    if (!acc[meal.mealType]) {
+      acc[meal.mealType] = [];
+    }
+    acc[meal.mealType].push(meal);
+    return acc;
+  }, {});
 
   return (
     <DashboardLayoutComponent>
@@ -211,47 +177,76 @@ export const MealCalendar = () => {
             </div>
           </div>
           <section className="mt-4 md:mt-0 md:pl-14">
-            <ol className="mt-4 space-y-1 text-sm leading-6 text-left text-gray-500">
-              {meals.map((meal) => (
-                <li
-                  key={meal.id}
-                  className="flex items-center justify-between px-4 py-2 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100"
-                >
-                  <div className="flex-auto">
-                    <p className="text-gray-900">
-                      {meal.name}
-                      <VegNonVegIcon isVeg={meal.isVeg} />
-                    </p>
-                  </div>
-                  {!isPastDate(selectedDate) && (
-                    <Menu as="div" className="relative">
-                      <MenuButton className="-m-2 flex items-center rounded-full p-1.5 text-gray-500 hover:text-gray-600">
-                        <span className="sr-only">Open options</span>
-                        <MoreVert className="w-6 h-6" aria-hidden="true" />
-                      </MenuButton>
-                      <MenuItems className="absolute right-0 z-10 mt-2 origin-top-right bg-white rounded-md shadow-lg w-36 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <MenuItems className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <MenuItem>
-                        {({ active }) => (
-                          <button
-                            onClick={() => handleRemoveMeal(meal.id)}
-                            className={classNames(
-                              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                              "block w-full text-left px-4 py-2 text-sm flex items-center whitespace-nowrap"
-                            )}
-                          >
-                            <DeleteOutline className="w-5 h-5 mr-2" />
-                            <span>Remove this item for me</span>
-                          </button>
+            {loading && <p>Loading meals...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+            {!loading && !error && (
+              <ol className="mt-4 space-y-4 text-sm leading-6 text-left text-gray-500">
+                {Object.keys(groupedMeals).length === 0 ? (
+                  <p>No meals scheduled for this date.</p>
+                ) : (
+                  Object.entries(groupedMeals).map(([mealType, mealItems]) => (
+                    <li key={mealType} className="space-y-2">
+                      <h3 className="text-lg font-semibold text-gray-900 capitalize">
+                        {mealType}
+                      </h3>
+                      <ul className="space-y-2">
+                        {mealItems.flatMap((meal) =>
+                          meal.items.map((item) => (
+                            <li
+                              key={item._id}
+                              className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100"
+                            >
+                              <span className="flex items-center">
+                                {item.name}
+                                <VegNonVegIcon
+                                  isVeg={
+                                    item.type &&
+                                    item.type.toLowerCase() === "veg"
+                                  }
+                                />
+                              </span>
+                              {!isPastDate(selectedDate) && (
+                                <Menu as="div" className="relative">
+                                  <Menu.Button className="-m-2 flex items-center rounded-full p-1.5 text-gray-500 hover:text-gray-600">
+                                    <span className="sr-only">
+                                      Open options
+                                    </span>
+                                    <MoreVert
+                                      className="w-5 h-5"
+                                      aria-hidden="true"
+                                    />
+                                  </Menu.Button>
+                                  <Menu.Items className="absolute right-0 z-10 mt-2 origin-top-right bg-white rounded-md shadow-lg w-56 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          onClick={() =>
+                                            handleRemoveItem(meal._id, item._id)
+                                          }
+                                          className={classNames(
+                                            active
+                                              ? "bg-gray-100 text-gray-900"
+                                              : "text-gray-700",
+                                            "block w-full text-left px-4 py-2 text-sm flex items-center whitespace-nowrap"
+                                          )}
+                                        >
+                                          <DeleteOutline className="w-5 h-5 mr-2" />
+                                          <span>Remove this item</span>
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  </Menu.Items>
+                                </Menu>
+                              )}
+                            </li>
+                          ))
                         )}
-                      </MenuItem>
-                    </MenuItems>
-                      </MenuItems>
-                    </Menu>
-                  )}
-                </li>
-              ))}
-            </ol>
+                      </ul>
+                    </li>
+                  ))
+                )}
+              </ol>
+            )}
           </section>
         </div>
       </div>

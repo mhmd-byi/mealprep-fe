@@ -15,7 +15,8 @@
     "name": "Food Menu",
     "icon": "RestaurantMenu",
     "path": "/dashboard/food-menu",
-    "requiresSubscription": false
+    "requiresSubscription": false,
+    "userOnly": true
   },
   {
     "name": "Meal Calendar",
@@ -27,42 +28,55 @@
     "name": "Change Request",
     "icon": "PublishedWithChanges",
     "path": "#",
-    "requiresSubscription": true
+    "requiresSubscription": true,
+    "userOnly": true
   },
   {
     "name": "Customize your Meal",
     "icon": "DashboardCustomize",
     "path": "#",
-    "requiresSubscription": true
+    "requiresSubscription": true,
+    "userOnly": true
   },
   {
     "name": "My billing",
     "icon": "Receipt",
     "path": "/dashboard/my-billing",
-    "requiresSubscription": true
+    "requiresSubscription": true,
+    "userOnly": true
   },
   {
     "name": "Plans",
     "icon": "NotificationsActive",
     "path": "/dashboard/plans",
-    "requiresSubscription": false
+    "requiresSubscription": false,
+    "userOnly": true
   },
   {
     "name": "Help",
     "icon": "Help",
     "path": "/dashboard/help",
-    "requiresSubscription": false
+    "requiresSubscription": false,
+    "userOnly": true
   },
   {
     "name": "Chat on WhatsApp",
     "icon": "WhatsApp",
     "path": "#",
-    "requiresSubscription": false
+    "requiresSubscription": false,
+    "userOnly": true
   },
   {
     "name": "Feedback",
     "icon": "ThumbUpSharp",
     "path": "/dashboard/feedback",
     "requiresSubscription": true
+  },
+  {
+    "name": "Add Menu",
+    "icon": "FoodBank",
+    "path": "/dashboard/add-menu",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

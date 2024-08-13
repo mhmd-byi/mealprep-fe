@@ -12,6 +12,7 @@ export const Input = ({
   autocomplete = false,
   required = false,
   classes = "block w-full h-12 rounded-lg border-0 px-5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 focus:border-theme-color-1 sm:text-sm sm:leading-6",
+  options = [],
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [filePreview, setFilePreview] = useState(null);
@@ -50,6 +51,7 @@ export const Input = ({
     e.stopPropagation();
     handleFileChange(e);
   };
+
   if (type === "file") {
     return (
       <div
@@ -87,6 +89,27 @@ export const Input = ({
           )}
         </div>
       </div>
+    );
+  }
+
+  if (type === "select") {
+    return (
+      <select
+        onChange={onChange}
+        value={value}
+        id={id}
+        name={name}
+        required={required}
+        disabled={disabled}
+        className={classes}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     );
   }
 

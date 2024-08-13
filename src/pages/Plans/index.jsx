@@ -27,7 +27,9 @@ const SubscriptionPlans = () => {
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${index === plans.length - 1 ? "lg:border-r-0" : ""}`}
+              className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${
+                index === plans.length - 1 ? "lg:border-r-0" : ""
+              }`}
             >
               <div className="pb-5">
                 <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">
@@ -45,7 +47,10 @@ const SubscriptionPlans = () => {
                     You are subscribed to this plan
                   </p>
                 ) : (
-                  <Button onClick={() => handlePlanSubscribe(plan.name)}>
+                  <Button
+                    onClick={() => handlePlanSubscribe(plan.name)}
+                    classes="w-full"
+                  >
                     Select
                   </Button>
                 )}

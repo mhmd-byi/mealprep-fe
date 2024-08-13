@@ -9,6 +9,7 @@ import { DashboardPage } from "./pages/Dashboard";
 import { MealCalendar } from "./pages/Meal-Calendar";
 import { HelpPage } from "./pages/Help";
 import { MyPlan } from "./pages/My-Plans";
+import AddMeal from "./pages/Admin/Add-Meal";
 export const routes = [
   {
     path: "/",
@@ -73,6 +74,11 @@ export const routes = [
   {
     path: "/dashboard/my-billing",
     component: MyPlan,
+    exact: true,
+  },
+  {
+    path: "/dashboard/add-menu",
+    component: AddMeal,
     exact: true,
   }
 ];

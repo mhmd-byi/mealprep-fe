@@ -11,13 +11,16 @@ export const useDashboard = () => {
     postalAddress: "",
     password: "",
     confirmPassword: "",
+    role: "user", // Add role field with default value
   });
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
+
   useEffect(() => {
     getUserData();
   }, [token, userId]);
+
   const getUserData = () => {
     axios({
       method: "GET",
@@ -35,6 +38,7 @@ export const useDashboard = () => {
         postalAddress: res.data.postalAddress,
         password: res.data.password,
         confirmPassword: res.data.confirmPassword,
+        role: res.data.role || "user", // Include role, default to "user" if not provided
       });
     });
     return false;

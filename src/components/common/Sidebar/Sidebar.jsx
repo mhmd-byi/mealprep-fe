@@ -16,6 +16,7 @@ const Sidebar = ({ closeSidebar }) => {
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
+  const userRole = userDetails.role;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,8 +26,22 @@ const Sidebar = ({ closeSidebar }) => {
     closeSidebar();
   };
 
+  const isItemVisible = (item) => {
+    if (item.requiresSubscription && !isSubscribed) {
+      return false;
+    }
+    if (item.adminOnly && userRole !== "admin") {
+      return false;
+    }
+    if (item.userOnly && userRole === "admin") {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
-    <div className="bg-black text-white w-80 lg:w-fit h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
+    <div className="bg-black text-white w-80 lg:w-72 h-full flex flex-col space-y-4 py-10 px-5 overflow-y-auto">
       <div className="flex justify-between items-center md:hidden mb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
         <button onClick={closeSidebar}>
@@ -43,7 +58,7 @@ const Sidebar = ({ closeSidebar }) => {
       </div>
       {sidebarData.map(
         (item, index) =>
-          (!item.requiresSubscription || isSubscribed) && (
+          isItemVisible(item) && (
             <button
               key={index}
               className={`flex items-center space-x-3 p-2 rounded ${
