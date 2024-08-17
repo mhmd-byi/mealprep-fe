@@ -73,69 +73,69 @@ export const HeroSlider = () => {
 
   return (
     <section className="flex justify-center relative pb-20 px-4">
-    <div>
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`relative w-full sm:w-[1500px] h-[300px] sm:h-[450px] top-10 ${
-            index !== currentSlide ? "hidden" : ""
-          }`}
-        >
-          <img
-            src={slide.image}
-            className="w-full h-full rounded-lg object-cover"
-          />
-          <div className="absolute right-0 top-0 w-full sm:w-[50%] h-full bg-black bg-opacity-75 flex flex-col justify-center px-4 sm:px-8 text-left rounded-lg">
-            <h1 className="text-white text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
-              {slide.heading}
-            </h1>
-            <p className="text-white text-sm sm:text-lg mb-4 sm:mb-8">
-              {slide.description}
-            </p>
-            <button className="bg-white text-black py-2 px-4 rounded w-fit">
-              {slide.buttonText}
-            </button>
-          </div>
-        </div>
-      ))}
-      <div className="absolute bottom-[12px] lg:bottom-12 left-1/2 -translate-x-1/2 flex space-x-2 bg-white p-1 rounded-full">
-        {slides.map((_, index) => (
+      <div>
+        {slides.map((slide, index) => (
           <div
-            key={index}
-            className={`cursor-pointer ${
-              index === currentSlide
-                ? "bg-theme-color-1 w-5 h-3 rounded-full"
-                : "bg-gray-400 w-3 h-3 rounded-full"
+            key={slide.id}
+            className={`relative w-full sm:w-[1500px] h-[450px] lg:h-[500px] top-10 ${
+              index !== currentSlide ? "hidden" : ""
             }`}
-            onClick={() => goToSlide(index)}
-          ></div>
+          >
+            <img
+              src={slide.image}
+              className="w-full h-full rounded-lg object-cover"
+            />
+            <div className=" p-8  absolute right-0 top-0 w-full sm:w-[50%] h-full bg-black bg-opacity-75 flex flex-col justify-center px-4 sm:px-8 text-left rounded-lg">
+              <h1 className="text-white text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
+                {slide.heading}
+              </h1>
+              <p className="text-white text-sm sm:text-lg mb-4 sm:mb-8">
+                {slide.description}
+              </p>
+              <button className="bg-white text-black py-2 px-4 rounded w-fit">
+                {slide.buttonText}
+              </button>
+            </div>
+          </div>
         ))}
+        <div className="absolute bottom-[12px] lg:bottom-12 left-1/2 -translate-x-1/2 flex space-x-2 bg-white p-1 rounded-full">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`cursor-pointer ${
+                index === currentSlide
+                  ? "bg-theme-color-1 w-5 h-3 rounded-full"
+                  : "bg-gray-400 w-3 h-3 rounded-full"
+              }`}
+              onClick={() => goToSlide(index)}
+            ></div>
+          ))}
+        </div>
+        <div className="absolute hidden lg:block top-1/2 lg:left-2 sm:left-8 -translate-y-1/2 text-white cursor-pointer">
+          <span
+            className="material-icons"
+            onClick={prevSlide}
+            style={{ fontSize: "30px", lineHeight: "30px" }}
+          >
+            <ArrowCircleLeft
+              sx={{ fontSize: "30px" }}
+              className="text-theme-color-1 hover:text-white"
+            />
+          </span>
+        </div>
+        <div className="absolute hidden lg:block top-1/2 right-2 sm:right-8 -translate-y-1/2 text-white cursor-pointer">
+          <span
+            className="material-icons"
+            onClick={nextSlide}
+            style={{ fontSize: "30px", lineHeight: "30px" }}
+          >
+            <ArrowCircleRight
+              sx={{ fontSize: "30px" }}
+              className="text-theme-color-1 hover:text-white"
+            />
+          </span>
+        </div>
       </div>
-      <div className="absolute hidden lg:block top-1/2 lg:left-2 sm:left-8 -translate-y-1/2 text-white cursor-pointer">
-        <span
-          className="material-icons"
-          onClick={prevSlide}
-          style={{ fontSize: "30px", lineHeight: "30px" }}
-        >
-          <ArrowCircleLeft
-            sx={{ fontSize: "30px" }}
-            className="text-theme-color-1 hover:text-white"
-          />
-        </span>
-      </div>
-      <div className="absolute hidden lg:block top-1/2 right-2 sm:right-8 -translate-y-1/2 text-white cursor-pointer">
-        <span
-          className="material-icons"
-          onClick={nextSlide}
-          style={{ fontSize: "30px", lineHeight: "30px" }}
-        >
-          <ArrowCircleRight
-            sx={{ fontSize: "30px" }}
-            className="text-theme-color-1 hover:text-white"
-          />
-        </span>
-      </div>
-    </div>
-  </section>
+    </section>
   );
 };
