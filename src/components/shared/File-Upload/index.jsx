@@ -6,6 +6,7 @@ import {
   CloudUpload,
   Check,
   ReportProblemTwoTone,
+  ErrorOutline,
 } from "@mui/icons-material";
 
 export const FileUpload = ({
