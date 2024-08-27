@@ -199,8 +199,8 @@ export const FileUpload = ({
             />
             <p className="text-lg font-semibold text-theme-color-1">
               {isDragActive
-                ? "Drop it like it's hot!"
-                : "Upload your masterpiece here"}
+                ? "Drop it"
+                : "Upload your image here"}
             </p>
             <p className="text-sm text-gray-500 mt-2">
               or click to select from your device
