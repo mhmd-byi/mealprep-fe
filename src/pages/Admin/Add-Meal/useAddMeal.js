@@ -4,8 +4,13 @@ import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 
 const useAddMeal = () => {
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
   const [mealData, setMealData] = useState({
-    date: "",
+    date: getCurrentDate(),
     mealType: "",
     items: [{ name: "", weight: "", type: "", description: "" }],
     imageUrl: "",
@@ -58,18 +63,16 @@ const useAddMeal = () => {
       if (imageUrl) {
         await updateMealImageUrl(mealData.date, imageUrl);
         console.log("Image uploaded and database updated successfully");
-        
-        // Clear the date and image after successful upload
         setMealData((prev) => ({ ...prev, date: "", imageUrl: "" }));
         setMealImage(null);
-        
-        return true; // Indicate success
+
+        return true;
       } else {
         throw new Error("Failed to upload image");
       }
     } catch (error) {
       console.error("Error in handleImageUpload:", error);
-      return false; // Indicate failure
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -126,8 +129,16 @@ const useAddMeal = () => {
     }
   };
 
-  const handleDateChange = (e) =>
-    setMealData((prev) => ({ ...prev, date: e.target.value }));
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const currentDate = getCurrentDate();
+
+    if (selectedDate >= currentDate) {
+      setMealData((prev) => ({ ...prev, date: selectedDate }));
+    } else {
+      console.warn("Cannot select a date in the past");
+    }
+  };
 
   const handleMealTypeChange = (e) =>
     setMealData((prev) => ({ ...prev, mealType: e.target.value }));
@@ -165,7 +176,8 @@ const useAddMeal = () => {
     handleSubmit,
     setMealImage,
     handleImageUpload,
-    mealImage
+    mealImage,
+    getCurrentDate,
   };
 };
 
