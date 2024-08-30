@@ -73,38 +73,38 @@ const AddMeal = () => {
       <Helmet>
         <title>Add Menu | Mealprep</title>
       </Helmet>
-      <div className="flex flex-col justify-center items-center p-2 sm:p-5 w-full h-full text-left">
-        <div className="bg-white shadow-lg rounded-lg p-4 sm:p-8 w-full max-w-4xl">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
+      <div className="flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 w-full min-h-screen">
+        <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6 md:p-8 w-full max-w-4xl">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-gray-800">
             Add Menu
           </h2>
-          <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-2 sm:gap-6">
+          <div className="mb-6 flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => handleTabClick(0)}
-              className={`flex justify-center rounded-md px-4 py-2 sm:px-5 sm:py-3 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              className={`flex-1 justify-center rounded-md px-4 py-2 sm:px-5 sm:py-3 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                 activeTab === 0
                   ? "bg-theme-color-1 hover:bg-theme-color-1 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               Meal Details
             </button>
             <button
               onClick={() => handleTabClick(1)}
-              className={`flex justify-center rounded-md px-4 py-2 sm:px-5 sm:py-3 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              className={`flex-1 justify-center rounded-md px-4 py-2 sm:px-5 sm:py-3 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                 activeTab === 1
                   ? "bg-theme-color-1 hover:bg-theme-color-1 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               Image Upload
             </button>
           </div>
           {activeTab === 0 && (
-            <form onSubmit={handleFormSubmit}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date
                   </label>
                   <Input
@@ -116,7 +116,7 @@ const AddMeal = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Meal Type
                   </label>
                   <Input
@@ -133,15 +133,15 @@ const AddMeal = () => {
                 </div>
               </div>
 
-              <div className="mb-4 sm:mb-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-2 sm:mb-4">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">
                   Meal Items
                 </h3>
-                <div className="max-h-[50vh] sm:max-h-[75vh] overflow-y-auto pr-2">
+                <div className="max-h-[50vh] sm:max-h-[60vh] overflow-y-auto pr-2 space-y-4">
                   {mealData.items.map((item, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_1fr_10px] gap-2 sm:gap-4 items-center mb-4 p-2 sm:p-4 bg-gray-100 rounded-lg"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-lg"
                     >
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -189,51 +189,49 @@ const AddMeal = () => {
                           className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
                         />
                       </div>
-                      <div>
+                      <div className="flex flex-col">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Type
                         </label>
-                        <Input
-                          type="select"
-                          value={item.type}
-                          onChange={(e) =>
-                            handleItemChange(index, "type", e.target.value)
-                          }
-                          className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
-                          placeholder="Select Meal Type"
-                          options={[
-                            { value: "Veg", label: "Veg" },
-                            { value: "Non Veg", label: "Non Veg" },
-                          ]}
-                        />
-                      </div>
-                      <div className="flex items-center justify-center sm:justify-end mt-2 sm:mt-0">
-                        {index > 0 && (
-                          <IconButton
-                            onClick={() => removeItem(index)}
-                            color="error"
-                          >
-                            <Delete />
-                          </IconButton>
-                        )}
+                        <div className="flex items-center">
+                          <Input
+                            type="select"
+                            value={item.type}
+                            onChange={(e) =>
+                              handleItemChange(index, "type", e.target.value)
+                            }
+                            className="flex-grow bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
+                            placeholder="Select Meal Type"
+                            options={[
+                              { value: "Veg", label: "Veg" },
+                              { value: "Non Veg", label: "Non Veg" },
+                            ]}
+                          />
+                          {index > 0 && (
+                            <IconButton
+                              onClick={() => removeItem(index)}
+                              color="error"
+                              className="ml-2"
+                            >
+                              <Delete />
+                            </IconButton>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex justify-start mb-4">
+              <div className="flex justify-between items-center">
                 <button
                   type="button"
                   onClick={addNewItem}
-                  className="flex justify-center rounded-md bg-transparent-1 px-4 py-2 sm:px-5 sm:py-3 text-sm font-semibold leading-6 text-theme-color-1 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 border-2 border-theme-color-1"
+                  className="flex items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-semibold text-theme-color-1 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 border-2 border-theme-color-1 hover:bg-theme-color-1 hover:text-white transition-colors duration-300"
                 >
                   Add Item
                   <Add className="ml-1" />
                 </button>
-              </div>
-
-              <div className="flex justify-end">
                 <Button
                   type="submit"
                   disabled={isLoading}
@@ -245,9 +243,9 @@ const AddMeal = () => {
             </form>
           )}
           {activeTab === 1 && (
-            <div>
-              <div className="mb-4 sm:mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date
                 </label>
                 <Input
@@ -266,13 +264,13 @@ const AddMeal = () => {
                 maxSizeInMB={5}
                 key={mealData.date}
               />
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end">
                 <Button
                   onClick={handleImageUploadClick}
                   disabled={isLoading || !mealData.date || !mealImage}
-                  className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 flex items-center"
                 >
-                  <CloudUpload className="mr-1" />
+                  <CloudUpload className="mr-2" />
                   {isLoading ? "Uploading..." : "Upload Image"}
                 </Button>
               </div>
@@ -281,7 +279,7 @@ const AddMeal = () => {
         </div>
       </div>
       {snackbar.open && (
-        <div className="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md">
+        <div className="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
           {snackbar.message}
         </div>
       )}

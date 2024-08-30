@@ -10,6 +10,8 @@ import { MealCalendar } from "./pages/Meal-Calendar";
 import { HelpPage } from "./pages/Help";
 import { MyPlan } from "./pages/My-Plans";
 import AddMeal from "./pages/Admin/Add-Meal";
+import CancelRequest from "./pages/Cancel-Request";
+import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
 export const routes = [
   {
     path: "/",
@@ -79,6 +81,16 @@ export const routes = [
   {
     path: "/dashboard/add-menu",
     component: AddMeal,
+    exact: true,
+  },
+  {
+    path: "/dashboard/cancel-request",
+    component: CancelRequest,
+    exact: true,
+  },
+  {
+    path: "/dashboard/user-cancel-request-list",
+    component: UserListWithCancelRequest,
     exact: true,
   }
 ];

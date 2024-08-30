@@ -25,9 +25,9 @@
     "requiresSubscription": true
   },
   {
-    "name": "Change Request",
-    "icon": "PublishedWithChanges",
-    "path": "#",
+    "name": "Cancel Request",
+    "icon": "Cancel",
+    "path": "/dashboard/cancel-request",
     "requiresSubscription": true,
     "userOnly": true
   },
@@ -76,6 +76,13 @@
     "name": "Add Menu",
     "icon": "FoodBank",
     "path": "/dashboard/add-menu",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
+    "name": "User Cancel Request",
+    "icon": "GroupRemove",
+    "path": "/dashboard/user-cancel-request-list",
     "requiresSubscription": false,
     "adminOnly": true
   }

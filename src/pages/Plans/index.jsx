@@ -7,11 +7,11 @@ import { useSubscription } from "./useSubscription";
 const SubscriptionPlans = () => {
   const { plans } = data;
   const { handleSubscribe, isSubscribedTo } = useSubscription();
-  const [errorMessages, setErrorMessages] = useState({}); // Changed to an object
+  const [errorMessages, setErrorMessages] = useState({});
 
   const handlePlanSubscribe = (planName) => {
     handleSubscribe(planName, (message) => {
-      setErrorMessages({ ...errorMessages, [planName]: message }); // Set the error message for this plan
+      setErrorMessages({ ...errorMessages, [planName]: message }); 
     });
   };
 

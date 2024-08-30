@@ -46,8 +46,8 @@ export const MyPlan = () => {
               <thead>
                 <tr className="border-b-2 border-gray-200">
                   <th className="text-left py-2">Plan Name</th>
-                  <th className="text-left py-2">Start Date</th>
-                  <th className="text-left py-2">End Date</th>
+                  <th className="text-left py-2">Total Meals</th>
+                  <th className="text-left py-2">Meals Left</th>
                   <th className="text-left py-2">Status</th>
                 </tr>
               </thead>
@@ -55,12 +55,14 @@ export const MyPlan = () => {
                 <tr className="text-left">
                   <td className="py-2">{activePlan.plan}</td>
                   <td className="py-2">
-                    {new Date(activePlan.startDate).toLocaleDateString()}
+                    {/* {new Date(activePlan.startDate).toLocaleDateString()} */}
+                    56 Meals
                   </td>
                   <td className="py-2">
-                    {new Date(
+                    {/* {new Date(
                       activePlan.subscriptionEndDate
-                    ).toLocaleDateString()}
+                    ).toLocaleDateString()} */}
+                    20 Meals
                   </td>
                   <td className="py-2">
                     <span className="bg-green-500 text-white px-2 py-1 rounded">
