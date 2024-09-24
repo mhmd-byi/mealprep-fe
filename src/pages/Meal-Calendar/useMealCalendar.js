@@ -24,22 +24,18 @@ export const useMealCalendar = () => {
         throw new Error("No token found. Please login again.");
       }
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}get-meal?date=${date}`,
+        `${process.env.REACT_APP_API_URL}meal/get-meal?date=${date}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log('this is response', response)
       setMeals(response.data);
     } catch (error) {
       console.error("Error fetching meals:", error);
-      if (error.message === "No token found. Please login again.") {
-      } else if (error.response && error.response.status === 401) {
-        setError("Session expired. Please login again.");
-      } else {
-        setError("Failed to fetch meals. Please try again.");
-      }
+      setError("No meals found for the following date");
     } finally {
       setLoading(false);
     }
@@ -68,7 +64,7 @@ export const useMealCalendar = () => {
         throw new Error("No token found. Please login again.");
       }
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}remove-meal-item/${mealId}/${itemId}`,
+        `${process.env.REACT_APP_API_URL}meal/remove-meal-item/${mealId}/${itemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

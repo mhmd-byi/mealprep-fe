@@ -13,7 +13,7 @@ export const UserListWithCancelRequest = () => {
         setIsLoading(true);
         console.log("Fetching cancelled meals...");
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}user/cancelled-meals`,
+          `${process.env.REACT_APP_API_URL}subscription/cancelled-meals`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,

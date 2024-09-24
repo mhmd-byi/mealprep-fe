@@ -13,7 +13,7 @@ const CancelRequest = () => {
     try {
       const userId = sessionStorage.getItem("userId");
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}user/cancel`,
+        `${process.env.REACT_APP_API_URL}subscription/cancel-request`,
         {
           userId,
           date: selectedDate,

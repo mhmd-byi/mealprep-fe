@@ -12,7 +12,7 @@ export const useSubscription = () => {
 
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}user/${userId}/subscription`,
+          `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ export const useSubscription = () => {
     try {
       const res = await axios({
         method: "POST",
-        url: `${process.env.REACT_APP_API_URL}user/${userId}/subscription`,
+        url: `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
         data: {
           userId,
           plan: planName,

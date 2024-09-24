@@ -21,7 +21,7 @@ const FoodMenu = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}get-meal?date=${date}`,
+        `${process.env.REACT_APP_API_URL}meal/get-meal?date=${date}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -81,7 +81,7 @@ const useAddMeal = () => {
   const updateMealImageUrl = async (date, imageUrl) => {
     try {
       await axios.patch(
-        `${process.env.REACT_APP_API_URL}update-meal-image`,
+        `${process.env.REACT_APP_API_URL}meal/update-meal-image`,
         {
           date,
           imageUrl,
@@ -106,7 +106,7 @@ const useAddMeal = () => {
       }
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}add-meal`,
+        `${process.env.REACT_APP_API_URL}meal/add-meal`,
         {
           userId,
           ...mealData,

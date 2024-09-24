@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Menu } from "@headlessui/react";
 import {
   ArrowForwardIos,
@@ -7,7 +6,6 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import axios from "axios";
 import { useMealCalendar } from "./useMealCalendar";
 
 const generateCalendarDays = (year, month) => {

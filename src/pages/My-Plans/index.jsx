@@ -14,7 +14,7 @@ export const MyPlan = () => {
 
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}user/${userId}/subscription`,
+          `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
