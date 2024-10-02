@@ -9,8 +9,8 @@ const SubscriptionPlans = () => {
   const { handleSubscribe, isSubscribedTo } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
 
-  const handlePlanSubscribe = (planName) => {
-    handleSubscribe(planName, (message) => {
+  const handlePlanSubscribe = (planName, mealCount) => {
+    handleSubscribe(planName, mealCount, (message) => {
       setErrorMessages({ ...errorMessages, [planName]: message }); 
     });
   };
@@ -48,7 +48,7 @@ const SubscriptionPlans = () => {
                   </p>
                 ) : (
                   <Button
-                    onClick={() => handlePlanSubscribe(plan.name)}
+                    onClick={() => handlePlanSubscribe(plan.name, plan.meals)}
                     classes="w-full"
                   >
                     Select

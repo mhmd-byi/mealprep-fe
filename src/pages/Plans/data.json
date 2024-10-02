@@ -3,7 +3,8 @@
       {
         "name": "Trial Meal Pack",
         "price": 279,
-        "duration": "7 Meals Only",
+        "duration": "4 Meals Only",
+        "meals": 4,
         "description": "Best to know us",
         "features": [
           "Assorted Meal Box",
@@ -15,10 +16,11 @@
       {
         "name": "Weekly Plan",
         "price": 1750,
-        "duration": "56 Meals Weekly",
+        "duration": "14 Meals Weekly",
+        "meals": 14,
         "description": "Perfect to try out weeks recipe",
         "features": [
-          "Get 56 Meals Weekly",
+          "Get 14 Meals Weekly",
           "Try New Recipe everyday",
           "Signature Meals",
           "Order now and save time"
@@ -28,6 +30,7 @@
         "name": "Monthly Plan",
         "price": 5700,
         "duration": "60 Meals Montly",
+        "meals": 60,
         "description": "Go healthy for a month",
         "features": [
           "Get 60 Meals Monthly",

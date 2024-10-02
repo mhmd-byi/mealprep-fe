@@ -29,7 +29,7 @@ export const useSubscription = () => {
     fetchSubscriptionStatus();
   }, []);
 
-  const handleSubscribe = async (planName, setErrorMessage) => {
+  const handleSubscribe = async (planName, mealCount, setErrorMessage) => {
     if (isSubscribed) {
       setErrorMessage(
         `You already have an active plan. Please wait until ${currentPlan.plan} expires to subscribe to a new one.`
@@ -48,6 +48,7 @@ export const useSubscription = () => {
           userId,
           plan: planName,
           startDate: new Date().toISOString(),
+          meals: mealCount,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,6 +83,7 @@ export const useSubscription = () => {
     isSubscribed,
     handleSubscribe,
     isSubscribedTo,
+    currentPlan,
   };
 };
 

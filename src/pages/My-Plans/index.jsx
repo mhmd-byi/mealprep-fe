@@ -1,36 +1,8 @@
-import React, { useState, useEffect } from "react";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import useSubscription from "../Plans/useSubscription";
-import axios from "axios";
 
 export const MyPlan = () => {
-  const [activePlan, setActivePlan] = useState(null);
-  const { isSubscribed } = useSubscription();
-
-  useEffect(() => {
-    const fetchActivePlan = async () => {
-      const userId = sessionStorage.getItem("userId");
-      const token = sessionStorage.getItem("token");
-
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setActivePlan(response.data.subscription);
-      } catch (error) {
-        console.error("Error fetching active plan:", error);
-      }
-    };
-
-    if (isSubscribed) {
-      fetchActivePlan();
-    }
-  }, [isSubscribed]);
+  const { isSubscribed, currentPlan } = useSubscription();
 
   return (
     <DashboardLayoutComponent>
@@ -40,7 +12,7 @@ export const MyPlan = () => {
             My Active Subscription Plan
           </h3>
         </div>
-        {isSubscribed && activePlan ? (
+        {isSubscribed && currentPlan ? (
           <div className="mt-7 bg-white shadow-md rounded-lg p-6 max-w-[1500px] lg:w-[1200px]">
             <table className="w-full">
               <thead>
@@ -53,21 +25,23 @@ export const MyPlan = () => {
               </thead>
               <tbody>
                 <tr className="text-left">
-                  <td className="py-2">{activePlan.plan}</td>
+                  <td className="py-2">{currentPlan.plan}</td>
                   <td className="py-2">
                     {/* {new Date(activePlan.startDate).toLocaleDateString()} */}
-                    56 Meals
+                    {currentPlan.plan.includes('rial') ? 4 : (currentPlan.plan.includes('eek') ? 14 : 60)} Meals
                   </td>
                   <td className="py-2">
                     {/* {new Date(
                       activePlan.subscriptionEndDate
                     ).toLocaleDateString()} */}
-                    20 Meals
+                    {currentPlan.meals} Meals
                   </td>
                   <td className="py-2">
-                    <span className="bg-green-500 text-white px-2 py-1 rounded">
-                      Active
-                    </span>
+                  {currentPlan.meals !== 0 ? <span className="bg-green-500 text-white px-2 py-1 rounded">
+                    Active
+                  </span> : <span className="bg-red-500 text-white px-2 py-1 rounded">
+                  Inactive
+                </span>}
                   </td>
                 </tr>
               </tbody>
