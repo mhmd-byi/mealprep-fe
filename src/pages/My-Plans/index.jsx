@@ -12,7 +12,7 @@ export const MyPlan = () => {
             My Active Subscription Plan
           </h3>
         </div>
-        {isSubscribed && currentPlan ? (
+        {(isSubscribed && currentPlan) ? (
           <div className="mt-7 bg-white shadow-md rounded-lg p-6 max-w-[1500px] lg:w-[1200px]">
             <table className="w-full">
               <thead>
@@ -25,19 +25,19 @@ export const MyPlan = () => {
               </thead>
               <tbody>
                 <tr className="text-left">
-                  <td className="py-2">{currentPlan.plan}</td>
+                  <td className="py-2">{currentPlan?.plan}</td>
                   <td className="py-2">
                     {/* {new Date(activePlan.startDate).toLocaleDateString()} */}
-                    {currentPlan.plan.includes('rial') ? 4 : (currentPlan.plan.includes('eek') ? 14 : 60)} Meals
+                    {currentPlan?.plan.includes('rial') ? 4 : (currentPlan.plan.includes('eek') ? 14 : 60)} Meals
                   </td>
                   <td className="py-2">
                     {/* {new Date(
                       activePlan.subscriptionEndDate
                     ).toLocaleDateString()} */}
-                    {currentPlan.meals} Meals
+                    {currentPlan?.meals} Meals
                   </td>
                   <td className="py-2">
-                  {currentPlan.meals !== 0 ? <span className="bg-green-500 text-white px-2 py-1 rounded">
+                  {currentPlan?.meals !== 0 ? <span className="bg-green-500 text-white px-2 py-1 rounded">
                     Active
                   </span> : <span className="bg-red-500 text-white px-2 py-1 rounded">
                   Inactive
