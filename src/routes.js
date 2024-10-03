@@ -12,6 +12,7 @@ import { MyPlan } from "./pages/My-Plans";
 import AddMeal from "./pages/Admin/Add-Meal";
 import CancelRequest from "./pages/Cancel-Request";
 import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
+import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery";
 export const routes = [
   {
     path: "/",
@@ -91,6 +92,11 @@ export const routes = [
   {
     path: "/dashboard/user-cancel-request-list",
     component: UserListWithCancelRequest,
+    exact: true,
+  },
+  {
+    path: "/dashboard/meal-delivery-list",
+    component: UserListOfMealDelivery,
     exact: true,
   }
 ];
