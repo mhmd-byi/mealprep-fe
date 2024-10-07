@@ -5,7 +5,6 @@ import { useHeader } from "./useHeader";
 import { MealprepLogo } from "../../shared";
 import Diet from "../../../assets/images/diet.png";
 import useSubscription from "../../../pages/Plans/useSubscription";
-import { useEffect } from "react";
 
 const Header = ({ toggleSidebar }) => {
   const { userDetails } = useDashboard();
@@ -27,7 +26,7 @@ const Header = ({ toggleSidebar }) => {
       <div className="flex flex-row ml-5 space-x-4 items-center">
         <img src={Diet} alt="meal-icon" className="w-10" />
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
-          {currentPlan?.meals} meals left
+          {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} meals left
         </span>
       </div>
         <div className="flex h-12 w-12 rounded-full items-center">

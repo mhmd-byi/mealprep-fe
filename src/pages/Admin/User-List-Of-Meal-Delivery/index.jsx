@@ -9,6 +9,7 @@ export const UserListOfMealDelivery = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     date: '',
+    mealType: '',
   });
 
   const getCurrentDate = () => {
@@ -27,13 +28,16 @@ export const UserListOfMealDelivery = () => {
     }
   };
 
+  const handleMealTypeChange = (e) =>
+    setFormData((prev) => ({ ...prev, mealType: e.target.value }));
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${formData.date}`,
+        `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${formData.date}&mealType=${formData.mealType}`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -86,6 +90,19 @@ export const UserListOfMealDelivery = () => {
                           className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                         />
                       </div>
+                      <div>
+                        <Input
+                          type="select"
+                          value={formData.mealType}
+                          onChange={handleMealTypeChange}
+                          placeholder="Select Meal Type"
+                          options={[
+                            { value: "lunch", label: "Lunch" },
+                            { value: "dinner", label: "Dinner" },
+                          ]}
+                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                        />
+                      </div>
                     </div>
 
                     <div className="flex justify-between items-center">
@@ -114,13 +131,13 @@ export const UserListOfMealDelivery = () => {
                                 scope="col"
                                 className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
                               >
-                                Date
+                                Email
                               </th>
                               <th
                                 scope="col"
                                 className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
                               >
-                                Meal Type
+                                Address
                               </th>
                             </tr>
                           </thead>
