@@ -1,4 +1,3 @@
-// useSubscription.js
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -49,7 +48,6 @@ export const useSubscription = () => {
     const userEmail = sessionStorage.getItem("userEmail");
 
     try {
-      // Create Razorpay order
       const orderResponse = await axios({
         method: "POST",
         url: `${process.env.REACT_APP_API_URL}subscription/create-order`,
@@ -73,7 +71,6 @@ export const useSubscription = () => {
         order_id: orderResponse.data.orderId,
         handler: async function (response) {
           try {
-            // Verify payment and create subscription
             const verifyResponse = await axios({
               method: "POST",
               url: `${process.env.REACT_APP_API_URL}subscription/verify-payment`,
@@ -111,7 +108,7 @@ export const useSubscription = () => {
           email: userEmail,
         },
         theme: {
-          color: "#3C9B62", // Using your theme color from the UI
+          color: "#3C9B62",
         },
         modal: {
           ondismiss: function () {

@@ -1,4 +1,3 @@
-// SubscriptionPlans.js
 import React, { useState } from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
