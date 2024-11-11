@@ -1,3 +1,4 @@
+// SubscriptionPlans.js
 import React, { useState } from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
@@ -9,8 +10,8 @@ const SubscriptionPlans = () => {
   const { handleSubscribe, isSubscribedTo } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
 
-  const handlePlanSubscribe = (planName, mealCount) => {
-    handleSubscribe(planName, mealCount, (message) => {
+  const handlePlanSubscribe = (planName, mealCount, price) => {
+    handleSubscribe(planName, mealCount, price, (message) => {
       setErrorMessages({ ...errorMessages, [planName]: message }); 
     });
   };
@@ -48,7 +49,7 @@ const SubscriptionPlans = () => {
                   </p>
                 ) : (
                   <Button
-                    onClick={() => handlePlanSubscribe(plan.name, plan.meals)}
+                    onClick={() => handlePlanSubscribe(plan.name, plan.meals, plan.price)}
                     classes="w-full"
                   >
                     Select
