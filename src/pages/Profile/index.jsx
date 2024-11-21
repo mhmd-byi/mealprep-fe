@@ -20,6 +20,7 @@ const Profile = () => {
     handleFileChange,
     handlePopupSubmit,
     isLoading,
+    formData,
   } = useProfile(setUserDetails);
 
   const initials = getInitials();
@@ -104,7 +105,7 @@ const Profile = () => {
                       id={"firstName"}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"First Name"}
-                      value={userDetails.firstName}
+                      value={formData.firstName || userDetails.firstName}
                       onChange={handleChange}
                     />
                   </div>
@@ -115,7 +116,7 @@ const Profile = () => {
                       id={"lastName"}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"Last Name"}
-                      value={userDetails.lastName}
+                      value={formData.lastName || userDetails.lastName}
                       onChange={handleChange}
                     />
                   </div>
@@ -127,7 +128,7 @@ const Profile = () => {
                   className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   placeholder={"WhatsApp Number"}
                   value={userDetails.mobile}
-                  onChange={handleChange}
+                  disabled={true}
                 />
                 <Input
                   type={"email"}
@@ -136,7 +137,7 @@ const Profile = () => {
                   className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   placeholder={"Email Address"}
                   value={userDetails.email}
-                  onChange={handleChange}
+                  disabled={true}
                 />
                 <div className="flex flex-wrap -mx-3 mb-6">
                   <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -147,7 +148,7 @@ const Profile = () => {
                       autocomplete={true}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"Enter Password"}
-                      value={userDetails.confirmPassword}
+                      value={formData.password || userDetails.password}
                       onChange={handleChange}
                     />
                   </div>
@@ -159,7 +160,7 @@ const Profile = () => {
                       autocomplete={true}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"Confirm Password"}
-                      value={userDetails.confirmPassword}
+                      value={formData.confirmPassword || userDetails.confirmPassword}
                       onChange={handleChange}
                     />
                     <ValidationMessage />
@@ -171,7 +172,7 @@ const Profile = () => {
                   id={"postal_address"}
                   className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   placeholder={"Postal Address"}
-                  value={userDetails.postalAddress}
+                  value={formData.postalAddress || userDetails.postalAddress}
                   onChange={handleChange}
                 />
                 <Button
