@@ -15,8 +15,8 @@ export const Footer = () => {
     navigate("/dashboard/plans");
   };
   return (
-    <footer className="px-8 py-3 drop-shadow-lg shadow-t-md">
-      <div className="flex justify-between text-theme-color-1 gap-4 ">
+    <footer className="drop-shadow-lg shadow-t-md">
+      <div className="flex justify-between text-theme-color-1 gap-4 bg-black px-8 py-3 rounded-t-2xl">
         <RestaurantMenu className="icon" onClick={navigateToFoodMenu} />
         <WhatsApp className="icon" />
         <NotificationsActive className="icon" onClick={navigateToPlan} />

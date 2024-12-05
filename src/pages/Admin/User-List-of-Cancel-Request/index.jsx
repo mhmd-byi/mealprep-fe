@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
+import { FileDownload } from "@mui/icons-material";
 
 export const UserListWithCancelRequest = () => {
   const [cancelledMeals, setCancelledMeals] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    date: '',
+    date: "",
   });
 
   const getCurrentDate = () => {
@@ -41,7 +42,6 @@ export const UserListWithCancelRequest = () => {
         }
       );
 
-
       if (Array.isArray(response.data)) {
         setCancelledMeals(response.data);
         setError(null);
@@ -50,17 +50,54 @@ export const UserListWithCancelRequest = () => {
         setCancelledMeals([]);
       }
     } catch (error) {
-      setError(`Failed to fetch cancelled meals: ${error.response?.data?.message || error.message}`);
+      setError(
+        `Failed to fetch cancelled meals: ${
+          error.response?.data?.message || error.message
+        }`
+      );
       setCancelledMeals([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const exportToCSV = () => {
+    // Define headers
+    const headers = ["User Id", "Name", "Start Date", "End Date", "Meal Type"];
+
+    // Convert data to CSV format
+    const csvData = cancelledMeals.map((meal) => [
+      meal.userId,
+      meal.name,
+      formatDate(meal.startDate),
+      formatDate(meal.endDate),
+      meal.mealType,
+    ]);
+
+    // Combine headers and data
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map((row) => row.join(",")),
+    ].join("\n");
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `cancelled-meals-${formData.date || "all"}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (isLoading) {
@@ -75,95 +112,137 @@ export const UserListWithCancelRequest = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="block lg:flex flex-col justify-center items-center p-5 w-full h-full">
-        <div className="min-w-[300px] md:min-w-[600px] lg:min-w-[900px] py-12 px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Cancelled Meals</h2>
-            <div className="bg-white rounded-lg overflow-hidden shadow">
-              <div className="flex flex-col">
-                <div className="flex flex-col p-5 text-center min-w-full">
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div>
-                        <Input
-                          type="date"
-                          value={formData.date}
-                          onChange={handleDateChange}
-                          min={getCurrentDate()}
-                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        />
-                      </div>
-                    </div>
+      <div className="flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 w-full h-full">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="bg-white rounded-lg overflow-hidden shadow-md">
+            <div className="p-4 md:p-6">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+                Cancelled Meals
+              </h2>
 
-                    <div className="flex justify-between items-center">
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                      >
-                        {isLoading ? "Submitting..." : "Submit"}
-                      </Button>
-                    </div>
-                  </form>
-                  <div className="p-1.5 min-w-full inline-block align-middle">
-                    <div className="overflow-hidden">
-                      {cancelledMeals.length > 0 ? (
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
-                                User Id
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
-                                Name
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
-                                Date
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
-                                Meal Type
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {cancelledMeals.map((meal, index) => (
-                              <tr key={index} className="hover:bg-gray-100">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal.userId}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {meal.name}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {formatDate(meal.date)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                  {meal.mealType}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <p className="text-center py-4">
-                          {error && <p className="text-red-500 mb-4">{error}</p>}
-                        </p>
-                      )}
-                    </div>
+              {/* Form Container - Responsive Grid */}
+              <form onSubmit={handleFormSubmit} className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                  <div className="md:col-span-2">
+                    <Input
+                      type="date"
+                      value={formData.date}
+                      onChange={handleDateChange}
+                      min={getCurrentDate()}
+                      className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />
                   </div>
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  >
+                    {isLoading ? "Submitting..." : "Submit"}
+                  </Button>
                 </div>
+              </form>
+
+              {/* Export Button */}
+              {cancelledMeals.length > 0 && (
+                <div className="mb-4 flex justify-end">
+                  <Button
+                    onClick={exportToCSV}
+                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                  >
+                    {/* <Download size={16} /> */}
+                    Export CSV
+                  </Button>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="text-center mb-4">
+                  <p className="text-red-500">{error}</p>
+                </div>
+              )}
+
+              {/* Responsive Table Container */}
+              <div className="overflow-x-auto">
+                {cancelledMeals.length > 0 ? (
+                  <table className="w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {[
+                          "User Id",
+                          "Name",
+                          "Start Date",
+                          "End Date",
+                          "Meal Type",
+                        ].map((header) => (
+                          <th
+                            key={header}
+                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell"
+                          >
+                            {header}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cancelledMeals.map((meal, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row"
+                        >
+                          {/* Mobile View - Card-like Layout */}
+                          <td className="md:hidden p-4">
+                            <div className="space-y-2">
+                              <div className="flex justify-between">
+                                <span className="font-medium">User Id:</span>
+                                <span>{meal.userId}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Name:</span>
+                                <span>{meal.name}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Start Date:</span>
+                                <span>{formatDate(meal.startDate)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">End Date:</span>
+                                <span>{formatDate(meal.endDate)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Meal Type:</span>
+                                <span className="capitalize">
+                                  {meal.mealType}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Desktop View */}
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                            {meal.userId}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 hidden md:table-cell">
+                            {meal.name}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                            {formatDate(meal.startDate)}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                            {formatDate(meal.endDate)}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize hidden md:table-cell">
+                            {meal.mealType}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-center py-4 text-gray-500">
+                    No cancelled meals found
+                  </p>
+                )}
               </div>
             </div>
           </div>

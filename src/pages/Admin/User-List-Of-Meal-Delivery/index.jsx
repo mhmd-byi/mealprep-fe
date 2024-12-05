@@ -45,7 +45,6 @@ export const UserListOfMealDelivery = () => {
         }
       );
 
-
       if (Array.isArray(response.data)) {
         setMealDeliveryList(response.data);
         setError(null);
@@ -59,6 +58,35 @@ export const UserListOfMealDelivery = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const exportToCSV = () => {
+    // Define headers
+    const headers = ["Name", "Email", "Address"];
+    
+    // Convert data to CSV format
+    const csvData = mealDeliveryList.map(meal => [
+      meal.name,
+      meal.email,
+      meal.address
+    ]);
+    
+    // Combine headers and data
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `meal-delivery-${formData.date}-${formData.mealType}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (isLoading) {
@@ -113,30 +141,36 @@ export const UserListOfMealDelivery = () => {
                       >
                         {isLoading ? "Submitting..." : "Submit"}
                       </Button>
+                      
+                      {mealDeliveryList.length > 0 && (
+                        <Button
+                          onClick={exportToCSV}
+                          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        >
+                          Export CSV
+                        </Button>
+                      )}
                     </div>
                   </form>
-                  <div className="p-1.5 min-w-full inline-block align-middle">
-                    <div className="overflow-hidden">
-                      {mealDeliveryList.length > 0 ? (
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
+                  
+                  {error && (
+                    <p className="text-red-500 mt-4 mb-2">{error}</p>
+                  )}
+
+                  <div className="mt-4 overflow-x-auto">
+                    {mealDeliveryList.length > 0 ? (
+                      <div className="min-w-full">
+                        {/* Desktop View */}
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left hidden md:table">
                           <thead className="bg-gray-50">
                             <tr>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name
                               </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Email
                               </th>
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              >
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Address
                               </th>
                             </tr>
@@ -157,14 +191,34 @@ export const UserListOfMealDelivery = () => {
                             ))}
                           </tbody>
                         </table>
-                      ) : (
-                        <p className="text-center py-4">
-                          {error && (
-                            <p className="text-red-500 mb-4">{error}</p>
-                          )}
-                        </p>
-                      )}
-                    </div>
+
+                        {/* Mobile View */}
+                        <div className="md:hidden space-y-4">
+                          {mealDeliveryList.map((meal, index) => (
+                            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                              <div className="space-y-2">
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Name:</span>
+                                  <span className="text-gray-900">{meal.name}</span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Email:</span>
+                                  <span className="text-gray-900">{meal.email}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-gray-500">Address:</span>
+                                  <span className="text-gray-900 text-right">{meal.address}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-center py-4 text-gray-500">
+                        No meal delivery data found
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

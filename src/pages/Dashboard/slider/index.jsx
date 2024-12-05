@@ -2,19 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import mealimage from "../../../assets/images/dashboard/meal.jpg";
 import mealimage2 from "../../../assets/images/dashboard/image2.jpg";
 import mealimage3 from "../../../assets/images/dashboard/image3.jpg";
-import { useNavigate } from "react-router-dom";
-import {
-  ArrowCircleLeft,
-  ArrowCircleRight,
-  RestaurantMenu,
-  CalendarMonth,
-  OpenInNew,
-  PublishedWithChanges,
-  DashboardCustomize,
-  Receipt,
-  NotificationsActive,
-  Help,
-} from "@mui/icons-material";
+import { ArrowCircleLeft, ArrowCircleRight } from "@mui/icons-material";
 
 export const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -26,7 +14,7 @@ export const HeroSlider = () => {
       image: mealimage,
       heading: "Meal Prep",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
       buttonText: "Purchase Plan Now",
     },
     {
@@ -34,7 +22,7 @@ export const HeroSlider = () => {
       image: mealimage2,
       heading: "Meal Prep",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
     },
     {
@@ -42,7 +30,7 @@ export const HeroSlider = () => {
       image: mealimage3,
       heading: "Meal Prep",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
     },
   ];
@@ -72,33 +60,52 @@ export const HeroSlider = () => {
   }, [currentSlide]);
 
   return (
-    <section className="flex justify-center relative pb-20 px-4">
+    <section className="flex justify-center relative lg:pb-20 px-4">
       <div>
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`relative w-full sm:w-[1500px] h-[450px] lg:h-[500px] top-10 ${
+            className={`relative w-full sm:w-[1500px] h-[450px] lg:h-[500px] mt-10 ${
               index !== currentSlide ? "hidden" : ""
             }`}
           >
-            <img
-              src={slide.image}
-              className="w-full h-full rounded-lg object-cover"
-            />
-            <div className=" p-8  absolute right-0 top-0 w-full sm:w-[50%] h-full bg-black bg-opacity-75 flex flex-col justify-center px-4 sm:px-8 text-left rounded-lg">
-              <h1 className="text-white text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
-                {slide.heading}
-              </h1>
-              <p className="text-white text-sm sm:text-lg mb-4 sm:mb-8">
-                {slide.description}
-              </p>
-              <button className="bg-white text-black py-2 px-4 rounded w-fit">
-                {slide.buttonText}
-              </button>
+            <div className="hidden sm:block">
+              <img
+                src={slide.image}
+                className="w-full h-[450px] rounded-lg object-cover"
+              />
+              <div className=" p-8  absolute right-0 top-0 w-full sm:w-[50%] h-[450px] bg-black bg-opacity-75 flex flex-col justify-center px-4 sm:px-8 text-left rounded-lg">
+                <h1 className="text-white text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
+                  {slide.heading}
+                </h1>
+                <p className="text-white text-sm sm:text-lg mb-4 sm:mb-8">
+                  {slide.description}
+                </p>
+                <button className="bg-white text-black py-2 px-4 rounded w-fit">
+                  {slide.buttonText}
+                </button>
+              </div>
+            </div>
+            <div className="sm:hidden bg-theme-color-1 rounded-lg overflow-hidden shadow-lg">
+              <div className="w-full h-[250px]">
+                <img
+                  src={slide.image}
+                  alt={slide.heading}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="p-4 text-white">
+                <h1 className="text-xl font-bold mb-2">{slide.heading}</h1>
+                <p className="text-sm mb-4">{slide.description}</p>
+                <button className="bg-white/30 text-white py-2 px-4 rounded hover:bg-opacity-90 transition-colors">
+                  {slide.buttonText}
+                </button>
+              </div>
             </div>
           </div>
         ))}
-        <div className="absolute bottom-[12px] lg:bottom-12 left-1/2 -translate-x-1/2 flex space-x-2 bg-white p-1 rounded-full">
+        <div className="absolute -bottom-5 lg:bottom-12 left-1/2 -translate-x-1/2 flex space-x-2 bg-white p-1 rounded-full">
           {slides.map((_, index) => (
             <div
               key={index}

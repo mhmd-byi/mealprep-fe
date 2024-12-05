@@ -16,9 +16,9 @@ const AddMeal = () => {
     addNewItem,
     removeItem,
     handleSubmit,
-    setMealImage,
-    handleImageUpload,
-    mealImage,
+    mealImages,
+    setMealImages,
+    handleMultipleImageUpload,
     getCurrentDate,
   } = useAddMeal();
   const [activeTab, setActiveTab] = useState(0);
@@ -42,7 +42,7 @@ const AddMeal = () => {
   };
 
   const handleImageUploadClick = async () => {
-    if (!mealData.date || !mealImage) {
+    if (!mealData.date || !mealImages) {
       setSnackbar({
         open: true,
         message: "Please select both a date and an image.",
@@ -51,7 +51,7 @@ const AddMeal = () => {
     }
 
     try {
-      const success = await handleImageUpload();
+      const success = await handleMultipleImageUpload();
       if (success) {
         setSnackbar({ open: true, message: "Image uploaded successfully!" });
       } else {
@@ -257,21 +257,30 @@ const AddMeal = () => {
                 />
               </div>
               <FileUpload
-                onFileChange={(file) => setMealImage(file)}
-                label="Upload Meal Image"
-                multiple={false}
-                maxFiles={1}
+                onFileChange={(files) => setMealImages(files)}
+                label="Upload Meal Images"
+                multiple={true}
+                maxFiles={5}
                 maxSizeInMB={5}
                 key={mealData.date}
               />
+              {mealImages.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600">
+                    {mealImages.length} image(s) selected
+                  </p>
+                </div>
+              )}
               <div className="flex justify-end">
                 <Button
                   onClick={handleImageUploadClick}
-                  disabled={isLoading || !mealData.date || !mealImage}
+                  disabled={
+                    isLoading || !mealData.date || mealImages.length === 0
+                  }
                   className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 flex items-center"
                 >
                   <CloudUpload className="mr-2" />
-                  {isLoading ? "Uploading..." : "Upload Image"}
+                  {isLoading ? "Uploading..." : "Upload Images"}
                 </Button>
               </div>
             </div>

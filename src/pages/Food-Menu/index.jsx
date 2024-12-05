@@ -1,22 +1,155 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 
+// Lightbox Component
+const Lightbox = ({ imageUrl, onClose }) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-6xl max-h-[90vh] flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
+        >
+          <XMarkIcon className="h-8 w-8 sm:h-10 sm:w-10" />
+        </button>
+        <img
+          src={imageUrl}
+          alt="Full Screen Image"
+          className="max-w-full max-h-full object-cover rounded-lg"
+        />
+      </div>
+    </div>
+  );
+};
+
+// Image Carousel Component
+const ImageCarousel = ({
+  images,
+  onImageClick,
+  className = "",
+  imageClassName = "",
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentIndex((prevIndex) =>
+          prevIndex === images.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [currentIndex, images]);
+
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  if (images.length === 0) return null;
+
+  return (
+    <div className={`relative w-full group ${className}`}>
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prevImage();
+            }}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 
+            bg-gray-500/50 hover:bg-gray-500/75 rounded-full p-2 
+            opacity-0 group-hover:opacity-100 transition-all duration-300"
+          >
+            <ChevronLeftIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 
+            bg-gray-500/50 hover:bg-gray-500/75 rounded-full p-2 
+            opacity-0 group-hover:opacity-100 transition-all duration-300"
+          >
+            <ChevronRightIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          </button>
+        </>
+      )}
+
+      <div
+        className="w-full aspect-video flex items-center justify-center overflow-hidden"
+        onClick={() => onImageClick(images[currentIndex])}
+      >
+        <img
+          src={images[currentIndex]}
+          alt={`Carousel Image ${currentIndex + 1}`}
+          className={`w-full h-full object-cover rounded-lg shadow-lg cursor-pointer 
+          transition-transform duration-300 hover:scale-105 ${imageClassName}`}
+        />
+      </div>
+
+      {images.length > 1 && (
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+          <div className="bg-gray-500/50 px-4 py-1 rounded-full text-white">
+            {currentIndex + 1} / {images.length}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Main Food Menu Component
 const FoodMenu = () => {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [menuImage, setMenuImage] = useState(null);
+  // Format today's date as YYYY-MM-DD for the input
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getTodayDate());
+  const [menuImages, setMenuImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [currentLightboxImage, setCurrentLightboxImage] = useState(null);
 
   const token = sessionStorage.getItem("token");
 
+  // Initial fetch when component mounts and whenever selectedDate changes
   useEffect(() => {
-    if (selectedDate) {
-      fetchMenuImage(selectedDate);
-    }
+    fetchMenuImages(selectedDate);
   }, [selectedDate]);
 
-  const fetchMenuImage = async (date) => {
+  const fetchMenuImages = async (date) => {
     setLoading(true);
     setError(null);
     try {
@@ -28,17 +161,24 @@ const FoodMenu = () => {
       );
 
       if (response.data && response.data.length > 0) {
-        const imageUrl = response.data[0].imageUrl;
-        setMenuImage(imageUrl);
+        const allImageUrls = response.data.flatMap(
+          (meal) => meal.imageUrls || []
+        );
+        setMenuImages(allImageUrls);
       } else {
-        setMenuImage(null);
+        setMenuImages([]);
       }
     } catch (error) {
-      console.error("Error fetching menu image:", error);
-      setError("Failed to load menu image. Please try again.");
+      console.error("Error fetching menu images:", error);
+      setError("Failed to load menu images. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const openLightbox = (imageUrl) => {
+    setCurrentLightboxImage(imageUrl);
+    setIsLightboxOpen(true);
   };
 
   return (
@@ -65,23 +205,16 @@ const FoodMenu = () => {
                   </p>
                 ) : error ? (
                   <p className="text-xl text-center text-red-600">{error}</p>
-                ) : selectedDate ? (
-                  menuImage ? (
-                    <div className="flex justify-center">
-                      <img
-                        src={menuImage}
-                        alt="Food Menu"
-                        className="max-w-full h-auto rounded-lg shadow-lg"
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-xl text-center text-gray-600">
-                      No menu image available for this date.
-                    </p>
-                  )
+                ) : menuImages.length > 0 ? (
+                  <ImageCarousel
+                    images={menuImages}
+                    onImageClick={openLightbox}
+                    className="my-custom-container-class"
+                    imageClassName="my-custom-image-class"
+                  />
                 ) : (
                   <p className="text-xl text-center text-gray-600">
-                    Please select a date to view the menu.
+                    No menu images available for this date.
                   </p>
                 )}
               </div>
@@ -89,6 +222,13 @@ const FoodMenu = () => {
           </div>
         </div>
       </div>
+
+      {isLightboxOpen && currentLightboxImage && (
+        <Lightbox
+          imageUrl={currentLightboxImage}
+          onClose={() => setIsLightboxOpen(false)}
+        />
+      )}
     </DashboardLayoutComponent>
   );
 };

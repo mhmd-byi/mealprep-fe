@@ -19,13 +19,7 @@
     "userOnly": true
   },
   {
-    "name": "Meal Calendar",
-    "icon": "CalendarMonth",
-    "path": "/dashboard/meal-calendar",
-    "requiresSubscription": true
-  },
-  {
-    "name": "Cancel Request",
+    "name": "Meal Cancel Request",
     "icon": "Cancel",
     "path": "/dashboard/cancel-request",
     "requiresSubscription": true,

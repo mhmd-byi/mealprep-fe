@@ -40,7 +40,7 @@ export const useSignup = () => {
         setLoaderState(false);
         sessionStorage.setItem("token", res.data.tokens.access.token);
         sessionStorage.setItem("userId", res.data.user._id);
-        navigate("/dashboard/profile");
+        navigate("/dashboard/");
       })
       .catch((err) => {
         setLoaderState(false);

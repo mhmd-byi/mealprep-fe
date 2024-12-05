@@ -51,7 +51,7 @@ export const Services = () => {
       className="w-1/4 p-2 flex flex-col items-center justify-start cursor-pointer"
       onClick={() => navigation(service.path)}
     >
-      <div className="mb-2 w-14 h-14 rounded-md bg-white flex items-center justify-center">
+      <div className="mb-2 w-14 h-14 rounded-md bg-theme-color-1 flex items-center justify-center">
         <img
           src={service.icon}
           alt={service.name}
@@ -65,7 +65,7 @@ export const Services = () => {
   );
 
   return (
-    <div className="px-4">
+    <div className="px-4 mt-16 lg:mt-0">
       <section className="mb-6 flex justify-center">
         <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
           <p className="text-2xl sm:text-xl">Our Services</p>

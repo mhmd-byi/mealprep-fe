@@ -16,7 +16,7 @@ const useAddMeal = () => {
     imageUrl: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [mealImage, setMealImage] = useState(null);
+  const [mealImages, setMealImages] = useState([]);
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
@@ -55,36 +55,36 @@ const useAddMeal = () => {
       return null;
     }
   };
-
-  const handleImageUpload = async () => {
+  const handleMultipleImageUpload = async () => {
     setIsLoading(true);
     try {
-      const imageUrl = await uploadFileToS3(mealImage);
-      if (imageUrl) {
-        await updateMealImageUrl(mealData.date, imageUrl);
-        console.log("Image uploaded and database updated successfully");
-        setMealData((prev) => ({ ...prev, date: "", imageUrl: "" }));
-        setMealImage(null);
-
+      const uploadPromises = mealImages.map(file => uploadFileToS3(file));
+      const imageUrls = await Promise.all(uploadPromises);
+      
+      const validImageUrls = imageUrls.filter(url => url !== null);
+      
+      if (validImageUrls.length > 0) {
+        await updateMealImageUrls(mealData.date, validImageUrls);
+        setMealImages([]);
         return true;
       } else {
-        throw new Error("Failed to upload image");
+        throw new Error("Failed to upload images");
       }
     } catch (error) {
-      console.error("Error in handleImageUpload:", error);
+      console.error("Error in handleMultipleImageUpload:", error);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateMealImageUrl = async (date, imageUrl) => {
+  const updateMealImageUrls = async (date, imageUrls) => {
     try {
       await axios.patch(
-        `${process.env.REACT_APP_API_URL}meal/update-meal-image`,
+        `${process.env.REACT_APP_API_URL}meal/update-meal-images`,
         {
           date,
-          imageUrl,
+          imageUrls,
           userId,
         },
         {
@@ -92,7 +92,7 @@ const useAddMeal = () => {
         }
       );
     } catch (error) {
-      console.error("Error updating meal image URL:", error);
+      console.error("Error updating meal image URLs:", error);
     }
   };
 
@@ -101,8 +101,8 @@ const useAddMeal = () => {
     setIsLoading(true);
 
     try {
-      if (mealImage) {
-        await handleImageUpload();
+      if (mealImages.length > 0) {
+        await handleMultipleImageUpload();
       }
 
       const response = await axios.post(
@@ -115,20 +115,20 @@ const useAddMeal = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      
+      // Reset form
       setMealData({
-        date: "",
+        date: getCurrentDate(),
         mealType: "",
         items: [{ name: "", weight: "", type: "", description: "" }],
-        imageUrl: "",
       });
-      setMealImage(null);
+      setMealImages([]);
     } catch (error) {
       console.error("Error adding meal:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
     const currentDate = getCurrentDate();
@@ -174,9 +174,9 @@ const useAddMeal = () => {
     addNewItem,
     removeItem,
     handleSubmit,
-    setMealImage,
-    handleImageUpload,
-    mealImage,
+    setMealImages,
+    handleMultipleImageUpload,
+    mealImages,
     getCurrentDate,
   };
 };
