@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import FoodMenuIcon from "../../../assets/images/icons/Menu.png";
-import MealCalendarIcon from "../../../assets/images/icons/Calender.png";
-import ChangeRequestIcon from "../../../assets/images/icons/Exchange.png";
-import CustomizedMealIcon from "../../../assets/images/icons/Customise.png";
-import ReceiptIcon from "../../../assets/images/icons/Receipt.png";
-import SubscriptionPlansIcon from "../../../assets/images/icons/Subscription.png";
-import HelpIcon from "../../../assets/images/icons/Help.png";
-import WhatsAppIcon from "../../../assets/images/icons/Whatsapp.png";
+import FoodMenuIcon from "../../../assets/images/icons/update/menu.png";
+import MealCalendarIcon from "../../../assets/images/icons/update/calender.png";
+import ChangeRequestIcon from "../../../assets/images/icons/update/change-request.png";
+import CustomizedMealIcon from "../../../assets/images/icons/update/customizes.png";
+import ReceiptIcon from "../../../assets/images/icons/update/rc.png";
+import SubscriptionPlansIcon from "../../../assets/images/icons/update/subs.png";
+import HelpIcon from "../../../assets/images/icons/update/help.png";
+import WhatsAppIcon from "../../../assets/images/icons/update/chat.png";
 
 export const Services = () => {
   const navigation = useNavigate();
@@ -32,11 +32,11 @@ export const Services = () => {
       className="w-[calc(25%-0.375rem)] lg:w-[200px] lg:h-[200px] p-4 flex flex-col items-center justify-center rounded-lg bg-white border-2 border-theme-color-1 shadow-sm transition-all duration-300 hover:shadow-md hover:border-theme-color-2 cursor-pointer"
       onClick={() => navigation(service.path)}
     >
-      <div className="mb-3 w-16 h-16 rounded-md bg-theme-color-1 flex items-center justify-center">
+      <div className="mb-3 rounded-md flex items-center justify-center">
         <img
           src={service.icon}
           alt={service.name}
-          className="w-10 h-10 object-contain"
+          className="w-16 h-16  object-contain"
         />
       </div>
       <h3 className="text-sm lg:text-base font-medium text-gray-800 text-center">
@@ -51,11 +51,11 @@ export const Services = () => {
       className="w-1/4 p-2 flex flex-col items-center justify-start cursor-pointer"
       onClick={() => navigation(service.path)}
     >
-      <div className="mb-2 w-14 h-14 rounded-md bg-theme-color-1 flex items-center justify-center">
+      <div className="mb-2 rounded-md flex items-center justify-center">
         <img
           src={service.icon}
           alt={service.name}
-          className="w-8 h-8 object-contain"
+          className="w-14 h-14  object-contain"
         />
       </div>
       <h3 className="text-xs font-medium text-gray-800 text-center mt-1">
