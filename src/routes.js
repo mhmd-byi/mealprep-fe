@@ -14,6 +14,7 @@ import CancelRequest from "./pages/Cancel-Request";
 import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
 import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery";
 import { CustomizeYourMeal } from "./pages/customize-your-meal";
+import { AllRegisteredUsers } from "./pages/Admin/All-Registered-Users";
 export const routes = [
   {
     path: "/",
@@ -103,6 +104,11 @@ export const routes = [
   {
     path: "/dashboard/customize-your-meal",
     component: CustomizeYourMeal,
+    exact: true,
+  },
+  {
+    path: "/dashboard/all-registered-users",
+    component: AllRegisteredUsers,
     exact: true,
   }
 ];

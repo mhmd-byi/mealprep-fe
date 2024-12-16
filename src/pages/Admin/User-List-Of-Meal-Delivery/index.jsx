@@ -212,6 +212,10 @@ export const UserListOfMealDelivery = () => {
                                   <span className="font-medium text-gray-500">Email:</span>
                                   <span className="text-gray-900">{meal.email}</span>
                                 </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Mobile:</span>
+                                  <span className="text-gray-900">{meal.mobile}</span>
+                                </div>
                                 <div className="flex justify-between">
                                   <span className="font-medium text-gray-500">Address:</span>
                                   <span className="text-gray-900 text-right">{meal.address}</span>

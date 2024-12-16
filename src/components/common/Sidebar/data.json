@@ -86,5 +86,12 @@
     "path": "/dashboard/meal-delivery-list",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "All Registered Users",
+    "icon": "FoodBank",
+    "path": "/dashboard/all-registered-users",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
