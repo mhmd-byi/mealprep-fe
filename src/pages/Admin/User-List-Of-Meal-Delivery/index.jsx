@@ -62,12 +62,13 @@ export const UserListOfMealDelivery = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Address"];
+    const headers = ["Name", "Email", "Mobile", "Address"];
     
     // Convert data to CSV format
     const csvData = mealDeliveryList.map(meal => [
       meal.name,
       meal.email,
+      meal.mobile,
       meal.address
     ]);
     
@@ -171,6 +172,9 @@ export const UserListOfMealDelivery = () => {
                                 Email
                               </th>
                               <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Mobile
+                              </th>
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Address
                               </th>
                             </tr>
@@ -183,6 +187,9 @@ export const UserListOfMealDelivery = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {meal.email}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {meal.mobile}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {meal.address}
