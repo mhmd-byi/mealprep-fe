@@ -28,7 +28,7 @@
   {
     "name": "Customize your Meal",
     "icon": "DashboardCustomize",
-    "path": "#",
+    "path": "/dashboard/customize-your-meal",
     "requiresSubscription": true,
     "userOnly": true
   },

@@ -58,11 +58,11 @@ const useAddMeal = () => {
   const handleMultipleImageUpload = async () => {
     setIsLoading(true);
     try {
-      const uploadPromises = mealImages.map(file => uploadFileToS3(file));
+      const uploadPromises = mealImages.map((file) => uploadFileToS3(file));
       const imageUrls = await Promise.all(uploadPromises);
-      
-      const validImageUrls = imageUrls.filter(url => url !== null);
-      
+
+      const validImageUrls = imageUrls.filter((url) => url !== null);
+
       if (validImageUrls.length > 0) {
         await updateMealImageUrls(mealData.date, validImageUrls);
         setMealImages([]);
@@ -115,7 +115,7 @@ const useAddMeal = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
+
       // Reset form
       setMealData({
         date: getCurrentDate(),
