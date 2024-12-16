@@ -81,6 +81,13 @@
     "adminOnly": true
   },
   {
+    "name": "Customisation Requests",
+    "icon": "GroupRemove",
+    "path": "/dashboard/get-list-of-customisation-request",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
     "name": "Meal Delivery List",
     "icon": "FoodBank",
     "path": "/dashboard/meal-delivery-list",

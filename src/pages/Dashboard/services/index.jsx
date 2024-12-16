@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import FoodMenuIcon from "../../../assets/images/icons/update/menu.png";
+import CancelRequestIcon from "../../../assets/images/icons/update/cancel-request-icon.png";
 import MealCalendarIcon from "../../../assets/images/icons/update/calender.png";
 import ChangeRequestIcon from "../../../assets/images/icons/update/change-request.png";
 import CustomizedMealIcon from "../../../assets/images/icons/update/customizes.png";
@@ -14,7 +15,7 @@ export const Services = () => {
   const services = [
     { name: "Food Menu", path: "/dashboard/food-menu", icon: FoodMenuIcon },
     { name: "Meal Calendar", path: "meal-calendar", icon: MealCalendarIcon },
-    { name: "Change Request", path: "", icon: ChangeRequestIcon },
+    { name: "Cancel Meal Request", path: "", icon: CancelRequestIcon },
     { name: "Customized Meal", path: "", icon: CustomizedMealIcon },
     { name: "Receipt", path: "", icon: ReceiptIcon },
     {
