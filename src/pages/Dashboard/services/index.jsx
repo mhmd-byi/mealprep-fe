@@ -15,8 +15,8 @@ export const Services = () => {
   const services = [
     { name: "Food Menu", path: "/dashboard/food-menu", icon: FoodMenuIcon },
     { name: "Meal Calendar", path: "meal-calendar", icon: MealCalendarIcon },
-    { name: "Cancel Meal Request", path: "", icon: CancelRequestIcon },
-    { name: "Customized Meal", path: "", icon: CustomizedMealIcon },
+    { name: "Cancel Meal Request", path: "/dashboard/cancel-request", icon: CancelRequestIcon },
+    { name: "Customized Meal", path: "/dashboard/customize-your-meal", icon: CustomizedMealIcon },
     { name: "Receipt", path: "", icon: ReceiptIcon },
     {
       name: "Subscription Plans",
