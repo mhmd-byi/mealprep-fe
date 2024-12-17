@@ -47,7 +47,7 @@
     "userOnly": true
   },
   {
-    "name": "Help",
+    "name": "FAQs",
     "icon": "Help",
     "path": "/dashboard/help",
     "requiresSubscription": false,

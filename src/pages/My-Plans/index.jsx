@@ -34,10 +34,10 @@ export const MyPlan = () => {
                     {/* {new Date(
                       activePlan.subscriptionEndDate
                     ).toLocaleDateString()} */}
-                    {currentPlan?.lunchMeals + currentPlan?.dinnerMeals} Meals
+                    {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} Meals
                   </td>
                   <td className="py-2">
-                  {currentPlan?.meals !== 0 ? <span className="bg-green-500 text-white px-2 py-1 rounded">
+                  {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) >= 1 ? <span className="bg-green-500 text-white px-2 py-1 rounded">
                     Active
                   </span> : <span className="bg-red-500 text-white px-2 py-1 rounded">
                   Inactive

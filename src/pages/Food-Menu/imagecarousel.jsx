@@ -94,7 +94,7 @@ const ImageCarousel = ({
 
       {/* Image Container */}
       <div 
-        className="w-full aspect-video flex items-center justify-center overflow-hidden"
+        className="w-full aspect-[9/16] flex items-center justify-center overflow-hidden"
         onClick={() => onImageClick(images[currentIndex])}
       >
         <img

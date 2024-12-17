@@ -11,6 +11,10 @@ const CancelRequest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isValidTimeForCancellation()) {
+      setMessage(`Cancellation request for ${mealType} cannot be accepted at this time.`);
+      return;
+    }
     try {
       const userId = sessionStorage.getItem("userId");
       const response = await axios.post(
@@ -39,9 +43,28 @@ const CancelRequest = () => {
     }
   };
 
+  const isValidTimeForCancellation = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+    const today = now.toISOString().split('T')[0];
+
+    if (startDate === today) {
+        if (mealType === "lunch" && hour >= 11) {
+            return false;
+        }
+        // Check if current time is after 4:30 PM
+        if (mealType === "dinner" && (hour > 16 || (hour === 16 && minutes >= 30))) {
+            return false;
+        }
+    }
+    return true;
+  };
+
+
   const getTomorrow = () => {
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setDate(tomorrow.getDate());
     return tomorrow.toISOString().split("T")[0];
   };
 
@@ -55,7 +78,7 @@ const CancelRequest = () => {
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
                   Cancel Meal Request
                 </h2>
-                <p className="text-sm"><span className="font-bold">Note:</span>You Can Raise Cancel Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4 PM For Dinner</p>
+                <p className="text-sm"><span className="font-bold">Note:</span>You Can Raise Cancel Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner</p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
                     {message}
