@@ -8,9 +8,13 @@ const SubscriptionPlans = () => {
   const { plans } = data;
   const { handleSubscribe, isSubscribedTo } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
+  const [additionalDetails, setAdditionalDetails] = useState({
+    mealType: 'veg',
+    carbType: 'low',
+  });
 
-  const handlePlanSubscribe = (planName, mealCount, price) => {
-    handleSubscribe(planName, mealCount, price, (message) => {
+  const handlePlanSubscribe = (planName, mealCount, price, mealType, carbType) => {
+    handleSubscribe(planName, mealCount, price, mealType, carbType, (message) => {
       setErrorMessages({ ...errorMessages, [planName]: message }); 
     });
   };
@@ -42,13 +46,46 @@ const SubscriptionPlans = () => {
                   {plan.description} <br />
                   Valid for {plan.duration}
                 </p>
+                <div className="flex flex-col space-y-4 justify-between items-center mb-4">
+                  <div className="flex items-center">
+                    <label className="mr-2">Meal Type:</label>
+                    <select
+                      className="border-2 border-grey-500 rounded-md p-1"
+                      onChange={(e) =>
+                        setAdditionalDetails({
+                          ...additionalDetails,
+                          mealType: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="veg">Veg</option>
+                      <option value="non-veg">Non-Veg</option>
+                      <option value="both">Both</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center">
+                    <label className="mr-2">Carb Type:</label>
+                    <select
+                      className="border-2 border-grey-500 rounded-md p-1"
+                      onChange={(e) =>
+                        setAdditionalDetails({
+                          ...additionalDetails,
+                          carbType: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="low">Low Carb</option>
+                      <option value="high">High Carb</option>
+                    </select>
+                  </div>
+                </div>
                 {isSubscribedTo(plan.name) ? (
                   <p className="text-theme-color-1 font-bold py-3 border-2 rounded-md border-theme-color-1">
                     You are subscribed to this plan
                   </p>
                 ) : (
                   <Button
-                    onClick={() => handlePlanSubscribe(plan.name, plan.meals, plan.price)}
+                    onClick={() => handlePlanSubscribe(plan.name, plan.meals, plan.price, additionalDetails.mealType, additionalDetails.carbType)}
                     classes="w-full"
                   >
                     Select

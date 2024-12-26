@@ -177,6 +177,12 @@ export const UserListOfMealDelivery = () => {
                               <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Address
                               </th>
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Veg/Non-Veg
+                              </th>
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Carb Type
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
@@ -193,6 +199,12 @@ export const UserListOfMealDelivery = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {meal.address}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
                                 </td>
                               </tr>
                             ))}

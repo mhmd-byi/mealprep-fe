@@ -33,6 +33,8 @@ export const useSubscription = () => {
     planName,
     mealCount,
     price,
+    mealType,
+    carbType,
     setErrorMessage
   ) => {
     if (isSubscribed) {
@@ -56,6 +58,8 @@ export const useSubscription = () => {
           userId,
           plan: planName,
           meals: mealCount,
+          mealType,
+          carbType,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,6 +86,8 @@ export const useSubscription = () => {
                 plan: planName,
                 startDate: new Date().toISOString(),
                 meals: mealCount,
+                mealType,
+                carbType,
               },
               headers: {
                 Authorization: `Bearer ${token}`,
