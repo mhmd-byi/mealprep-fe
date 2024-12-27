@@ -42,7 +42,6 @@ export const UserListWithCustomisationRequest = () => {
         }
       );
 
-      console.log('customisation requests', response)
       if (Array.isArray(response.data)) {
         setCustomisationRequests(response.data);
         setError(null);
