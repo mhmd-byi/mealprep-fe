@@ -9,6 +9,7 @@ export const useCustomiseYourMeal = () => {
     weight: "",
   }]);
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
 
@@ -28,7 +29,7 @@ export const useCustomiseYourMeal = () => {
       setItems(response.data[0].items);
     } catch (e) {
       console.error(e);
-      setMessage(e.message);
+      setErrorMessage('Menu not updated, please come back in some time');
     }
   };
 
@@ -58,7 +59,7 @@ export const useCustomiseYourMeal = () => {
       }
     } catch (e) {
       console.error(e);
-      setMessage(e.message);
+      setErrorMessage(e.message);
     }
   };
 
@@ -74,5 +75,6 @@ export const useCustomiseYourMeal = () => {
     message,
     items,
     handleItemChange,
+    errorMessage,
   };
 };

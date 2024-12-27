@@ -11,38 +11,12 @@ import { IconButton } from "@mui/material";
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
   const [mealType, setMealType] = useState("");
-  const { getMealItems, message, items, handleItemChange, createMealRequest } =
+  const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage } =
     useCustomiseYourMeal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     getMealItems(startDate);
-    // try {
-    //   const userId = sessionStorage.getItem("userId");
-    //   const response = await axios.post(
-    //     `${process.env.REACT_APP_API_URL}subscription/cancel-request`,
-    //     {
-    //       userId,
-    //       startDate,
-    //       endDate,
-    //       mealType,
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-    //       },
-    //     }
-    //   );
-    //   setMessage("Meal cancellation request submitted successfully");
-    //   setStartDate("");
-    //   setEndDate("");
-    //   setMealType("");
-    // } catch (error) {
-    //   setMessage(
-    //     "Error submitting cancellation request: " +
-    //       error.response?.data?.message || error.message
-    //   );
-    // }
   };
 
   const handleSubmitCustomiseRequest = async (e) => {
@@ -71,6 +45,11 @@ export const CustomizeYourMeal = () => {
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
                     {message}
+                  </div>
+                )}
+                {errorMessage && (
+                  <div className="mb-4 text-sm font-medium text-red-700 mt-5">
+                    {errorMessage}
                   </div>
                 )}
                 {items.length > 1 ? (
