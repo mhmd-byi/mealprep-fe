@@ -11,12 +11,12 @@ import { IconButton } from "@mui/material";
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
   const [mealType, setMealType] = useState("");
-  const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage } =
+  const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage, setItems } =
     useCustomiseYourMeal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    getMealItems(startDate);
+    getMealItems(startDate, mealType);
   };
 
   const handleSubmitCustomiseRequest = async (e) => {
@@ -112,10 +112,26 @@ export const CustomizeYourMeal = () => {
                       <div className="flex justify-between items-center">
                         <Button
                           type="submit"
-                          className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                          classes="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                         >
                           Submit
                         </Button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setItems([{
+                              name: "",
+                              description: "",
+                              weight: "",
+                            }]);
+                            setStartDate("");
+                            setMealType("");
+                          }
+                        }
+                          className="text-red-600 border-2 bg-white border-red-600 hover:bg-red-600 font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50 hover:text-white"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </div>
                   </form>
@@ -157,12 +173,11 @@ export const CustomizeYourMeal = () => {
                             <option value="">Select meal type</option>
                             <option value="lunch">Lunch</option>
                             <option value="dinner">Dinner</option>
-                            <option value="both">Both</option>
                           </select>
                         </div>
                       </div>
                       <div>
-                        <Button type="submit" classes="w-1/4">
+                        <Button type="submit" classes="w-1/4 text-white">
                           Submit Request
                         </Button>
                       </div>

@@ -13,14 +13,14 @@ export const useCustomiseYourMeal = () => {
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
 
-  const getMealItems = async (date) => {
+  const getMealItems = async (date, mealType) => {
     try {
       if (!token) {
         throw new Error("No token found. Please login again.");
       }
       const response = await axios({
         method: "GET",
-        url: `${process.env.REACT_APP_API_URL}meal/get-meal?date=${date}`,
+        url: `${process.env.REACT_APP_API_URL}meal/get-meal?date=${date}&mealType=${mealType}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,5 +76,6 @@ export const useCustomiseYourMeal = () => {
     items,
     handleItemChange,
     errorMessage,
+    setItems,
   };
 };
