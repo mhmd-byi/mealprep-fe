@@ -8,11 +8,12 @@ const CancelRequest = () => {
   const [endDate, setEndDate] = useState("");
   const [mealType, setMealType] = useState("");
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValidTimeForCancellation()) {
-      setMessage(`Cancellation request for ${mealType} cannot be accepted at this time.`);
+      setErrorMessage(`Cancellation request for ${mealType} cannot be accepted at this time.`);
       return;
     }
     try {
@@ -36,7 +37,7 @@ const CancelRequest = () => {
       setEndDate("");
       setMealType("");
     } catch (error) {
-      setMessage(
+      setErrorMessage(
         "Error submitting cancellation request: " +
           error.response?.data?.message || error.message
       );
@@ -82,6 +83,11 @@ const CancelRequest = () => {
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
                     {message}
+                  </div>
+                )}
+                {errorMessage && (
+                  <div className="mb-4 text-sm font-medium text-red-700 mt-5">
+                    {errorMessage}
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
