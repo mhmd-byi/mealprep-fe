@@ -238,7 +238,7 @@ const useAddMeal = () => {
       });
       setMealData((prev) => ({
         ...prev,
-        items: response?.data[0]?.items || [],
+        items: response?.data[0]?.items || [{ name: "", weight: "", type: "", description: "" }],
       }));
     } catch (e) {
       console.error(e);
