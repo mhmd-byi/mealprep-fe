@@ -238,7 +238,7 @@ const useAddMeal = () => {
       });
       setMealData((prev) => ({
         ...prev,
-        items: response.data[0].items,
+        items: response?.data[0]?.items || [],
       }));
     } catch (e) {
       console.error(e);
