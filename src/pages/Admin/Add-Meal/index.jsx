@@ -25,6 +25,7 @@ const AddMeal = () => {
     menuImages,
     imagesLoading,
     deleteAnImage,
+    getMealItemsInText,
   } = useAddMeal();
   const [activeTab, setActiveTab] = useState(0);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
@@ -72,8 +73,6 @@ const AddMeal = () => {
       });
     }
   };
-
-  const handleDateChangeForMenuImages = () => {}
 
   return (
     <DashboardLayoutComponent>

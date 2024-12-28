@@ -156,7 +156,6 @@ const useAddMeal = () => {
           }
         )
         .then((response) => {
-          console.log("Menu images:", response.data);
           setMenuImages(response.data.imageUrls);
           setImagesLoading(false);
         })
@@ -211,17 +210,47 @@ const useAddMeal = () => {
       ],
     }));
 
-  const removeItem = (index) =>
-    setMealData((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, i) => i !== index),
-    }));
+  const removeItem = (index) => {
+    setMealData((prev) => {
+      const items = [...prev.items];
+      items.splice(index, 1);
+      return { ...prev, items };
+    });
+  };
 
   useEffect(() => {
     if (date.length > 1) {
       getMenuImages(date);
     }
   }, [date]);
+
+  const getMealItemsInText = async (date, mealType) => {
+    try {
+      if (!token) {
+        throw new Error("No token found. Please login again.");
+      }
+      const response = await axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_API_URL}meal/get-meal?date=${date}&mealType=${mealType}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setMealData((prev) => ({
+        ...prev,
+        items: response.data[0].items,
+      }));
+    } catch (e) {
+      console.error(e);
+      toast.error('Menu not updated, please come back in some time');
+    }
+  };
+
+  useEffect(() => {
+    if (date && mealData.mealType) {
+      getMealItemsInText(date, mealData.mealType)
+    }
+  }, [date, mealData.mealType]);
 
   return {
     mealData,
@@ -241,6 +270,7 @@ const useAddMeal = () => {
     menuImages,
     imagesLoading,
     deleteAnImage,
+    getMealItemsInText,
   };
 };
 
