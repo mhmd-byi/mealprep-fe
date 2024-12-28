@@ -236,10 +236,12 @@ const useAddMeal = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setMealData((prev) => ({
-        ...prev,
-        items: response?.data[0]?.items || [{ name: "", weight: "", type: "", description: "" }],
-      }));
+      if (response?.data?.items.length > 0) {
+        setMealData((prev) => ({
+          ...prev,
+          items: response?.data[0]?.items,
+        }));
+      }
     } catch (e) {
       console.error(e);
       toast.error('Menu not updated, please come back in some time');
