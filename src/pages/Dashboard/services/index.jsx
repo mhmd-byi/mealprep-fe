@@ -30,7 +30,7 @@ export const Services = () => {
   const renderServiceItem = (service, index) => (
     <div
       key={index}
-      className="w-[calc(25%-0.375rem)] lg:w-[200px] lg:h-[200px] p-4 flex flex-col items-center justify-center rounded-lg bg-white border-2 border-theme-color-1 shadow-sm transition-all duration-300 hover:shadow-md hover:border-theme-color-2 cursor-pointer"
+      className="w-[calc(25%-0.375rem)] lg:w-[200px] lg:h-[200px] p-4 flex flex-col items-center justify-center rounded-lg transition-all duration-300 cursor-pointer"
       onClick={() => navigation(service.path)}
     >
       <div className="mb-3 rounded-md flex items-center justify-center">
