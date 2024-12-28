@@ -2,6 +2,7 @@ import { useState } from "react";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const useProfile = (setUserDetails) => {
   const [formData, setFormData] = useState({
@@ -118,13 +119,14 @@ const useProfile = (setUserDetails) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    console.log('line 121', { name, value })
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const updatedFormData = { ...formData };
-    if (formData.password === formData.confirmPassword) {
+    if (updatedFormData.password === updatedFormData.confirmPassword) {
       try {
         const response = await axios({
           method: "PATCH",
@@ -140,7 +142,7 @@ const useProfile = (setUserDetails) => {
         console.error("Error submitting profile:", error);
       }
     } else {
-      console.error("Passwords do not match");
+      toast.error("Passwords do not match");
     }
   };
 

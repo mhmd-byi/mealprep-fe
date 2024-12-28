@@ -8,6 +8,7 @@ import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Edit } from "@mui/icons-material";
 import { Helmet } from "react-helmet";
 import { Loader } from "../../components";
+import { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const { userDetails, getInitials, setUserDetails } = useDashboard();
@@ -28,11 +29,6 @@ const Profile = () => {
   const UserName = userDetails.firstName + " " + userDetails.lastName;
 
   const formRef = useRef(null);
-  const { ValidationMessage } = usePasswordValidation(
-    formRef,
-    "newPassword",
-    "confirmNewPassword"
-  );
 
   return (
     <div>
@@ -144,11 +140,10 @@ const Profile = () => {
                     <Input
                       type={"password"}
                       name={"password"}
-                      id={"newPassword"}
-                      autocomplete={true}
+                      id={"password"}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"Enter Password"}
-                      value={formData.password || userDetails.password}
+                      value={formData.password}
                       onChange={handleChange}
                     />
                   </div>
@@ -156,14 +151,12 @@ const Profile = () => {
                     <Input
                       type={"password"}
                       name={"confirmPassword"}
-                      id={"confirmNewPassword"}
-                      autocomplete={true}
+                      id={"confirmPassword"}
                       className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       placeholder={"Confirm Password"}
-                      value={formData.confirmPassword || userDetails.confirmPassword}
+                      value={formData.confirmPassword}
                       onChange={handleChange}
                     />
-                    <ValidationMessage />
                   </div>
                 </div>
                 <Input
@@ -185,6 +178,7 @@ const Profile = () => {
           </div>
         </div>
       </DashboardLayoutComponent>
+      <Toaster />
     </div>
   );
 };
