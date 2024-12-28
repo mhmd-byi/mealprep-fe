@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
+import toast from "react-hot-toast";
 
 const useAddMeal = () => {
   const getCurrentDate = () => {
@@ -17,6 +18,9 @@ const useAddMeal = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [mealImages, setMealImages] = useState([]);
+  const [date, setDate] = useState("");
+  const [menuImages, setMenuImages] = useState([]);
+  const [imagesLoading, setImagesLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
@@ -80,7 +84,7 @@ const useAddMeal = () => {
 
   const updateMealImageUrls = async (date, imageUrls) => {
     try {
-      await axios.patch(
+      await axios.put(
         `${process.env.REACT_APP_API_URL}meal/update-meal-images`,
         {
           date,
@@ -131,12 +135,60 @@ const useAddMeal = () => {
   };
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
+    setDate(selectedDate);
     const currentDate = getCurrentDate();
 
     if (selectedDate >= currentDate) {
       setMealData((prev) => ({ ...prev, date: selectedDate }));
     } else {
       console.warn("Cannot select a date in the past");
+    }
+  };
+
+  const getMenuImages = async (particularDate) => {
+    try {
+      setImagesLoading(true);
+      await axios
+        .get(
+          `${process.env.REACT_APP_API_URL}meal/fetch-menu-images?date=${particularDate}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then((response) => {
+          console.log("Menu images:", response.data);
+          setMenuImages(response.data.imageUrls);
+          setImagesLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error getting menu images:", error);
+          setImagesLoading(false);
+          return [];
+        });
+    } catch (error) {
+      console.error("Error getting menu images:", error);
+    }
+  };
+
+  const deleteAnImage = async (imageUrl, particularDate) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_URL}meal/delete-menu-images`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          data: {
+            date: particularDate,
+            url: imageUrl
+          }
+        }
+      );
+
+      getMenuImages(date);
+      toast.success('Image deleted successfully')
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting menu images:", error);
+      toast.error('Error deleting menu images')
     }
   };
 
@@ -165,6 +217,12 @@ const useAddMeal = () => {
       items: prev.items.filter((_, i) => i !== index),
     }));
 
+  useEffect(() => {
+    if (date.length > 1) {
+      getMenuImages(date);
+    }
+  }, [date]);
+
   return {
     mealData,
     isLoading,
@@ -178,6 +236,11 @@ const useAddMeal = () => {
     handleMultipleImageUpload,
     mealImages,
     getCurrentDate,
+    date,
+    setDate,
+    menuImages,
+    imagesLoading,
+    deleteAnImage,
   };
 };
 

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, FileUpload } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Helmet } from "react-helmet";
 import useAddMeal from "./useAddMeal";
 import IconButton from "@mui/material/IconButton";
 import { Add, Delete, CloudUpload } from "@mui/icons-material";
+import { ImageMenu } from "../../../components/common/ImageMenu";
+import { Toaster } from "react-hot-toast";
 
 const AddMeal = () => {
   const {
@@ -20,6 +22,9 @@ const AddMeal = () => {
     setMealImages,
     handleMultipleImageUpload,
     getCurrentDate,
+    menuImages,
+    imagesLoading,
+    deleteAnImage,
   } = useAddMeal();
   const [activeTab, setActiveTab] = useState(0);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
@@ -32,11 +37,11 @@ const AddMeal = () => {
     e.preventDefault();
     try {
       await handleSubmit(e);
-      setSnackbar({ open: true, message: "Meal added successfully!" });
+      setSnackbar({ open: true, message: "Menu added successfully!" });
     } catch (error) {
       setSnackbar({
         open: true,
-        message: "Failed to add meal. Please try again.",
+        message: "Failed to add menu. Please try again.",
       });
     }
   };
@@ -67,6 +72,8 @@ const AddMeal = () => {
       });
     }
   };
+
+  const handleDateChangeForMenuImages = () => {}
 
   return (
     <DashboardLayoutComponent>
@@ -256,6 +263,13 @@ const AddMeal = () => {
                   className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 />
               </div>
+              {imagesLoading ? (
+                <div>Loading images...</div>
+              ) : (
+                menuImages.length > 0 && mealData.date && (
+                  <ImageMenu images={menuImages} handleDelete={deleteAnImage} currentDate={mealData.date} />
+                )
+              )}
               <FileUpload
                 onFileChange={(files) => setMealImages(files)}
                 label="Upload Meal Images"
@@ -292,6 +306,7 @@ const AddMeal = () => {
           {snackbar.message}
         </div>
       )}
+      <Toaster />
     </DashboardLayoutComponent>
   );
 };
