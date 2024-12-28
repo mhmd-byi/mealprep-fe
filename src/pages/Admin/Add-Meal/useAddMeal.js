@@ -236,12 +236,10 @@ const useAddMeal = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response?.data?.items?.length > 0) {
-        setMealData((prev) => ({
-          ...prev,
-          items: response?.data[0]?.items,
-        }));
-      }
+      setMealData((prev) => ({
+        ...prev,
+        items: response?.data[0]?.items || [{ name: "", weight: "", type: "", description: "" }],
+      }));
     } catch (e) {
       console.error(e);
     }
