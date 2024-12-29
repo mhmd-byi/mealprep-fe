@@ -15,9 +15,31 @@ export const useSignup = () => {
     confirmPassword: "",
     postalAddress: "",
   });
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+  const currentDate = getCurrentDate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const activityEntry = async (userId) => {
+    try {
+      const res = await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/add-activity`,
+        data: {
+          userId: userId,
+          date: currentDate,
+          description: "Account created",
+        },
+      });
+      console.log("Activity added successfully:", res.data);
+    } catch (e) {
+      console.error("Error adding activity:", e);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -37,9 +59,10 @@ export const useSignup = () => {
       },
     })
       .then((res) => {
-        setLoaderState(false);
         sessionStorage.setItem("token", res.data.tokens.access.token);
         sessionStorage.setItem("userId", res.data.user._id);
+        activityEntry(res.data.user._id);
+        setLoaderState(false);
         navigate("/dashboard/");
       })
       .catch((err) => {
