@@ -4,6 +4,28 @@ import axios from "axios";
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [currentPlan, setCurrentPlan] = useState(null);
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+  const currentDate = getCurrentDate();
+
+  const activityEntry = async (userId, mealPlan) => {
+    try {
+      const res = await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/add-activity`,
+        data: {
+          userId: userId,
+          date: currentDate,
+          description: `Subscribed to ${mealPlan}`,
+        },
+      });
+      console.log("Activity added successfully:", res.data);
+    } catch (e) {
+      console.error("Error adding activity:", e);
+    }
+  };
 
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
@@ -95,6 +117,7 @@ export const useSubscription = () => {
             });
 
             if (verifyResponse.data) {
+              activityEntry(userId, planName);
               setIsSubscribed(true);
               setCurrentPlan({
                 plan: planName,
