@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import FoodMenuIcon from "../../../assets/images/icons/update/menu.png";
 import CancelRequestIcon from "../../../assets/images/icons/update/cancel-request-icon.png";
 import MealCalendarIcon from "../../../assets/images/icons/update/calender.png";
-import ChangeRequestIcon from "../../../assets/images/icons/update/change-request.png";
 import CustomizedMealIcon from "../../../assets/images/icons/update/customizes.png";
 import ReceiptIcon from "../../../assets/images/icons/update/rc.png";
 import SubscriptionPlansIcon from "../../../assets/images/icons/update/subs.png";
@@ -14,7 +13,7 @@ export const Services = () => {
 
   const services = [
     { name: "Food Menu", path: "/dashboard/food-menu", icon: FoodMenuIcon },
-    { name: "Meal Calendar", path: "meal-calendar", icon: MealCalendarIcon },
+    { name: "Meal Trackings", path: "/dashboard/meal-tracking", icon: MealCalendarIcon },
     { name: "Cancel Meal Request", path: "/dashboard/cancel-request", icon: CancelRequestIcon },
     { name: "Customized Meal", path: "/dashboard/customize-your-meal", icon: CustomizedMealIcon },
     { name: "My Billings", path: "/dashboard/my-billing", icon: ReceiptIcon },

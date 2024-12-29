@@ -54,6 +54,13 @@
     "userOnly": true
   },
   {
+    "name": "Meal Trackings",
+    "icon": "FoodBank",
+    "path": "/dashboard/meal-tracking",
+    "requiresSubscription": false,
+    "adminOnly": false
+  },
+  {
     "name": "Chat on WhatsApp",
     "icon": "WhatsApp",
     "path": "#",

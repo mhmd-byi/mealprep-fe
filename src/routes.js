@@ -16,6 +16,7 @@ import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery
 import { CustomizeYourMeal } from "./pages/customize-your-meal";
 import { AllRegisteredUsers } from "./pages/Admin/All-Registered-Users";
 import { UserListWithCustomisationRequest } from "./pages/Admin/User-List-of-Customisation-Request";
+import { MealTracking } from "./pages/MealTracking";
 export const routes = [
   {
     path: "/",
@@ -115,6 +116,11 @@ export const routes = [
   {
     path: "/dashboard/get-list-of-customisation-request",
     component: UserListWithCustomisationRequest,
+    exact: true,
+  },
+  {
+    path: "/dashboard/meal-tracking",
+    component: MealTracking,
     exact: true,
   }
 ];
