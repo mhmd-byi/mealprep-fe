@@ -3,7 +3,7 @@ import { useData } from "./useData";
 export const Data = () => {
   const { allRegisteredUsersCount, cancelledMealsCount, mealDeliveryListCountDinner, mealDeliveryListCountLunch, customisationRequestCount } = useData();
   return (
-    <div className="px-4 my-16 lg:mt-0">
+    <div className="px-4 my-16 lg:mt-4">
       <section className="mb-6 flex justify-center">
         <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
           <p className="text-2xl sm:text-xl">Today's Stats</p>

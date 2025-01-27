@@ -7,7 +7,7 @@ export const DashboardPage = () => {
   const { userDetails } = useDashboard();
   return (
     <DashboardLayoutComponent>
-      <HeroSlider />
+      {userDetails.role !== "admin" && <HeroSlider />}
       {userDetails.role === "admin" && <Data />}
       <Services />
     </DashboardLayoutComponent>
