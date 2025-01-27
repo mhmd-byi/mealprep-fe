@@ -65,8 +65,10 @@ const FoodMenu = () => {
                 {imagesLoading ? (
                   <div>Loading images...</div>
                 ) : (
-                  menuImages.length > 0 && (
+                  menuImages.length > 0 ? (
                     <ImageMenuForUser images={menuImages} />
+                  ) : (
+                    <div>Menu images not found</div>
                   )
                 )}
               </div>
