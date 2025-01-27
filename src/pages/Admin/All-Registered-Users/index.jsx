@@ -45,6 +45,9 @@ export const AllRegisteredUsers = () => {
                                 Address
                               </th>
                               <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Current Plan
+                              </th>
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Meal Counts
                               </th>
                             </tr>
@@ -63,6 +66,9 @@ export const AllRegisteredUsers = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {user.postalAddress}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
