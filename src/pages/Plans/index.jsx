@@ -11,11 +11,12 @@ const SubscriptionPlans = () => {
   const [additionalDetails, setAdditionalDetails] = useState({
     mealType: 'veg',
     carbType: 'low',
+    lunchDinner: 'lunch',
   });
 
-  const handlePlanSubscribe = (planName, mealCount, price, mealType, carbType) => {
-    handleSubscribe(planName, mealCount, price, mealType, carbType, (message) => {
-      setErrorMessages({ ...errorMessages, [planName]: message }); 
+  const handlePlanSubscribe = (planName, mealCount, price, mealType, carbType, lunchDinner) => {
+    handleSubscribe(planName, mealCount, price, mealType, carbType, lunchDinner, (message) => {
+      setErrorMessages({ ...errorMessages, [planName]: message });
     });
   };
 
@@ -64,6 +65,22 @@ const SubscriptionPlans = () => {
                     </select>
                   </div>
                   <div className="flex items-center">
+                    <label className="mr-2">Lunch/Dinner:</label>
+                    <select
+                      className="border-2 border-grey-500 rounded-md p-1"
+                      onChange={(e) =>
+                        setAdditionalDetails({
+                          ...additionalDetails,
+                          lunchDinner: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="lunch">Only Lunch</option>
+                      <option value="dinner">Only Dinner</option>
+                      <option value="lunchAndDinner">Both</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center">
                     <label className="mr-2">Carb Type:</label>
                     <select
                       className="border-2 border-grey-500 rounded-md p-1"
@@ -85,7 +102,7 @@ const SubscriptionPlans = () => {
                   </p>
                 ) : (
                   <Button
-                    onClick={() => handlePlanSubscribe(plan.name, plan.meals, plan.price, additionalDetails.mealType, additionalDetails.carbType)}
+                    onClick={() => handlePlanSubscribe(plan.name, plan.meals, plan.price, additionalDetails.mealType, additionalDetails.carbType, additionalDetails.lunchDinner)}
                     classes="w-full"
                   >
                     Select

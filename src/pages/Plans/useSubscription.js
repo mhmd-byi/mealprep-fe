@@ -57,6 +57,7 @@ export const useSubscription = () => {
     price,
     mealType,
     carbType,
+    lunchDinner,
     setErrorMessage
   ) => {
     if (isSubscribed) {
@@ -82,6 +83,7 @@ export const useSubscription = () => {
           meals: mealCount,
           mealType,
           carbType,
+          lunchDinner,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -110,6 +112,7 @@ export const useSubscription = () => {
                 meals: mealCount,
                 mealType,
                 carbType,
+                lunchDinner,
               },
               headers: {
                 Authorization: `Bearer ${token}`,
