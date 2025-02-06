@@ -91,8 +91,11 @@ const SubscriptionPlans = () => {
                         })
                       }
                     >
-                      <option value="low">Low Carb</option>
-                      <option value="high">High Carb</option>
+                      <option value="low-carb-high-protein">Low Carb High Protein Meal</option>
+                      <option value="balanced-meal">Balanced Meal</option>
+                      <option value="high-carb-high-protein">High Carb High Protein Meal</option>
+                      <option value="zero-carb">Zero Carb Meal</option>
+                      <option value="keto-meal">Keto Meal</option>
                     </select>
                   </div>
                 </div>
