@@ -10,7 +10,7 @@ const SubscriptionPlans = () => {
   const [errorMessages, setErrorMessages] = useState({});
   const [additionalDetails, setAdditionalDetails] = useState({
     mealType: 'veg',
-    carbType: 'low',
+    carbType: 'low-carb-high-protein',
     lunchDinner: 'lunch',
   });
 
