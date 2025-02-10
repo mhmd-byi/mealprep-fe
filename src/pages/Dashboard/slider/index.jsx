@@ -12,25 +12,25 @@ export const HeroSlider = () => {
     {
       id: 1,
       image: mealimage,
-      heading: "Meal Prep",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+      // heading: "Meal Prep",
+      // description:
+      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
       buttonText: "Purchase Plan Now",
     },
     {
       id: 2,
       image: mealimage2,
-      heading: "Meal Prep",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      // heading: "Meal Prep",
+      // description:
+      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
     },
     {
       id: 3,
       image: mealimage3,
-      heading: "Meal Prep",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      // heading: "Meal Prep",
+      // description:
+      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
     },
   ];
@@ -65,14 +65,14 @@ export const HeroSlider = () => {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`relative w-full sm:w-[1500px] h-[450px] lg:h-[500px] mt-10 ${
+            className={`relative w-full sm:w-[1500px] h-[350px] lg:h-[500px] mt-10 ${
               index !== currentSlide ? "hidden" : ""
             }`}
           >
             <div className="hidden sm:block">
               <img
                 src={slide.image}
-                className="w-full h-[450px] rounded-lg object-cover"
+                className="w-full max-h-[250px] md:max-h-[450px] rounded-lg object-cover"
               />
               <div className=" p-8  absolute right-0 top-0 w-full sm:w-[50%] h-[450px] bg-black bg-opacity-75 flex flex-col justify-center px-4 sm:px-8 text-left rounded-lg">
                 <h1 className="text-white text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
