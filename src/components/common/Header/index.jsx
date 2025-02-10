@@ -30,7 +30,7 @@ const Header = ({ toggleSidebar }) => {
         </span>
       </div>
         <div className="flex h-12 w-12 rounded-full items-center">
-          <img src={fetchUserProfileImage || userProfileImg} alt="Profile" />
+          <img src={fetchUserProfileImage || userProfileImg} alt="Profile" className="rounded-full" />
         </div>
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
           Hi, {userDetails.firstName}
