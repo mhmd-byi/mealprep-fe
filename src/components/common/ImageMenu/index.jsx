@@ -48,6 +48,7 @@ export const ImageMenuForUser = ({ images }) => {
         images={images}
         onClick={handleClick}
         enableImageSelection={false}
+        tileViewportStyle={{ borderRadius: '10px', overflow: 'hidden', columnGap: '25px' }}
       />
       <Lightbox
         slides={slides}
