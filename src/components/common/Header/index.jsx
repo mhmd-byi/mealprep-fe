@@ -29,8 +29,8 @@ const Header = ({ toggleSidebar }) => {
           {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} meals left
         </span>
       </div>
-        <div className="flex h-12 w-12 rounded-full items-center">
-          <img src={fetchUserProfileImage || userProfileImg} alt="Profile" className="rounded-full" />
+        <div className="flex items-center">
+          <img src={fetchUserProfileImage || userProfileImg} alt="Profile" className="rounded-full h-12 w-12" />
         </div>
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
           Hi, {userDetails.firstName}
