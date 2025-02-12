@@ -9,7 +9,7 @@ const ForgotPassword = () => {
   const navigateToResetPassword = () => navigate("/reset-password");
   const { handleSubmit } = useForgotPassword();
   return (
-    <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
+    <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
       <div className="flex justify-center">
         <div className="px-12 flex flex-col items-center justify-center py-8 shadow-md bg-white rounded-lg lg:h-[650px] lg:w-[450px] my-auto">
           <MealprepLogo />

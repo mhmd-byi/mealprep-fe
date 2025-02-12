@@ -11,7 +11,7 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col h-screen bg-theme-bg-2 bg-no-repeat bg-cover ">
+      <div className="flex flex-col h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover ">
         <Header toggleSidebar={toggleSidebar} />
         <div
           className={`flex flex-1 overflow-hidden ${

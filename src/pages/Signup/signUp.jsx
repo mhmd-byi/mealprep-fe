@@ -19,7 +19,7 @@ const Signup = () => {
   );
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full lg:h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
+    <div className="relative flex flex-col items-center justify-center h-full lg:h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
       <div className="flex px-5 lg:px-12 py-8 shadow-md bg-white rounded-lg">
         <div className="content">
           <div className="flex flex-col justify-center items-center">
