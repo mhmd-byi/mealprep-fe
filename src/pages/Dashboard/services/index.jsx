@@ -68,7 +68,7 @@ export const Services = () => {
     <div className="px-4 mt-16 lg:mt-0">
       <section className="mb-6 flex justify-center">
         <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
-          <p className="text-2xl sm:text-xl">Our Services</p>
+          <p className="text-2xl sm:text-xl">Features</p>
         </div>
       </section>
 

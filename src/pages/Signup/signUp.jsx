@@ -24,9 +24,9 @@ const Signup = () => {
         <div className="content">
           <div className="flex flex-col justify-center items-center">
             <MealprepLogo />
-            <h2 className="text-center font-medium text-4xl">Sign Up</h2>
+            <h2 className="text-center font-medium text-4xl my-5">Sign Up</h2>
           </div>
-          <p className="mt-10 text-center text-lg">
+          <p className="text-center text-lg">
             Enter your information below to proceed. <br />
             If you already have an account, please log in instead.
           </p>
@@ -109,8 +109,9 @@ const Signup = () => {
               </div>
 
               {errMsg.length > 1 && <Alert severity="error">{errMsg}</Alert>}
-
-              <Button type={"submit"} children={"Submit"} />
+              <div className="flex justify-center">
+                <Button type={"submit"} children={"Submit"} />
+              </div>
             </form>
             <p class="mt-10 text-center text-sm text-gray-500">
               Already have an account? &nbsp;

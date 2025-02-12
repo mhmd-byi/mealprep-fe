@@ -20,9 +20,9 @@ const Login = () => {
           <div className="content">
             <div className="flex flex-col justify-center items-center">
               <MealprepLogo classes={"text-center justify-center"} />
-              <h2 className="text-center font-medium text-4xl text-slate-950">Login</h2>
+              <h2 className="text-center font-medium text-4xl my-5 text-slate-950">Login</h2>
             </div>
-            <p className="mt-10 text-center text-lg">
+            <p className="text-center text-lg">
               If you have an account with us, <br />
               please log in.
             </p>
@@ -72,10 +72,12 @@ const Login = () => {
                     <Alert severity="error">{errMsg}</Alert>
                   )}
                 </div>
-                <Button type="submit" id={"login"}>
-                  {" "}
-                  {loaderState ? "Logging in..." : "Login"}
-                </Button>
+                <div className="flex justify-center">
+                  <Button type="submit" id={"login"}>
+                    {" "}
+                    {loaderState ? "Logging in..." : "Login"}
+                  </Button>
+                </div>
               </form>
 
               <p class="mt-10 text-center text-sm text-gray-500">
