@@ -42,6 +42,14 @@ export const CustomizeYourMeal = () => {
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
                   Customise Meal Request
                 </h2>
+                <p className="mb-4">Steps to use:
+                  <ul>
+                    <li>1. First select the date and meal type for which you need to make customization request</li>
+                    <li>2. Input your requests</li>
+                    <li>3. Submit the request</li>
+                  </ul>
+                  Note: You Can Raise Cutomize Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
+                </p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
                     {message}

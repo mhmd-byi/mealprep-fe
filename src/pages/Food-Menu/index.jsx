@@ -54,7 +54,13 @@ const FoodMenu = () => {
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
                   Food Menu
                 </h2>
-                <div className="flex justify-center mb-8">
+                <p>Steps to use:
+                  <ul>
+                    <li>1. Select desired date from date column</li>
+                    <li>2. Tap on the image to get a zoomed view</li>
+                  </ul>
+                </p>
+                <div className="flex justify-center my-8">
                   <input
                     type="date"
                     value={selectedDate}

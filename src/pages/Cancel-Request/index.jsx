@@ -79,6 +79,15 @@ const CancelRequest = () => {
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
                   Cancel Meal Request
                 </h2>
+                <p className="mb-4">Steps to use:
+                  <ul>
+                    <li>1. First select start date and end date for which you need to cancel the request</li>
+                    <li>2. If you want to cancel for 1 day then start date and end date will be same</li>
+                    <li>3. Select the meal type like Lunch, Dinner or Both whatever you want to raise a cancel request for</li>
+                    <li>4. Submit the request</li>
+                  </ul>
+                  Note: You Can Raise Cutomize Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
+                </p>
                 <p className="text-sm"><span className="font-bold">Note:</span>You Can Raise Cancel Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner</p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">

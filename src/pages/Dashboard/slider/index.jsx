@@ -75,7 +75,7 @@ export const HeroSlider = () => {
                 <img
                   src={slide.image}
                   alt={slide.heading}
-                  className="w-full h-[140px] md:h-[450px] lg:h-[500px] cover"
+                  className="w-full h-[140px] md:h-[450px] cover"
                 />
               </div>
 
