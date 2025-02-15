@@ -12,6 +12,8 @@ const CancelRequest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    setMessage("");
     if (!isValidTimeForCancellation()) {
       setErrorMessage(`Cancellation request for ${mealType} cannot be accepted at this time.`);
       return;
@@ -86,9 +88,8 @@ const CancelRequest = () => {
                     <li>3. Select the meal type like Lunch, Dinner or Both whatever you want to raise a cancel request for</li>
                     <li>4. Submit the request</li>
                   </ul>
-                  Note: You Can Raise Cutomize Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
+                  Note: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
                 </p>
-                <p className="text-sm"><span className="font-bold">Note:</span>You Can Raise Cancel Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner</p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
                     {message}
