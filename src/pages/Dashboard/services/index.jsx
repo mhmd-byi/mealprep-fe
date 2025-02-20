@@ -22,7 +22,7 @@ export const Services = () => {
       path: "/dashboard/plans",
       icon: SubscriptionPlansIcon,
     },
-    { name: "Help", path: "", icon: HelpIcon },
+    { name: "FAQs", path: "", icon: HelpIcon },
     { name: "Chat on WhatsApp", path: "", icon: WhatsAppIcon },
   ];
 

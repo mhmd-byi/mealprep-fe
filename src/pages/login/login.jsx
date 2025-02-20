@@ -19,7 +19,7 @@ const Login = () => {
         <div className="login-box max-h-[680px] px-12 py-8 shadow-md bg-white rounded-lg">
           <div className="content">
             <div className="flex flex-col justify-center items-center">
-              <MealprepLogo classes={"text-center justify-center"} />
+              <MealprepLogo classes={"text-center justify-center max-w-52"} />
               <h2 className="text-center font-medium text-4xl my-5 text-slate-950">Login</h2>
             </div>
             <p className="text-center text-lg">

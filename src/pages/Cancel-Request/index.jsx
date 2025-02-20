@@ -88,7 +88,10 @@ const CancelRequest = () => {
                     <li>3. Select the meal type like Lunch, Dinner or Both whatever you want to raise a cancel request for</li>
                     <li>4. Submit the request</li>
                   </ul>
-                  Note: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
+                  <br />
+                  &nbsp;
+                  <strong>Note 1</strong>: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 11:00 AM For Lunch<br />
+                  <strong>Note 2</strong>: You Can Raise Cancel Meal Request From 12 Mid Night Till 4:30 PM For Dinner
                 </p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">

@@ -68,12 +68,6 @@
     "userOnly": true
   },
   {
-    "name": "Feedback",
-    "icon": "ThumbUpSharp",
-    "path": "/dashboard/feedback",
-    "requiresSubscription": true
-  },
-  {
     "name": "Add Menu",
     "icon": "FoodBank",
     "path": "/dashboard/add-menu",

@@ -23,7 +23,7 @@ const Signup = () => {
       <div className="flex px-5 lg:px-12 py-8 shadow-md bg-white rounded-lg">
         <div className="content">
           <div className="flex flex-col justify-center items-center">
-            <MealprepLogo />
+            <MealprepLogo classes={"text-center justify-center max-w-52"} />
             <h2 className="text-center font-medium text-4xl my-5">Sign Up</h2>
           </div>
           <p className="text-center text-lg">

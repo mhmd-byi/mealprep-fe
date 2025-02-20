@@ -185,7 +185,7 @@ export const CustomizeYourMeal = () => {
                       </div>
                       <div>
                         <Button type="submit" classes="w-full sm:w-1/4 text-white">
-                          Submit Request
+                          View menu
                         </Button>
                       </div>
                     </div>

@@ -4,7 +4,7 @@ const ResetPassword = () => {
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 bg-no-repeat bg-cover">
       <div className="flex justify-center">
         <div className="px-12 flex flex-col items-center justify-center py-8 shadow-md bg-white rounded-lg lg:h-[650px] lg:w-[450px] my-auto">
-          <MealprepLogo />
+          <MealprepLogo classes={"text-center justify-center max-w-52"} />
           <h2 className="text-center font-medium text-4xl">New Password</h2>
           <div className="content w-full">
             <p className="mt-10 text-center text-lg">Enter New Password</p>

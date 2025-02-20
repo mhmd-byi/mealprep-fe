@@ -15,7 +15,7 @@ const Header = ({ toggleSidebar }) => {
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-lg">
       <div className="flex items-center">
-        <MealprepLogo alt={"Meal Prep Logo"} />
+        <MealprepLogo alt={"Meal Prep Logo"} classes={"max-w-52"} />
       </div>
       <div className="md:hidden">
         <button onClick={toggleSidebar}>
