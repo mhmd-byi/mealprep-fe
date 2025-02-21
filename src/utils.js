@@ -20,7 +20,7 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
   }
 
   try {
-    const { data } = await axios(options);
+    const { data } = await axios.request(options);
     console.log(data);
   } catch (e) {
     console.error(e);
