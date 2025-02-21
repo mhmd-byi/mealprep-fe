@@ -60,7 +60,7 @@ export const CustomizeYourMeal = () => {
                     {errorMessage}
                   </div>
                 )}
-                {items.length > 1 ? (
+                {items.length > 0 ? (
                   <form onSubmit={handleSubmitCustomiseRequest}>
                     <div className="space-y-4">
                       <h3 className="text-base sm:text-lg font-medium text-gray-900">

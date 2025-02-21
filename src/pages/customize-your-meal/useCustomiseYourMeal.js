@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { sendEmail } from "../../utils";
 
 export const useCustomiseYourMeal = () => {
   const [meals, setMeals] = useState([]);
@@ -12,6 +13,7 @@ export const useCustomiseYourMeal = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
+  const email = sessionStorage.getItem("email");
 
   const getMealItems = async (date, mealType) => {
     try {
@@ -56,6 +58,7 @@ export const useCustomiseYourMeal = () => {
           weight: "",
         }]);
         setMessage('Your request has been submitted successfully');
+        sendEmail(email, email, "Meal customisation request submitted", "Your request has been submitted successfully with following details: " + JSON.stringify(items));
       }
     } catch (e) {
       console.error(e);

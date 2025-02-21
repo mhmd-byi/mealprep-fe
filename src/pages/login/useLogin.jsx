@@ -22,7 +22,7 @@ export const useLogin = () => {
       method: "POST",
       url: `${process.env.REACT_APP_API_URL}user/login`,
       data: {
-        email: formData.email,
+        email: formData.email.toLowerCase(),
         password: formData.password,
       },
     })
@@ -34,6 +34,7 @@ export const useLogin = () => {
           res.data.tokens.access.expires
         );
         sessionStorage.setItem("userId", res.data.userId);
+        sessionStorage.setItem("email", formData.email.toLowerCase());
         navigate("/dashboard");
       })
       .catch((err) => {
