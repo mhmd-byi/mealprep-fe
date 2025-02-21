@@ -8,6 +8,7 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
       "Content-Type": "application/json",
       Accept: "application/json",
       "Api-Token": process.env.REACT_APP_MAILTRAP_API_TOKEN,
+      "Access-Control-Allow-Origin": "https://app.mealprep.co.in",
     },
     data: {
       to: [{ email: toEmail, name: toName }],
