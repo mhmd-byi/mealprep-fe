@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import { Button } from "../../components";
+import { sendEmail } from "../../utils";
 
 const CancelRequest = () => {
   const [startDate, setStartDate] = useState("");
@@ -20,6 +21,7 @@ const CancelRequest = () => {
     }
     try {
       const userId = sessionStorage.getItem("userId");
+      const email = sessionStorage.getItem("email");
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}subscription/cancel-request`,
         {
@@ -35,6 +37,7 @@ const CancelRequest = () => {
         }
       );
       setMessage("Meal cancellation request submitted successfully");
+      sendEmail(email, email, "Meal cancellation request submitted successfully", "Meal cancellation request submitted successfully");
       setStartDate("");
       setEndDate("");
       setMealType("");

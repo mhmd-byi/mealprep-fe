@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { sendEmail } from "../../utils";
 
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -70,7 +71,7 @@ export const useSubscription = () => {
     const userId = sessionStorage.getItem("userId");
     const token = sessionStorage.getItem("token");
     const userName = sessionStorage.getItem("userName");
-    const userEmail = sessionStorage.getItem("userEmail");
+    const userEmail = sessionStorage.getItem("email");
 
     try {
       const orderResponse = await axios({
@@ -121,6 +122,7 @@ export const useSubscription = () => {
 
             if (verifyResponse.data) {
               activityEntry(userId, planName);
+              sendEmail(userEmail, userEmail, "Subscription successful", `You have successfully subscribed to ${planName} plan. You have ${mealCount} meals left.`);
               setIsSubscribed(true);
               setCurrentPlan({
                 plan: planName,
