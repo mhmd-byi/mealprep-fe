@@ -1,19 +1,18 @@
 import axios from "axios";
 
 export const sendEmail = async (toEmail, toName, subject, bodyText) => {
+  const token = sessionStorage.getItem("token");
+  
   const options = {
     method: "POST",
-    url: "https://send.api.mailtrap.io/api/send",
+    url: `${process.env.REACT_APP_API_URL}activity/email/send`,
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
-      "Api-Token": process.env.REACT_APP_MAILTRAP_API_TOKEN,
-      "Access-Control-Allow-Origin": "https://app.mealprep.co.in",
+      Authorization: `Bearer ${token}`,
     },
     data: {
-      to: [{ email: toEmail, name: toName }],
-      from: [{ email: 'info@mealprep.co.in', name: 'Mealprep Info' }],
-      headers: {'X-Message-Source': 'app.mealprep.co.in'},
+      toEmail: toEmail,
+      toName: toName,
       subject: subject,
       text: bodyText,
     }
@@ -22,7 +21,9 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
   try {
     const { data } = await axios.request(options);
     console.log(data);
+    return data;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 };

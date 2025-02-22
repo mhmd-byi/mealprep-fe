@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { sendEmail } from "../../utils";
 
 export const useCustomiseYourMeal = () => {
@@ -58,7 +58,8 @@ export const useCustomiseYourMeal = () => {
           weight: "",
         }]);
         setMessage('Your request has been submitted successfully');
-        sendEmail(email, email, "Meal customisation request submitted", "Your request has been submitted successfully with following details: " + JSON.stringify(items));
+        const allItems = items.map(item => `${item.name} - ${item.description} - ${item.weight}\n`);
+        sendEmail(email, email, "Meal customisation request submitted", "Your request has been submitted successfully with following details: \n" + allItems);
       }
     } catch (e) {
       console.error(e);
