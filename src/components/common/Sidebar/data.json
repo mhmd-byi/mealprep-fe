@@ -63,7 +63,7 @@
   {
     "name": "Chat on WhatsApp",
     "icon": "WhatsApp",
-    "path": "#",
+    "path": "https://wa.me/+919826157131",
     "requiresSubscription": false,
     "userOnly": true
   },

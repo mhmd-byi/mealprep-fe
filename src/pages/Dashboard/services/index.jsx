@@ -23,7 +23,7 @@ export const Services = () => {
       icon: SubscriptionPlansIcon,
     },
     { name: "FAQs", path: "", icon: HelpIcon },
-    { name: "Chat on WhatsApp", path: "", icon: WhatsAppIcon },
+    { name: "Chat on WhatsApp", path: "https://wa.me/+919826157131", icon: WhatsAppIcon },
   ];
 
   const renderServiceItem = (service, index) => (
