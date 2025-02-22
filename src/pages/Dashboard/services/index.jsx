@@ -9,7 +9,7 @@ import HelpIcon from "../../../assets/images/icons/update/help.png";
 import WhatsAppIcon from "../../../assets/images/icons/update/chat.png";
 
 export const Services = () => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const services = [
     { name: "Food Menu", path: "/dashboard/food-menu", icon: FoodMenuIcon },
@@ -22,7 +22,7 @@ export const Services = () => {
       path: "/dashboard/plans",
       icon: SubscriptionPlansIcon,
     },
-    { name: "FAQs", path: "", icon: HelpIcon },
+    { name: "FAQs", path: "/dashboard/help", icon: HelpIcon },
     { name: "Chat on WhatsApp", path: "https://wa.me/+919826157131", icon: WhatsAppIcon },
   ];
 
@@ -30,7 +30,13 @@ export const Services = () => {
     <div
       key={index}
       className="w-[calc(25%-0.375rem)] lg:w-[200px] lg:h-[200px] p-4 flex flex-col items-center justify-center rounded-lg transition-all duration-300 cursor-pointer"
-      onClick={() => navigation(service.path)}
+      onClick={() => {
+        if (service.path.startsWith('http')) {
+          window.open(service.path, '_blank');
+        } else {
+          navigate(service.path);
+        }
+      }}
     >
       <div className="mb-3 rounded-md flex items-center justify-center">
         <img
@@ -49,7 +55,13 @@ export const Services = () => {
     <div
       key={index}
       className="w-1/4 p-2 flex flex-col items-center justify-start cursor-pointer"
-      onClick={() => navigation(service.path)}
+      onClick={() => {
+        if (service.path.startsWith('http')) {
+          window.open(service.path, '_blank');
+        } else {
+          navigate(service.path);
+        }
+      }}
     >
       <div className="mb-2 rounded-md flex items-center justify-center">
         <img

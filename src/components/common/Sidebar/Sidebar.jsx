@@ -22,7 +22,11 @@ const Sidebar = ({ closeSidebar }) => {
   const location = useLocation();
 
   const handleNavigate = (path) => {
-    navigate(path);
+    if (path.startsWith('http')) {
+      window.open(path, '_blank');
+    } else {
+      navigate(path);
+    }
     closeSidebar();
   };
 
