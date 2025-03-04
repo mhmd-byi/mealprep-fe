@@ -18,6 +18,7 @@ export const MyPlan = () => {
               <thead>
                 <tr className="border-b-2 border-gray-200">
                   <th className="text-left py-2">Plan Name</th>
+                  <th className="text-left py-2">Total Meals</th>
                   <th className="text-left py-2">Meals Left</th>
                   <th className="text-left py-2">Status</th>
                 </tr>
@@ -25,6 +26,9 @@ export const MyPlan = () => {
               <tbody>
                 <tr className="text-left">
                   <td className="py-2">{currentPlan?.plan}</td>
+                  <td className="py-2">
+                    {currentPlan?.totalMeals} Meals
+                  </td>
                   <td className="py-2">
                     {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} Meals
                   </td>
