@@ -18,7 +18,6 @@ export const MyPlan = () => {
               <thead>
                 <tr className="border-b-2 border-gray-200">
                   <th className="text-left py-2">Plan Name</th>
-                  <th className="text-left py-2">Total Meals</th>
                   <th className="text-left py-2">Meals Left</th>
                   <th className="text-left py-2">Status</th>
                 </tr>
@@ -27,13 +26,6 @@ export const MyPlan = () => {
                 <tr className="text-left">
                   <td className="py-2">{currentPlan?.plan}</td>
                   <td className="py-2">
-                    {/* {new Date(activePlan.startDate).toLocaleDateString()} */}
-                    {currentPlan?.plan.includes('rial') ? 4 : (currentPlan.plan.includes('eek') ? 14 : 60)} Meals
-                  </td>
-                  <td className="py-2">
-                    {/* {new Date(
-                      activePlan.subscriptionEndDate
-                    ).toLocaleDateString()} */}
                     {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} Meals
                   </td>
                   <td className="py-2">
