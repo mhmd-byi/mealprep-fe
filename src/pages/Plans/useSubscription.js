@@ -42,7 +42,11 @@ export const useSubscription = () => {
             },
           }
         );
-        setIsSubscribed(response.data.isSubscribed);
+        if (response.data.subscription.meals <= 0) {
+          setIsSubscribed(false);
+        } else {
+          setIsSubscribed(true);
+        }
         setCurrentPlan(response.data.subscription);
       } catch (error) {
         console.error("Error fetching subscription status:", error);
