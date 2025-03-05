@@ -15,9 +15,15 @@ const Header = ({ toggleSidebar }) => {
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-lg">
       <div className="flex items-center">
-        <MealprepLogo alt={"Meal Prep Logo"} classes={"max-w-52"} />
+        <MealprepLogo alt={"Meal Prep Logo"} classes={"max-w-40 md:max-w-52"} />
       </div>
-      <div className="md:hidden">
+      <div className="md:hidden flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <img src={Diet} alt="meal-icon" className="w-6" />
+          <span className="text-gray-800 text-sm">
+            {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} meals left
+          </span>
+        </div>
         <button onClick={toggleSidebar}>
           <Menu className="h-6 w-6" />
         </button>
