@@ -30,7 +30,7 @@ export const MyPlan = () => {
                     {currentPlan?.totalMeals} Meals
                   </td>
                   <td className="py-2">
-                    {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} Meals
+                    {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} Meals
                   </td>
                   <td className="py-2">
                   {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) >= 1 ? <span className="bg-green-500 text-white px-2 py-1 rounded">

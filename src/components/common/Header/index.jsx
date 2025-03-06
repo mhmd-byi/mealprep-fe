@@ -21,7 +21,7 @@ const Header = ({ toggleSidebar }) => {
         <div className="flex items-center gap-2">
           <img src={Diet} alt="meal-icon" className="w-6" />
           <span className="text-gray-800 text-sm">
-            {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} meals left
+            {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
           </span>
         </div>
         <button onClick={toggleSidebar}>
@@ -32,7 +32,7 @@ const Header = ({ toggleSidebar }) => {
       <div className="flex flex-row ml-5 space-x-4 items-center">
         <img src={Diet} alt="meal-icon" className="w-10" />
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
-          {(currentPlan?.lunchMeals + currentPlan?.dinnerMeals) || 0} meals left
+          {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
         </span>
       </div>
         <div className="flex items-center">
