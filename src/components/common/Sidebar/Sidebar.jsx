@@ -31,7 +31,6 @@ const Sidebar = ({ closeSidebar }) => {
   };
 
   const isItemVisible = (item) => {
-    console.log((currentPlan?.lunchMeals + currentPlan?.dinnerMeals));
     if (item.requiresSubscription && !isSubscribed) {
       return false;
     }
