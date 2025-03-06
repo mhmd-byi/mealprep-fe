@@ -7,13 +7,11 @@ export const MyPlan = () => {
   return (
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-center items-center p-5 w-full lg:h-full my-auto">
-        <div className="bg-white shadow-md rounded px-4 lg:px-14 py-4 w-fit lg:max-w-[1500px] lg:w-[1200px]">
-          <h3 className="text-2xl lg:text-3xl text-black text-center">
-            My Active Subscription Plan
-          </h3>
-        </div>
         {(isSubscribed && currentPlan) ? (
           <div className="mt-7 bg-white shadow-md rounded-lg p-6 max-w-[1500px] lg:w-[1200px]">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-6 text-gray-800">
+              My Active Subscription Plan
+            </h2>
             <table className="w-full">
               <thead>
                 <tr className="border-b-2 border-gray-200">
