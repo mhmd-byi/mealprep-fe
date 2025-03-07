@@ -1,4 +1,4 @@
-import userProfileImg from "../../../assets/images/user/user-profile.png";
+import userProfileImg from "../../../assets/images/user/user-placeholder.png";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Menu, ExitToAppRounded } from "@mui/icons-material";
 import { useHeader } from "./useHeader";

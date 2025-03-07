@@ -2,14 +2,13 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
-import useProfile from "../../../pages/Profile/useProfile";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Logout, Close } from "@mui/icons-material";
 import { useHeader } from "../Header/useHeader";
 import useSubscription from "../../../pages/Plans/useSubscription";
+import userProfileImg from "../../../assets/images/user/user-placeholder.png";
 
 const Sidebar = ({ closeSidebar }) => {
-  const { profileImageUrl } = useProfile();
   const { userDetails } = useDashboard();
   const { logout } = useHeader();
   const { isSubscribed, currentPlan } = useSubscription();
@@ -57,7 +56,7 @@ const Sidebar = ({ closeSidebar }) => {
       </div>
       <div className="flex md:hidden items-center space-x-3 p-2">
         <img
-          src={fetchUserProfileImage || profileImageUrl}
+          src={fetchUserProfileImage || userProfileImg}
           alt="Profile"
           className="h-12 w-12 rounded-full object-fill"
         />
