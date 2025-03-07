@@ -71,7 +71,7 @@ export const Services = () => {
   const renderMobileServiceItem = (service, index) => (
     (service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)) && (<div
       key={index}
-      className="w-1/4 p-2 flex flex-col items-center justify-start cursor-pointer"
+      className="w-full p-2 flex flex-col items-center justify-start cursor-pointer"
       onClick={() => {
         if (service.path.startsWith('http')) {
           window.open(service.path, '_blank');
@@ -80,11 +80,11 @@ export const Services = () => {
         }
       }}
     >
-      <div className="mb-2 rounded-md flex items-center justify-center">
+      <div className="mb-2 rounded-md flex items-center justify-center w-full">
         <img
           src={service.icon}
           alt={service.name}
-          className="w-14 h-14  object-contain"
+          className="w-14 h-14 object-contain"
         />
       </div>
       <h3 className="text-xs font-medium text-gray-800 text-center mt-1">
@@ -102,15 +102,15 @@ export const Services = () => {
       </section>
 
       {/* Mobile view - 4 columns */}
-      <section className="mt-6 lg:hidden">
-        <div className="grid grid-cols-4 gap-1">
+      <section className="mt-6 lg:hidden flex justify-center">
+        <div className="grid grid-cols-4 gap-1 w-full max-w-[500px] mx-auto">
           {services.map(renderMobileServiceItem)}
         </div>
       </section>
 
       {/* Desktop view - 4 columns */}
-      <section className="my-20 hidden lg:block">
-        <div className="grid grid-cols-4 gap-4 lg:gap-10 max-w-[1500px] mx-auto">
+      <section className="my-20 hidden lg:block flex justify-center">
+        <div className="grid grid-cols-4 gap-4 lg:gap-10 max-w-[1500px] w-full mx-auto justify-items-center">
           {services.map(renderServiceItem)}
         </div>
       </section>

@@ -3,6 +3,7 @@ import slide1 from "../../../assets/images/dashboard/slide1.jpg";
 import slide2 from "../../../assets/images/dashboard/slide2.jpg";
 import slide3 from "../../../assets/images/dashboard/slide3.jpg";
 import { ArrowCircleLeft, ArrowCircleRight } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 export const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -16,6 +17,7 @@ export const HeroSlider = () => {
       // description:
       //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
       buttonText: "Purchase Plan Now",
+      buttonLink: "/dashboard/plans",
     },
     {
       id: 2,
@@ -24,6 +26,7 @@ export const HeroSlider = () => {
       // description:
       //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
+      buttonLink: "/dashboard/plans",
     },
     {
       id: 3,
@@ -32,8 +35,11 @@ export const HeroSlider = () => {
       // description:
       //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
+      buttonLink: "/dashboard/plans",
     },
   ];
+
+  const navigate = useNavigate();
 
   const prevSlide = () => {
     setCurrentSlide(currentSlide === 0 ? slides.length - 1 : currentSlide - 1);
@@ -86,7 +92,7 @@ export const HeroSlider = () => {
                 <p className="text-sm md:text-base lg:text-lg mb-4 md:mb-6">
                   {slide.description}
                 </p>
-                <button className="bg-white text-black py-2 px-4 rounded hover:bg-opacity-90 transition-colors">
+                <button onClick={() => navigate(slide.buttonLink)} className="bg-white text-black py-2 px-4 rounded hover:bg-opacity-90 transition-colors">
                   {slide.buttonText}
                 </button>
               </div>
