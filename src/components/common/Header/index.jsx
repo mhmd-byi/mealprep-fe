@@ -29,12 +29,12 @@ const Header = ({ toggleSidebar }) => {
         </button>
       </div>
       <div className="hidden md:flex items-center space-x-4 w-fit">
-      <div className="flex flex-row ml-5 space-x-4 items-center">
+      {userDetails?.role !== "admin" && <div className="flex flex-row ml-5 space-x-4 items-center">
         <img src={Diet} alt="meal-icon" className="w-10" />
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
           {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
         </span>
-      </div>
+      </div>}
         <div className="flex items-center">
           <img src={fetchUserProfileImage || userProfileImg} alt="Profile" className="rounded-full h-12 w-12" />
         </div>
