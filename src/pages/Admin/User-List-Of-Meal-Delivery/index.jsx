@@ -62,14 +62,16 @@ export const UserListOfMealDelivery = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Mobile", "Address"];
+    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type"];
     
     // Convert data to CSV format
     const csvData = mealDeliveryList.map(meal => [
       meal.name,
       meal.email,
       meal.mobile,
-      meal.address
+      meal.address,
+      meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1),
+      meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)
     ]);
     
     // Combine headers and data
