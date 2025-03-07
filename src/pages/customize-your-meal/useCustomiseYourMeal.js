@@ -81,5 +81,6 @@ export const useCustomiseYourMeal = () => {
     handleItemChange,
     errorMessage,
     setItems,
+    setErrorMessage,
   };
 };

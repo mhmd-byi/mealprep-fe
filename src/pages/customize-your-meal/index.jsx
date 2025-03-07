@@ -2,26 +2,47 @@
 
 import { useState } from "react";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import axios from "axios";
 import { Button, Input } from "../../components";
 import { Helmet } from "react-helmet";
 import { useCustomiseYourMeal } from "./useCustomiseYourMeal";
-import { IconButton } from "@mui/material";
 
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
   const [mealType, setMealType] = useState("");
-  const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage, setItems } =
+  const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage, setItems, setErrorMessage } =
     useCustomiseYourMeal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isValidTimeForCustomisation()) {
+      setErrorMessage("You can only customise your meal request between 10:30 AM and 4:30 PM");
+      return;
+    }
     getMealItems(startDate, mealType);
   };
 
   const handleSubmitCustomiseRequest = async (e) => {
     e.preventDefault();
     createMealRequest(startDate);
+  };
+
+  const isValidTimeForCustomisation = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+    const today = now.toISOString().split('T')[0];
+
+    if (startDate === today) {
+        // Check if current time is after 10:30 AM
+        if (mealType === "lunch" && (hour > 10 || (hour === 10 && minutes >= 30))) {
+            return false;
+        }
+        // Check if current time is after 4:30 PM
+        if (mealType === "dinner" && (hour > 16 || (hour === 16 && minutes >= 30))) {
+            return false;
+        }
+    }
+    return true;
   };
 
   const getTomorrow = () => {
