@@ -39,7 +39,7 @@ export const routes = [
     exact: true,
   },
   {
-    path: "/reset-password",
+    path: "/reset-password/:token",
     component: ResetPassword,
     exact: true,
   },

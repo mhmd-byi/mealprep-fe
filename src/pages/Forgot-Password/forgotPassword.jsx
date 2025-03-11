@@ -6,8 +6,7 @@ import { Input, Button, MealprepLogo } from "../../components";
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate("/");
-  const navigateToResetPassword = () => navigate("/reset-password");
-  const { handleSubmit } = useForgotPassword();
+  const { handleSubmit, message, setEmail, email } = useForgotPassword();
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
       <div className="flex justify-center">
@@ -26,9 +25,12 @@ const ForgotPassword = () => {
                   name="recoverd-email-address"
                   type="email"
                   placeholder="Enter Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   class="block w-full h-12 rounded-lg border-0 px-5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:theme-color-1 sm:text-sm sm:leading-6"
                 />
               </div>
+              {message && <p className="text-center text-green-500">{message}</p>}
               <div class="w-full">
                 <p class="text-left text-base text-black-500">
                   Back to{" "}
@@ -40,7 +42,7 @@ const ForgotPassword = () => {
                   </a>
                 </p>
               </div>
-              <Button type={'submit'} onClick={navigateToResetPassword}>Next</Button>
+              <Button type={'submit'}>Submit</Button>
             </form>
           </div>
         </div>
