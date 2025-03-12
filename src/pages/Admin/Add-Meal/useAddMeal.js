@@ -136,13 +136,13 @@ const useAddMeal = () => {
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
     setDate(selectedDate);
-    const currentDate = getCurrentDate();
+    // const currentDate = getCurrentDate();
 
-    if (selectedDate >= currentDate) {
-      setMealData((prev) => ({ ...prev, date: selectedDate }));
-    } else {
-      console.warn("Cannot select a date in the past");
-    }
+    setMealData((prev) => ({ ...prev, date: selectedDate }));
+    // if (selectedDate >= currentDate) {
+    // } else {
+    //   console.warn("Cannot select a date in the past");
+    // }
   };
 
   const getMenuImages = async (particularDate) => {
