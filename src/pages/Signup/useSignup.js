@@ -7,6 +7,9 @@ export const useSignup = () => {
   const navigate = useNavigate();
   const [loaderState, setLoaderState] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otp, setOtp] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,6 +27,58 @@ export const useSignup = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
+  };
+
+  const sendOtp = async () => {
+    if (!formData.mobile) {
+      setErrMsg("Please enter your mobile number first");
+      return;
+    }
+    setLoaderState(true);
+    try {
+      await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/send-otp`,
+        data: {
+          mobileNumber: formData.mobile,
+          name: `${formData.firstName} ${formData.lastName}`,
+        },
+      });
+      setOtpSent(true);
+      setErrMsg("");
+    } catch (err) {
+      setErrMsg(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoaderState(false);
+    }
+  };
+
+  const verifyOtp = async () => {
+    if (!otp) {
+      setErrMsg("Please enter the OTP");
+      return;
+    }
+    setLoaderState(true);
+    try {
+      await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/verify-otp`,
+        data: {
+          mobile: formData.mobile,
+          otp: otp,
+        },
+      });
+      setOtpVerified(true);
+      setErrMsg("");
+    } catch (err) {
+      setErrMsg(err.response?.data?.message || "Invalid OTP");
+    } finally {
+      setLoaderState(false);
+    }
   };
 
   const activityEntry = async (userId) => {
@@ -45,6 +100,10 @@ export const useSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!otpVerified) {
+      setErrMsg("Please verify your mobile number with OTP first");
+      return;
+    }
     setLoaderState(true);
     axios({
       method: "POST",
@@ -83,5 +142,11 @@ export const useSignup = () => {
     handleSubmit,
     errMsg,
     loaderState,
+    otpSent,
+    otpVerified,
+    otp,
+    handleOtpChange,
+    sendOtp,
+    verifyOtp,
   };
 };

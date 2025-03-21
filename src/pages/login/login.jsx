@@ -1,17 +1,51 @@
 // Login.js file
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "./useLogin";
 import { Button, Input, MealprepLogo } from "../../components";
-import { Alert } from "@mui/material";
+import { Alert, Tabs, Tab, Box } from "@mui/material";
+
+const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`login-tabpanel-${index}`}
+      aria-labelledby={`login-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const navigateToSignup = () => navigate("/signup");
   const navigateToForgotPassword = () => navigate("/forgot-password");
+  const [tabValue, setTabValue] = useState(0);
 
-  const { handleChange, handleSubmit, formData, loaderState, errMsg } =
-    useLogin();
+  const { 
+    handleChange, 
+    handleSubmit, 
+    formData, 
+    loaderState, 
+    errMsg,
+    // OTP login handlers
+    handleOtpLogin,
+    otpSent,
+    otpVerified,
+    otp,
+    handleOtpChange,
+    sendOtp,
+    verifyOtp
+  } = useLogin();
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
@@ -26,65 +60,144 @@ const Login = () => {
               If you have an account with us, <br />
               please log in.
             </p>
-            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form class="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <div class="mt-2">
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Email Address"
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                centered
+                className="mb-4"
+              >
+                <Tab label="Email/Password" />
+                <Tab label="Login with OTP" />
+              </Tabs>
 
-                <div>
-                  <div class="mt-2">
-                    <Input
-                      id={"password"}
-                      name={"password"}
-                      type="password"
-                      placeholder={"Enter password"}
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
+              <TabPanel value={tabValue} index={0}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <div>
+                    <div className="mt-2">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Email Address"
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="text-sm">
-                    <p>
-                      Having trouble in sign in?&nbsp;
-                      <a
-                        onClick={navigateToForgotPassword}
-                        class="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
-                      >
-                        Forgot password
-                      </a>
-                    </p>
-                  </div>
-                </div>
 
-                <div>
+                  <div>
+                    <div className="mt-2">
+                      <Input
+                        id={"password"}
+                        name={"password"}
+                        type="password"
+                        placeholder={"Enter password"}
+                        value={formData.password}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm">
+                      <p>
+                        Having trouble in sign in?&nbsp;
+                        <a
+                          onClick={navigateToForgotPassword}
+                          className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
+                        >
+                          Forgot password
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+
                   {errMsg.length > 1 && (
                     <Alert severity="error">{errMsg}</Alert>
                   )}
-                </div>
-                <div className="flex justify-center">
-                  <Button type="submit" id={"login"}>
-                    {" "}
-                    {loaderState ? "Logging in..." : "Login"}
-                  </Button>
-                </div>
-              </form>
+                  <div className="flex justify-center">
+                    <Button type="submit" id={"login"}>
+                      {loaderState ? "Logging in..." : "Login"}
+                    </Button>
+                  </div>
+                </form>
+              </TabPanel>
 
-              <p class="mt-10 text-center text-sm text-gray-500">
-                Don’t have an account? &nbsp;
+              <TabPanel value={tabValue} index={1}>
+                <form className="space-y-6" onSubmit={handleOtpLogin}>
+                  <div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Input
+                          id="mobile"
+                          name="mobile"
+                          type="tel"
+                          placeholder="Phone Number"
+                          value={formData.mobile}
+                          onChange={handleChange}
+                          disabled={otpVerified}
+                        />
+                      </div>
+                      {!otpVerified && (
+                        <Button
+                          type="button"
+                          onClick={sendOtp}
+                          disabled={otpSent}
+                          children={otpSent ? "OTP Sent" : "Send OTP"}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {otpSent && !otpVerified && (
+                    <div>
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Input
+                            id="otp"
+                            name="otp"
+                            type="text"
+                            placeholder="Enter OTP"
+                            value={otp}
+                            onChange={handleOtpChange}
+                            maxLength={6}
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={verifyOtp}
+                          children="Verify OTP"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {otpVerified && (
+                    <div className="text-green-600 text-sm text-center">
+                      ✓ Phone number verified
+                    </div>
+                  )}
+
+                  {errMsg.length > 1 && (
+                    <Alert severity="error">{errMsg}</Alert>
+                  )}
+                  <div className="flex justify-center">
+                    <Button 
+                      type="submit" 
+                      id={"login"}
+                      disabled={!otpVerified}
+                    >
+                      {loaderState ? "Logging in..." : "Login with OTP"}
+                    </Button>
+                  </div>
+                </form>
+              </TabPanel>
+
+              <p className="mt-10 text-center text-sm text-gray-500">
+                Don't have an account? &nbsp;
                 <a
                   onClick={navigateToSignup}
-                  class="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
+                  className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
                 >
                   Sign Up
                 </a>
@@ -96,4 +209,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;

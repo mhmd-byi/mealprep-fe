@@ -9,7 +9,18 @@ import { useRef } from "react";
 const Signup = () => {
   const navigate = useNavigate();
   const navigateToSignin = () => navigate("/");
-  const { formData, handleChange, handleSubmit, errMsg } = useSignup();
+  const { 
+    formData, 
+    handleChange, 
+    handleSubmit, 
+    errMsg, 
+    otpSent, 
+    otpVerified, 
+    otp, 
+    handleOtpChange, 
+    sendOtp, 
+    verifyOtp 
+  } = useSignup();
 
   const formRef = useRef(null);
   const { ValidationMessage } = usePasswordValidation(
@@ -30,10 +41,10 @@ const Signup = () => {
             Enter your information below to proceed. <br />
             If you already have an account, please log in instead.
           </p>
-          <div class="mt-10">
-            <form class="space-y-6" onSubmit={handleSubmit} ref={formRef}>
-              <div class="flex flex-wrap -mx-3 mb-6">
-                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <div className="mt-10">
+            <form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
+              <div className="flex flex-wrap -mx-3 mb-6">
+                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                   <Input
                     id={"firstName"}
                     name={"firstName"}
@@ -43,7 +54,7 @@ const Signup = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div class="w-full md:w-1/2 px-3">
+                <div className="w-full md:w-1/2 px-3">
                   <Input
                     id={"lastName"}
                     name={"lastName"}
@@ -54,17 +65,58 @@ const Signup = () => {
                   />
                 </div>
               </div>
-              <div class="w-full">
-                <Input
-                  id={"mobile"}
-                  name={"mobile"}
-                  type={"tel"}
-                  required={true}
-                  placeholder={"Phone Number"}
-                  onChange={handleChange}
-                />
+              <div className="w-full">
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Input
+                      id={"mobile"}
+                      name={"mobile"}
+                      type={"tel"}
+                      required={true}
+                      placeholder={"Phone Number"}
+                      onChange={handleChange}
+                      disabled={otpVerified}
+                    />
+                  </div>
+                  {!otpVerified && (
+                    <Button
+                      type="button"
+                      onClick={sendOtp}
+                      disabled={otpSent}
+                      children={otpSent ? "OTP Sent" : "Send OTP"}
+                    />
+                  )}
+                </div>
               </div>
-              <div class="w-full">
+              {otpSent && !otpVerified && (
+                <div className="w-full">
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        id={"otp"}
+                        name={"otp"}
+                        type={"text"}
+                        required={true}
+                        placeholder={"Enter OTP"}
+                        value={otp}
+                        onChange={handleOtpChange}
+                        maxLength={6}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={verifyOtp}
+                      children="Verify OTP"
+                    />
+                  </div>
+                </div>
+              )}
+              {otpVerified && (
+                <div className="text-green-600 text-sm text-center">
+                  ✓ Phone number verified
+                </div>
+              )}
+              <div className="w-full">
                 <Input
                   id={"email"}
                   name={"email"}
@@ -74,8 +126,8 @@ const Signup = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div class="flex flex-wrap -mx-3 mb-6">
-                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="flex flex-wrap -mx-3 mb-6">
+                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                   <Input
                     id={"newPassword"}
                     name={"password"}
@@ -85,7 +137,7 @@ const Signup = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div class="w-full md:w-1/2 px-3">
+                <div className="w-full md:w-1/2 px-3">
                   <Input
                     id={"confirmNewPassword"}
                     name={"confirmPassword"}
@@ -97,7 +149,7 @@ const Signup = () => {
                   <ValidationMessage />
                 </div>
               </div>
-              <div class="w-full">
+              <div className="w-full">
                 <Input
                   required={true}
                   id={"address"}
@@ -110,14 +162,14 @@ const Signup = () => {
 
               {errMsg.length > 1 && <Alert severity="error">{errMsg}</Alert>}
               <div className="flex justify-center">
-                <Button type={"submit"} children={"Submit"} />
+                <Button type={"submit"} children={"Submit"} disabled={!otpVerified} />
               </div>
             </form>
-            <p class="mt-10 text-center text-sm text-gray-500">
+            <p className="mt-10 text-center text-sm text-gray-500">
               Already have an account? &nbsp;
               <a
                 onClick={navigateToSignin}
-                class="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
+                className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
               >
                 Login
               </a>
