@@ -13,27 +13,18 @@ export const HeroSlider = () => {
     {
       id: 1,
       image: slide1,
-      // heading: "Meal Prep",
-      // description:
-      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
       buttonText: "Purchase Plan Now",
       buttonLink: "/dashboard/plans",
     },
     {
       id: 2,
       image: slide2,
-      // heading: "Meal Prep",
-      // description:
-      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
       buttonLink: "/dashboard/plans",
     },
     {
       id: 3,
       image: slide3,
-      // heading: "Meal Prep",
-      // description:
-      //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       buttonText: "Purchase Plan Now",
       buttonLink: "/dashboard/plans",
     },
@@ -71,7 +62,7 @@ export const HeroSlider = () => {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`relative w-full sm:w-[1500px] h-auto mt-10 ${
+            className={`relative w-full mt-10 ${
               index !== currentSlide ? "hidden" : ""
             }`}
           >
@@ -81,18 +72,12 @@ export const HeroSlider = () => {
                 <img
                   src={slide.image}
                   alt={slide.heading}
-                  className="w-full h-[140px] md:h-[450px] cover"
+                  className="w-full cover"
                 />
               </div>
 
               <div className="p-4 md:p-6 lg:p-8 text-white">
-                <h1 className="text-xl md:text-2xl lg:text-4xl font-bold mb-2 md:mb-4">
-                  {slide.heading}
-                </h1>
-                <p className="text-sm md:text-base lg:text-lg mb-4 md:mb-6">
-                  {slide.description}
-                </p>
-                <button onClick={() => navigate(slide.buttonLink)} className="bg-white text-black py-2 px-4 rounded hover:bg-opacity-90 transition-colors">
+                <button onClick={() => navigate(slide.buttonLink)} className="bg-white text-black py-px md:py-2 px-1 md:px-4 rounded hover:bg-opacity-90 transition-colors">
                   {slide.buttonText}
                 </button>
               </div>
