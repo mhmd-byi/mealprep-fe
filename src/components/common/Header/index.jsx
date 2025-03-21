@@ -18,12 +18,12 @@ const Header = ({ toggleSidebar }) => {
         <MealprepLogo alt={"Meal Prep Logo"} classes={"max-w-40 md:max-w-52"} />
       </div>
       <div className="md:hidden flex items-center gap-4">
-        <div className="flex items-center gap-2">
+        {userDetails?.role !== "admin" &&<div className="flex items-center gap-2">
           <img src={Diet} alt="meal-icon" className="w-6" />
           <span className="text-gray-800 text-sm">
             {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
           </span>
-        </div>
+        </div>}
         <button onClick={toggleSidebar}>
           <Menu className="h-6 w-6" />
         </button>
