@@ -37,7 +37,15 @@ const CancelRequest = () => {
         }
       );
       setMessage("Meal cancellation request submitted successfully");
-      sendEmail(email, email, "Meal cancellation request submitted successfully", "Meal cancellation request submitted successfully");
+      sendEmail(email, email, "Meal Cancellation Request Received", `Dear Customer,\n
+        We have received your meal cancellation request.\n
+        With our cancel meal request feature, you can cancel meals for today or future dates as per your convenience.\n
+        ⏳ Cancellation Timings:\n
+        Lunch: 12 Midnight – 11:00 AM\n
+        Dinner: 12 Midnight – 4:30 PM\n
+        For any queries, feel free to contact us.\n\n
+        Team Mealprep\n
+          `);
       setStartDate("");
       setEndDate("");
       setMealType("");

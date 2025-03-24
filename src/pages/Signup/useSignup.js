@@ -122,7 +122,13 @@ export const useSignup = () => {
         sessionStorage.setItem("token", res.data.tokens.access.token);
         sessionStorage.setItem("userId", res.data.user._id);
         activityEntry(res.data.user._id);
-        sendEmail(formData.email, `${formData.firstName} ${formData.lastName}`, "Welcome to Mealprep!", "Welcome to Mealprep! Your account has been created successfully.");
+        sendEmail(formData.email, `${formData.firstName} ${formData.lastName}`, "Welcome to Mealprep – Your Fit Meal Journey Begins!", `Dear ${formData.firstName},\n
+          Thank you for signing up with Mealprep! 🎉 Your journey towards healthy and convenient eating starts here.\n
+          To begin, visit the Plans section and choose a meal plan that suits your lifestyle. Subscribe now and let us take care of your daily nutrition!\n
+          👉 Browse Meal Plans\n
+          Stay healthy, stay fit!\n\n
+          Team Mealprep\n
+          `);
         setLoaderState(false);
         navigate("/dashboard/");
       })

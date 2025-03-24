@@ -59,7 +59,16 @@ export const useCustomiseYourMeal = () => {
         }]);
         setMessage('Your request has been submitted successfully');
         const allItems = items.map(item => `${item.name} - ${item.description} - ${item.weight}\n`);
-        sendEmail(email, email, "Meal customisation request submitted", "Your request has been submitted successfully with following details: \n" + allItems);
+        sendEmail(email, email, "Meal Customization Request Received", `
+          Your meal customization request has been received! 🍽️\n
+          With our customization feature, you can request changes to your dish from today’s menu.\n
+          ⏳ Customization Request Timings:\n
+          Lunch: 12 Midnight – 11:00 AM\n
+          Dinner: 12 Midnight – 4:30 PM\n
+          For any further modifications, please reach out to us.\n
+          Enjoy your personalized meal!\n\n
+          Team Mealprep\n
+          ` + allItems);
       }
     } catch (e) {
       console.error(e);

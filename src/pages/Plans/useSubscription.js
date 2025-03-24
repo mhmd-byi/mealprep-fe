@@ -122,7 +122,17 @@ export const useSubscription = () => {
 
             if (verifyResponse.data) {
               activityEntry(userId, planName);
-              sendEmail(userEmail, userEmail, "Subscription successful", `You have successfully subscribed to ${planName} plan. You have ${mealCount} meals left.`);
+              sendEmail(userEmail, userEmail, "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
+                Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
+                  Important Information:\n
+                  ✅ Mealprep Kitchen operates from Monday to Saturday.\n
+                  ✅ Meal Cancellation & Customization Requests:\n
+                  Lunch: 12 Midnight – 11:00 AM\n
+                  Dinner: 12 Midnight – 4:30 PM\n
+                  For any assistance, feel free to reach out.\n
+                  Wishing you a delicious and healthy journey!\n\n
+                  Team Mealprep\n
+                `);
               setIsSubscribed(true);
               setCurrentPlan({
                 plan: planName,
