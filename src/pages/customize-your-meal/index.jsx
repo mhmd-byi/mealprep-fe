@@ -5,12 +5,14 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import { Button, Input } from "../../components";
 import { Helmet } from "react-helmet";
 import { useCustomiseYourMeal } from "./useCustomiseYourMeal";
+import useSubscription from "../Plans/useSubscription";
 
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
   const [mealType, setMealType] = useState("");
   const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage, setItems, setErrorMessage } =
     useCustomiseYourMeal();
+  const { currentPlan } = useSubscription();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
