@@ -28,7 +28,14 @@ export const useCustomiseYourMeal = () => {
         },
       });
       console.log("this is response", response);
-      setItems(response.data[0].items);
+
+      const subsForNonVeg = subscribedFor.toLowerCase().includes("non");
+      const filteredItems = response.data[0].items.filter((item) => {
+        const isNonVeg = item.type.toLowerCase().includes("non");
+        const isVeg = !isNonVeg;
+        return subsForNonVeg ? isNonVeg : isVeg;
+      });
+      setItems(filteredItems);
     } catch (e) {
       console.error(e);
       setErrorMessage('Menu not updated, please come back in some time');
