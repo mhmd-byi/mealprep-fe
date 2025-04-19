@@ -20,7 +20,7 @@ export const CustomizeYourMeal = () => {
       setErrorMessage("You can only customise your meal request between 10:30 AM and 4:30 PM");
       return;
     }
-    getMealItems(startDate, mealType);
+    getMealItems(startDate, mealType, currentPlan.mealType);
   };
 
   const handleSubmitCustomiseRequest = async (e) => {

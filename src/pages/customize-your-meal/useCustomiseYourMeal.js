@@ -15,7 +15,7 @@ export const useCustomiseYourMeal = () => {
   const token = sessionStorage.getItem("token");
   const email = sessionStorage.getItem("email");
 
-  const getMealItems = async (date, mealType) => {
+  const getMealItems = async (date, mealType, subscribedFor) => {
     try {
       if (!token) {
         throw new Error("No token found. Please login again.");
