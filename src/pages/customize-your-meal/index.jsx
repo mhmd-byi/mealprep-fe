@@ -201,8 +201,8 @@ export const CustomizeYourMeal = () => {
                             required
                           >
                             <option value="">Select meal type</option>
-                            <option value="lunch">Lunch</option>
-                            <option value="dinner">Dinner</option>
+                            {currentPlan && (currentPlan.lunchMeals > 0) ? <option value="lunch">Lunch</option> : null}
+                            {currentPlan && (currentPlan.dinnerMeals > 0) ? <option value="dinner">Dinner</option> : null}
                           </select>
                         </div>
                       </div>
