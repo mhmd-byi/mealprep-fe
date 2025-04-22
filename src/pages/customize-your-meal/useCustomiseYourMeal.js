@@ -4,11 +4,7 @@ import { sendEmail } from "../../utils";
 
 export const useCustomiseYourMeal = () => {
   const [meals, setMeals] = useState([]);
-  const [items, setItems] = useState([{
-    name: "",
-    description: "",
-    weight: "",
-  }]);
+  const [items, setItems] = useState([]);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const userId = sessionStorage.getItem("userId");
