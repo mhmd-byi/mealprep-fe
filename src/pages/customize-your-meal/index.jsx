@@ -5,12 +5,14 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import { Button, Input } from "../../components";
 import { Helmet } from "react-helmet";
 import { useCustomiseYourMeal } from "./useCustomiseYourMeal";
+import useSubscription from "../Plans/useSubscription";
 
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
   const [mealType, setMealType] = useState("");
   const { getMealItems, message, items, handleItemChange, createMealRequest, errorMessage, setItems, setErrorMessage } =
     useCustomiseYourMeal();
+  const { currentPlan } = useSubscription();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ export const CustomizeYourMeal = () => {
       setErrorMessage("You can only customise your meal request between 10:30 AM and 4:30 PM");
       return;
     }
-    getMealItems(startDate, mealType);
+    getMealItems(startDate, mealType, currentPlan.mealType);
   };
 
   const handleSubmitCustomiseRequest = async (e) => {
@@ -199,8 +201,8 @@ export const CustomizeYourMeal = () => {
                             required
                           >
                             <option value="">Select meal type</option>
-                            <option value="lunch">Lunch</option>
-                            <option value="dinner">Dinner</option>
+                            {currentPlan && (currentPlan.lunchMeals > 0) ? <option value="lunch">Lunch</option> : null}
+                            {currentPlan && (currentPlan.dinnerMeals > 0) ? <option value="dinner">Dinner</option> : null}
                           </select>
                         </div>
                       </div>
