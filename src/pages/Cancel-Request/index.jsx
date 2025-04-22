@@ -3,6 +3,7 @@ import axios from "axios";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import { Button } from "../../components";
 import { sendEmail } from "../../utils";
+import useSubscription from "../Plans/useSubscription";
 
 const CancelRequest = () => {
   const [startDate, setStartDate] = useState("");
@@ -10,6 +11,8 @@ const CancelRequest = () => {
   const [mealType, setMealType] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { currentPlan } = useSubscription();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,9 +168,9 @@ const CancelRequest = () => {
                         required
                       >
                         <option value="">Select meal type</option>
-                        <option value="lunch">Lunch</option>
-                        <option value="dinner">Dinner</option>
-                        <option value="both">Both</option>
+                        {currentPlan && (currentPlan.lunchMeals > 0) ? <option value="lunch">Lunch</option> : null}
+                        {currentPlan && (currentPlan.dinnerMeals > 0) ? <option value="dinner">Dinner</option> : null}
+                        {currentPlan && (currentPlan.dinnerMeals > 0 && currentPlan.lunchMeals > 0) ? <option value="both">Both</option> : null}
                       </select>
                     </div>
                     <div>
