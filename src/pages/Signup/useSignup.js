@@ -114,6 +114,10 @@ export const useSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const match = formData.postalAddress.match(/\b\d{6}\b/);
+    if (match.length > 1) {
+      setErrMsg("Please enter only one valid 6 digit pin code.");
+      return;
+    }
     const usrPincode = match ? Number(match[0]) : null;
     if (usrPincode === null) {
       setErrMsg("Please enter a valid 6 digit pin code in the address.");
