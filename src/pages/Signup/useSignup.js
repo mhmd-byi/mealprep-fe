@@ -18,6 +18,7 @@ export const useSignup = () => {
     password: "",
     confirmPassword: "",
     postalAddress: "",
+    pincode: undefined
   });
   const getCurrentDate = () => {
     const today = new Date();
@@ -115,7 +116,7 @@ export const useSignup = () => {
         mobile: formData.mobile,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        postalAddress: formData.postalAddress,
+        postalAddress: formData.postalAddress + " " + formData.pincode,
       },
     })
       .then((res) => {
