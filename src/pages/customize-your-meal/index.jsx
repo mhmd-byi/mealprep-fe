@@ -93,7 +93,8 @@ export const CustomizeYourMeal = () => {
                         {items.map((item, index) => (
                           <div
                             key={index}
-                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 items-center p-2 sm:p-4 bg-gray-100 rounded-lg"
+                            style={{ backgroundColor: item.exclude ? "#d1d5db" : undefined }}
+                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 items-center p-2 sm:p-4 bg-gray-100 rounded-lg"
                           >
                             <div className="w-full">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -133,7 +134,19 @@ export const CustomizeYourMeal = () => {
                                     e.target.value
                                   )
                                 }
+                                disabled={(item.exclude ?? false)}
                                 options={item.weights}
+                              />
+                            </div>
+                            <div className="w-full">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Exclude this Item
+                              </label>
+                              <Input
+                                type="checkbox"
+                                value={item.exclude ?? false}
+                                onChange={(e) => handleItemChange(index, "exclude", !(item.exclude ?? false))}
+                                classes="rounded-lg size-5 border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 focus:border-theme-color-1 sm:text-sm sm:leading-6"
                               />
                             </div>
                           </div>
