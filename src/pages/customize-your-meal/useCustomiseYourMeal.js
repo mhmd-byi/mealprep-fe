@@ -11,6 +11,25 @@ export const useCustomiseYourMeal = () => {
   const token = sessionStorage.getItem("token");
   const email = sessionStorage.getItem("email");
 
+  /**
+   * Get the array of available options
+   * @param {string} input 
+   * @returns {string[]}
+   */
+  function getWeightOptions(input) {
+    // Remove any invalid separator (full stop is excluded as decimal point)
+    input = input.replace(/[^\w\s,-_]/g, ''); // Remove any character that's not alphanumeric, space, comma, hyphen, or underscore
+  
+    // Split the input by common separators (comma, hyphen, underscore, or space)
+    const separatorRegex = /[\s,_-]+/;
+    const weights = input.split(separatorRegex);
+  
+    // Use a regular expression to ensure only valid weight formats are captured
+    const validWeightRegex = /\d+[a-zA-Z]+/;
+  
+    return weights.filter(weight => validWeightRegex.test(weight));
+  };
+
   const getMealItems = async (date, mealType, subscribedFor) => {
     try {
       if (!token) {
@@ -26,12 +45,20 @@ export const useCustomiseYourMeal = () => {
       console.log("this is response", response);
 
       const subsForNonVeg = subscribedFor.toLowerCase().includes("non");
+
       const filteredItems = response.data[0].items.filter((item) => {
         const isNonVeg = item.type.toLowerCase().includes("non");
         const isVeg = !isNonVeg;
         return subsForNonVeg ? isNonVeg : isVeg;
       });
-      setItems(filteredItems);
+
+      const havingWeightOptsItems = filteredItems.map((itm) => {
+        const weight = itm.weight;
+        const weights = getWeightOptions(weight).map((str) => ({ value: str, label: str }));
+        const selectedWeight = weights.at(0).value;
+        return { ...itm, weights, weight: selectedWeight };
+      });
+      setItems(havingWeightOptsItems);
     } catch (e) {
       console.error(e);
       setErrorMessage('Menu not updated, please come back in some time');
@@ -55,11 +82,7 @@ export const useCustomiseYourMeal = () => {
         },
       });
       if (response.status === 201 || response.status === 200) {
-        setItems([{
-          name: "",
-          description: "",
-          weight: "",
-        }]);
+        setItems([]);
         setMessage('Your request has been submitted successfully');
         const allItems = items.map(item => `${item.name} - ${item.description} - ${item.weight}\n`);
         sendEmail(email, email, "Meal Customization Request Received", `

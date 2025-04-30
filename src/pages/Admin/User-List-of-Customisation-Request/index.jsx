@@ -193,10 +193,10 @@ export const UserListWithCustomisationRequest = () => {
                               
                               <div className="flex justify-start">
                                 <span className="font-medium">Items:</span>
-                                <span className="capitalize">
+                                <span className="capitalize" style={{ textDecorationLine: request.items.exclude ? "line-through" : undefined }}>
                                   Name: {request.items.name}
                                 </span>
-                                <span className="capitalize">
+                                <span className="capitalize line-through" style={{ textDecorationLine: request.items.exclude ? "line-through" : undefined }}>
                                   Weight/Count: {request.items.weight}
                                 </span>
                               </div>
@@ -211,7 +211,7 @@ export const UserListWithCustomisationRequest = () => {
                             {request.items.map((item) => (
                               <>
                                 <tr>
-                                  <td>Name: {item.name} - Weight/Count: {item.weight}</td>
+                                  <td><span style={{ textDecorationLine: item.exclude ? "line-through" : undefined }}>Name: {item.name} - Weight/Count: {item.weight}</span></td>
                                 </tr>
                               </>
                             ))}
