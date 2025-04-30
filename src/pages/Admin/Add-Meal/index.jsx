@@ -118,6 +118,7 @@ const AddMeal = () => {
                     value={mealData.date}
                     onChange={handleDateChange}
                     min={getCurrentDate()}
+                    required={true}
                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                   />
                 </div>
@@ -129,6 +130,7 @@ const AddMeal = () => {
                     type="select"
                     value={mealData.mealType}
                     onChange={handleMealTypeChange}
+                    required={true}
                     className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                     placeholder="Select Meal Type"
                     options={[
@@ -159,6 +161,7 @@ const AddMeal = () => {
                           onChange={(e) =>
                             handleItemChange(index, "name", e.target.value)
                           }
+                          required={true}
                           placeholder="Meal name"
                           className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
                         />
@@ -191,6 +194,7 @@ const AddMeal = () => {
                           onChange={(e) =>
                             handleItemChange(index, "weight", e.target.value)
                           }
+                          required={true}
                           placeholder="Weight"
                         />
                       </div>
@@ -207,6 +211,7 @@ const AddMeal = () => {
                             }
                             className="flex-grow bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
                             placeholder="Select Meal Type"
+                            required={true}
                             options={[
                               { value: "Veg", label: "Veg" },
                               { value: "Non Veg", label: "Non Veg" },
