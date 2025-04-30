@@ -5,6 +5,7 @@ import { useSignup } from "./useSignup";
 import { Alert } from "@mui/material";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
 import { useRef } from "react";
+import usePincodeValidation from "./usePincodeValidation";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -28,7 +29,9 @@ const Signup = () => {
     "newPassword",
     "confirmNewPassword"
   );
+  const { PincodeValidationMessage, pincodeValid } = usePincodeValidation(formRef);
 
+  const isSubmitDisabled = !pincodeValid || !otpVerified || String(errMsg) !== "";
   return (
     <div className="relative flex flex-col items-center justify-center h-full lg:h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
       <div className="flex px-5 lg:px-12 py-8 shadow-md bg-white rounded-lg">
@@ -149,6 +152,21 @@ const Signup = () => {
                   <ValidationMessage />
                 </div>
               </div>
+              <div className="flex flex-wrap -mx-3 mb-6">
+                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                  <Input
+                    id={"pincode"}
+                    name={"pincode"}
+                    type={"number"}
+                    required={true}
+                    placeholder={"Enter area pincode"}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="w-full md:w-1/2 px-3">
+                  <PincodeValidationMessage />
+                </div>
+              </div>
               <div className="w-full">
                 <Input
                   required={true}
@@ -162,7 +180,7 @@ const Signup = () => {
 
               {errMsg.length > 1 && <Alert severity="error">{errMsg}</Alert>}
               <div className="flex justify-center">
-                <Button type={"submit"} children={"Submit"} disabled={!otpVerified} />
+                <Button type={"submit"} children={"Submit"} disabled={isSubmitDisabled} />
               </div>
             </form>
             <p className="mt-10 text-center text-sm text-gray-500">

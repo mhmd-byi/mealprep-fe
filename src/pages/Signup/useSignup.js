@@ -3,19 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendEmail } from "../../utils";
 
-const indorePinCodes = [
-  452001, 453441, 453551,
-  453001, 452016, 453111,
-  452009, 452003, 452020,
-  453331, 452010, 452006,
-  452013, 452002, 452015,
-  452018, 452014, 452011,
-  453771, 453236, 453112,
-  453446, 453332, 453115,
-  452007, 452012, 452005,
-  452008, 453220, 453661
-];
-
 export const useSignup = () => {
   const navigate = useNavigate();
   const [loaderState, setLoaderState] = useState(false);
@@ -31,6 +18,7 @@ export const useSignup = () => {
     password: "",
     confirmPassword: "",
     postalAddress: "",
+    pincode: undefined
   });
   const getCurrentDate = () => {
     const today = new Date();
@@ -113,20 +101,6 @@ export const useSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const match = formData.postalAddress.match(/\b\d{6}\b/);
-    if (match.length > 1) {
-      setErrMsg("Please enter only one valid 6 digit pin code.");
-      return;
-    }
-    const usrPincode = match ? Number(match[0]) : null;
-    if (usrPincode === null) {
-      setErrMsg("Please enter a valid 6 digit pin code in the address.");
-      return;
-    }
-    if (!indorePinCodes.includes(usrPincode)) {
-      setErrMsg("Only Indore candidates are allowed to register.");
-      return;
-    }
     if (!otpVerified) {
       setErrMsg("Please verify your mobile number with OTP first");
       return;
@@ -142,7 +116,7 @@ export const useSignup = () => {
         mobile: formData.mobile,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        postalAddress: formData.postalAddress,
+        postalAddress: formData.postalAddress + " " + formData.pincode,
       },
     })
       .then((res) => {
