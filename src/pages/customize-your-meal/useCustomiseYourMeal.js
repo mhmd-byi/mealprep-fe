@@ -55,11 +55,7 @@ export const useCustomiseYourMeal = () => {
         },
       });
       if (response.status === 201 || response.status === 200) {
-        setItems([{
-          name: "",
-          description: "",
-          weight: "",
-        }]);
+        setItems([]);
         setMessage('Your request has been submitted successfully');
         const allItems = items.map(item => `${item.name} - ${item.description} - ${item.weight}\n`);
         sendEmail(email, email, "Meal Customization Request Received", `
