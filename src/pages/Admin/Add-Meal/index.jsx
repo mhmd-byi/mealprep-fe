@@ -147,7 +147,7 @@ const AddMeal = () => {
                   {mealData.items.map((item, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-lg"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-end gap-4 items-center p-4 bg-gray-100 rounded-lg"
                     >
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -183,7 +183,7 @@ const AddMeal = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Weight
+                          Weight (add separator for multiple values)
                         </label>
                         <Input
                           type="text"
@@ -192,7 +192,6 @@ const AddMeal = () => {
                             handleItemChange(index, "weight", e.target.value)
                           }
                           placeholder="Weight"
-                          className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
                         />
                       </div>
                       <div className="flex flex-col">
