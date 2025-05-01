@@ -66,14 +66,25 @@ export const UserListWithCustomisationRequest = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  console.log("first", customisationRequests);
   const exportToCSV = () => {
-    const headers = ["User Id", "Name", "Start Date", "End Date", "Meal Type"];
+    const headers = ["User Id", "User Name", "Meal Type", "Item Name", "Item Weight/Count", "Exclude"]; // , "Start Date", "End Date"
 
     // Convert data to CSV format
-    const csvData = customisationRequests.map((meal) => [
-      meal.user.firstName + " " + meal.user.lastName,
-      "Name:" + " " + meal.items.name + ", " + "Weight/Count:" + " " + meal.items.weight,
-    ]);
+    const csvData = customisationRequests.reduce((fArr, meal) => {
+      const upItems = meal.items.map((item) => {
+        return [
+          meal.userId || "",
+          (meal.user.firstName || "") + " " + (meal.user.lastName || ""),
+          "", // mealType
+          item.name || "",
+          item.weight || "",
+          item.exclude || "",
+        ]
+      });
+
+      return [...fArr, ...upItems];
+    }, []);
 
     // Combine headers and data
     const csvContent = [
@@ -89,7 +100,7 @@ export const UserListWithCustomisationRequest = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `cancelled-meals-${formData.date || "all"}.csv`
+      `Customisation-Requests-${formData.date || "all"}.csv`
     );
     document.body.appendChild(link);
     link.click();
