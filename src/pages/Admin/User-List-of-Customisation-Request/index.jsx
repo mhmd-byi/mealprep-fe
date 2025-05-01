@@ -40,13 +40,14 @@ export const UserListWithCustomisationRequest = () => {
         }
       );
 
-      const resData = response.data.sort((a, b) => {
-        const aDate = new Date(a.createdAt).getTime();
-        const bDate = new Date(b.createdAt).getTime();
-
-        return aDate > bDate ? 1 : -1;
-      });
+      const resData = response.data;
       if (Array.isArray(resData)) {
+        resData.sort((a, b) => {
+          const aDate = new Date(a.createdAt).getTime();
+          const bDate = new Date(b.createdAt).getTime();
+  
+          return aDate > bDate ? 1 : -1;
+        });
         const usrToRequestInfo = new Map();
         resData.forEach((info) => usrToRequestInfo.set(info.userId, info))
         setCustomisationRequests(Array.from(usrToRequestInfo.values()));
