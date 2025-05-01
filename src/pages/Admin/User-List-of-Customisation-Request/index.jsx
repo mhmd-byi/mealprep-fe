@@ -66,7 +66,6 @@ export const UserListWithCustomisationRequest = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  console.log("first", customisationRequests);
   const exportToCSV = () => {
     const headers = ["User Id", "User Name", "Meal Type", "Item Name", "Item Weight/Count", "Exclude"]; // , "Start Date", "End Date"
 
