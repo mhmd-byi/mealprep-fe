@@ -8,9 +8,7 @@ export const UserListWithCustomisationRequest = () => {
   const [customisationRequests, setCustomisationRequests] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    date: "",
-  });
+  const [formData, setFormData] = useState({ date: "" });
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -82,7 +80,8 @@ export const UserListWithCustomisationRequest = () => {
         ]
       });
 
-      return [...fArr, ...upItems];
+      if (fArr.length < 1) return [...upItems];
+      return [...fArr, [], ...upItems];
     }, []);
 
     // Combine headers and data
