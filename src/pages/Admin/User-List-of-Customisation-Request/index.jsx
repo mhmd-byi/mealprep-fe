@@ -40,7 +40,12 @@ export const UserListWithCustomisationRequest = () => {
         }
       );
 
-      const resData = response.data;
+      const resData = response.data.sort((a, b) => {
+        const aDate = new Date(a.createdAt).getTime();
+        const bDate = new Date(b.createdAt).getTime();
+
+        return aDate > bDate ? 1 : -1;
+      });
       if (Array.isArray(resData)) {
         const usrToRequestInfo = new Map();
         resData.forEach((info) => usrToRequestInfo.set(info.userId, info))
