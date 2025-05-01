@@ -40,8 +40,11 @@ export const UserListWithCustomisationRequest = () => {
         }
       );
 
-      if (Array.isArray(response.data)) {
-        setCustomisationRequests(response.data);
+      const resData = response.data;
+      if (Array.isArray(resData)) {
+        const usrToRequestInfo = new Map();
+        resData.forEach((info) => usrToRequestInfo.set(info.userId, info))
+        setCustomisationRequests(Array.from(usrToRequestInfo.values()));
         setError(null);
       } else {
         setError("Received unexpected data format from server.");
