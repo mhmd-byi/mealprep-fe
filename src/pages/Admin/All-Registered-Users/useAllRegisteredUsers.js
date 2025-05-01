@@ -30,7 +30,7 @@ export const useAllRegisteredUsers = () => {
       `${user.firstName} ${user.lastName}`, // Name
       user.email, // Email
       user.mobile, // Mobile
-      user.postalAddress, // Address
+      (user.postalAddress || "").replaceAll(",", "-"), // Address
       `Lunch: ${user.mealCounts.lunchMeals || 0}, Dinner: ${user.mealCounts.dinnerMeals || 0}` // Meal Counts
     ]);
   
