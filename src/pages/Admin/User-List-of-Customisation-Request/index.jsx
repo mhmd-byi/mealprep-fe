@@ -8,9 +8,7 @@ export const UserListWithCustomisationRequest = () => {
   const [customisationRequests, setCustomisationRequests] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    date: "",
-  });
+  const [formData, setFormData] = useState({ date: "" });
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -42,8 +40,17 @@ export const UserListWithCustomisationRequest = () => {
         }
       );
 
-      if (Array.isArray(response.data)) {
-        setCustomisationRequests(response.data);
+      const resData = response.data;
+      if (Array.isArray(resData)) {
+        resData.sort((a, b) => {
+          const aDate = new Date(a.createdAt).getTime();
+          const bDate = new Date(b.createdAt).getTime();
+  
+          return aDate > bDate ? 1 : -1;
+        });
+        const usrToRequestInfo = new Map();
+        resData.forEach((info) => usrToRequestInfo.set(info.userId, info))
+        setCustomisationRequests(Array.from(usrToRequestInfo.values()));
         setError(null);
       } else {
         setError("Received unexpected data format from server.");
@@ -67,13 +74,24 @@ export const UserListWithCustomisationRequest = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ["User Id", "Name", "Start Date", "End Date", "Meal Type"];
+    const headers = ["User Id", "User Name", "Meal Type", "Item Name", "Item Weight/Count", "Exclude"]; // , "Start Date", "End Date"
 
     // Convert data to CSV format
-    const csvData = customisationRequests.map((meal) => [
-      meal.user.firstName + " " + meal.user.lastName,
-      "Name:" + " " + meal.items.name + ", " + "Weight/Count:" + " " + meal.items.weight,
-    ]);
+    const csvData = customisationRequests.reduce((fArr, meal) => {
+      const upItems = meal.items.map((item) => {
+        return [
+          meal.userId || "",
+          (meal.user.firstName || "") + " " + (meal.user.lastName || ""),
+          "", // mealType
+          item.name || "",
+          item.weight || "",
+          item.exclude || "",
+        ]
+      });
+
+      if (fArr.length < 1) return [...upItems];
+      return [...fArr, [], ...upItems];
+    }, []);
 
     // Combine headers and data
     const csvContent = [
@@ -89,7 +107,7 @@ export const UserListWithCustomisationRequest = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `cancelled-meals-${formData.date || "all"}.csv`
+      `Customisation-Requests-${formData.date || "all"}.csv`
     );
     document.body.appendChild(link);
     link.click();
