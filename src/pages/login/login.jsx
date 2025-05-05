@@ -109,6 +109,15 @@ const Login = () => {
                           Forgot password
                         </a>
                       </p>
+                      <p className="mt-2">
+                        Don't have an account? &nbsp;
+                        <a
+                          onClick={navigateToSignup}
+                          className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
+                        >
+                          Sign Up
+                        </a>
+                      </p>
                     </div>
                   </div>
 
@@ -192,16 +201,6 @@ const Login = () => {
                   </div>
                 </form>
               </TabPanel>
-
-              <p className="mt-10 text-center text-sm text-gray-500">
-                Don't have an account? &nbsp;
-                <a
-                  onClick={navigateToSignup}
-                  className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
-                >
-                  Sign Up
-                </a>
-              </p>
             </div>
           </div>
         </div>
