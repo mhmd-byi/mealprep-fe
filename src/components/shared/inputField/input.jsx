@@ -13,6 +13,7 @@ export const Input = ({
   required = false,
   classes = "block w-full h-12 rounded-lg border-0 px-5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 focus:border-theme-color-1 sm:text-sm sm:leading-6",
   options = [],
+  min = undefined,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [filePreview, setFilePreview] = useState(null);
@@ -84,7 +85,7 @@ export const Input = ({
             )
           ) : (
             <p className="text-gray-500 flex">
-              Upload Profile Photo {<CloudUpload className="ml-2"/>}
+              Upload Profile Photo {<CloudUpload className="ml-2" />}
             </p>
           )}
         </div>
@@ -126,6 +127,7 @@ export const Input = ({
         className={classes}
         autoComplete={autocomplete ? "on" : "off"}
         disabled={disabled}
+        min={min}
       />
       {type === "password" && (
         <button
