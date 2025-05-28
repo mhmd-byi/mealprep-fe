@@ -62,7 +62,7 @@ export const UserListOfMealDelivery = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type"];
+    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Selected Plan"];
     
     // Convert data to CSV format
     const csvData = mealDeliveryList.map(meal => [
@@ -71,7 +71,8 @@ export const UserListOfMealDelivery = () => {
       meal.mobile,
       meal.address,
       meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1),
-      meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)
+      meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1),
+      meal.plan,
     ]);
     
     // Combine headers and data
@@ -185,6 +186,9 @@ export const UserListOfMealDelivery = () => {
                               <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Carb Type
                               </th>
+                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Selected Plan
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
@@ -207,6 +211,9 @@ export const UserListOfMealDelivery = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {meal?.plan || ""}
                                 </td>
                               </tr>
                             ))}
