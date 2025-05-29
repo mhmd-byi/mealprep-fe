@@ -24,7 +24,6 @@ const CancelRequest = () => {
     }
     try {
       const userId = sessionStorage.getItem("userId");
-      const email = sessionStorage.getItem("email");
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}subscription/cancel-request`,
         {
@@ -40,7 +39,7 @@ const CancelRequest = () => {
         }
       );
       setMessage("Meal cancellation request submitted successfully");
-      sendEmail(email, email, "Meal Cancellation Request Received", `Dear Customer,\n
+      sendEmail(userId, "", "Meal Cancellation Request Received", `Dear Customer,\n
         We have received your meal cancellation request.\n
         With our cancel meal request feature, you can cancel meals for today or future dates as per your convenience.\n
         ⏳ Cancellation Timings:\n
