@@ -1,8 +1,29 @@
 import axios from "axios";
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 export const sendEmail = async (toEmail, toName, subject, bodyText) => {
   const token = sessionStorage.getItem("token");
-  
+
+  if (!toEmail || !isValidEmail(toEmail)) {
+    const { data: userData } = await axios.request({
+      method: "GET",
+      url: `${process.env.REACT_APP_API_URL}user/${toEmail}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toEmail = userData.email;
+    if (!toName) {
+      toName = userData.firstName + " " + userData.lastName;
+    }
+  }
+
+  if (!isValidEmail(toEmail)) {
+    return;
+  }
+
   const options = {
     method: "POST",
     url: `${process.env.REACT_APP_API_URL}activity/email/send`,
@@ -15,13 +36,12 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
       toName: toName,
       subject: subject,
       text: bodyText,
-    }
-  }
+    },
+  };
 
   try {
     const { data } = await axios.request(options);
-    console.log(data);
-    return data;
+    return;
   } catch (e) {
     console.error(e);
     throw e;
