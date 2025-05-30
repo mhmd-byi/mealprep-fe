@@ -39,11 +39,8 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
     },
   };
 
-  try {
-    const { data } = await axios.request(options);
-    return;
-  } catch (e) {
+  await axios.request(options).catch((e) => {
     console.error(e);
     throw e;
-  }
+  });
 };
