@@ -85,7 +85,7 @@ export const useCustomiseYourMeal = () => {
         setItems([]);
         setMessage('Your request has been submitted successfully');
         const allItems = items.map(item => `${item.name} - ${item.description} - ${item.weight}\n`);
-        sendEmail(email, email, "Meal Customization Request Received", `
+        sendEmail(userId, "", "Meal Customization Request Received", `
           Your meal customization request has been received! 🍽️\n
           With our customization feature, you can request changes to your dish from today’s menu.\n
           ⏳ Customization Request Timings:\n
