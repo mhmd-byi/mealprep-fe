@@ -53,9 +53,9 @@ export const useCustomiseYourMeal = () => {
       });
 
       const havingWeightOptsItems = filteredItems.map((itm) => {
-        const weight = itm.weight;
+        const weight = itm.weight || "";
         const weights = getWeightOptions(weight).map((str) => ({ value: str, label: str }));
-        const selectedWeight = weights.at(0).value;
+        const selectedWeight = weights.at(0)?.value;
         return { ...itm, weights, weight: selectedWeight };
       });
       setItems(havingWeightOptsItems);
