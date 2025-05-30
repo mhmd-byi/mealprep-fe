@@ -5,7 +5,7 @@ const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 export const sendEmail = async (toEmail, toName, subject, bodyText) => {
   const token = sessionStorage.getItem("token");
 
-  if (!toEmail || !isValidEmail(toEmail)) {
+  if (toEmail && !isValidEmail(toEmail)) {
     const { data: userData } = await axios.request({
       method: "GET",
       url: `${process.env.REACT_APP_API_URL}user/${toEmail}`,
@@ -20,7 +20,7 @@ export const sendEmail = async (toEmail, toName, subject, bodyText) => {
     }
   }
 
-  if (!isValidEmail(toEmail)) {
+  if (!isValidEmail(toEmail || "")) {
     return;
   }
 
