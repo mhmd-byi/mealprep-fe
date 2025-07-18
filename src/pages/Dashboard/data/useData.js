@@ -63,11 +63,14 @@ export const useData = () => {
           },
         }
       );
-
-      mealType === "lunch"
-        ? setMealDeliveryListCountLunch(response.data.length)
-        : setMealDeliveryListCountDinner(response.data.length);
-      setMealDeliveryListCountLunch(response.data.length);
+      if (response.data.length > 0) {
+        mealType === "lunch"
+          ? setMealDeliveryListCountLunch(response.data.length)
+          : setMealDeliveryListCountDinner(response.data.length);
+      } else {
+        setMealDeliveryListCountLunch(0);
+        setMealDeliveryListCountDinner(0);
+      }
     } catch (error) {
       setError(`Failed to fetch meal deliver list`);
       setMealDeliveryListCountLunch(0);
@@ -91,11 +94,15 @@ export const useData = () => {
     }
   };
 
+  const fetchBothMealCOunts = () => {
+    getDeliveryCount("lunch");
+    getDeliveryCount("dinner");
+  };
+
   useEffect(() => {
     getAllUsers();
     getCancelledRequests();
-    getDeliveryCount("lunch");
-    getDeliveryCount("dinner");
+    fetchBothMealCOunts();
     getCustomisationRequestCount();
   }, [token]);
 
