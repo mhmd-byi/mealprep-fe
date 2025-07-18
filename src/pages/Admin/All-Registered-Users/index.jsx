@@ -9,7 +9,7 @@ export const AllRegisteredUsers = () => {
   return (
     <DashboardLayoutComponent>
       <div className="block lg:flex flex-col justify-center items-center p-5 w-full">
-        <div className="min-w-[300px] md:min-w-[600px] lg:min-w-[900px] py-6 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-full py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col mx-auto mt-8 mb-4">
             <div className="bg-white rounded-lg overflow-hidden shadow">
               <div className="flex flex-col p-5">
@@ -23,63 +23,77 @@ export const AllRegisteredUsers = () => {
                     Export to CSV
                   </button>
                 </div>
-                <div className="flex flex-col text-center min-w-full">
-                  <div className="mt-4 overflow-auto max-h-[600px]">
+                <div className="flex flex-col text-center w-full">
+                  <div className="mt-4 w-full">
                     {allRegisteredUsers.length > 0 ? (
-                      <div className="min-w-full">
+                      <div className="w-full">
                         {/* Desktop View */}
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left hidden md:table">
-                          <thead className="bg-gray-50 sticky top-0 z-10">
-                            <tr>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Mobile
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Address
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Current Plan
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Meal Counts
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {allRegisteredUsers.map((user, index) => (
-                              <tr key={index} className="hover:bg-gray-100">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {user.firstName} {user.lastName}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {user.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {user.mobile}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {user.postalAddress}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
-                                </td>
+                        <div className="hidden md:block overflow-x-auto">
+                          <table className="w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
+                            <thead className="bg-gray-50 sticky top-0 z-10">
+                              <tr>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Name
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                  Email
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Mobile
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                  Address
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Current Plan
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Meal Counts
+                                </th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {allRegisteredUsers.map((user, index) => (
+                                <tr key={index} className="hover:bg-gray-100">
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                                    <div className="break-words">
+                                      {user.firstName} {user.lastName}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {user.email}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {user.mobile}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words max-w-[200px]">
+                                      {user.postalAddress}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
 
                         {/* Mobile View */}
                         <div className="md:hidden space-y-4">
-                          {allRegisteredUsers.map((meal, index) => (
+                          {allRegisteredUsers.map((user, index) => (
                             <div
                               key={index}
                               className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
@@ -89,24 +103,48 @@ export const AllRegisteredUsers = () => {
                                   <span className="font-medium text-gray-500">
                                     Name:
                                   </span>
-                                  <span className="text-gray-900">
-                                    {meal.name}
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {user.firstName} {user.lastName}
                                   </span>
                                 </div>
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">
                                     Email:
                                   </span>
-                                  <span className="text-gray-900">
-                                    {meal.email}
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {user.email}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">
+                                    Mobile:
+                                  </span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {user.mobile}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">
+                                    Address:
+                                  </span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {user.postalAddress}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">
+                                    Current Plan:
+                                  </span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
                                   </span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="font-medium text-gray-500">
-                                    Address:
+                                    Meal Counts:
                                   </span>
-                                  <span className="text-gray-900 text-right">
-                                    {meal.address}
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
                                   </span>
                                 </div>
                               </div>
@@ -116,7 +154,7 @@ export const AllRegisteredUsers = () => {
                       </div>
                     ) : (
                       <p className="text-center py-4 text-gray-500">
-                        No meal delivery data found
+                        No user data found
                       </p>
                     )}
                   </div>
