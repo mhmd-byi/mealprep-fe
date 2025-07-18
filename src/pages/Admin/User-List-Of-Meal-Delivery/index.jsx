@@ -105,12 +105,12 @@ export const UserListOfMealDelivery = () => {
   return (
     <DashboardLayoutComponent>
       <div className="block lg:flex flex-col justify-center items-center p-5 w-full h-full">
-        <div className="min-w-[300px] md:min-w-[600px] lg:min-w-[900px] py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-full py-12 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto">
             <h2 className="text-2xl font-bold mb-4">Meal Delivery List</h2>
             <div className="bg-white rounded-lg overflow-hidden shadow">
               <div className="flex flex-col">
-                <div className="flex flex-col p-5 text-center min-w-full">
+                <div className="flex flex-col p-5 text-center w-full">
                   <form onSubmit={handleFormSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
@@ -161,64 +161,80 @@ export const UserListOfMealDelivery = () => {
                     <p className="text-red-500 mt-4 mb-2">{error}</p>
                   )}
 
-                  <div className="mt-4 overflow-x-auto">
+                  <div className="mt-4 w-full">
                     {mealDeliveryList.length > 0 ? (
-                      <div className="min-w-full">
+                      <div className="w-full">
                         {/* Desktop View */}
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left hidden md:table">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Mobile
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Address
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Veg/Non-Veg
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Carb Type
-                              </th>
-                              <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Selected Plan
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {mealDeliveryList.map((meal, index) => (
-                              <tr key={index} className="hover:bg-gray-100">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {meal.name}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal.mobile}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal.address}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {meal?.plan || ""}
-                                </td>
+                        <div className="hidden md:block overflow-x-auto">
+                          <table className="w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
+                            <thead className="bg-gray-50 sticky top-0 z-10">
+                              <tr>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Name
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                  Email
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Mobile
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                  Address
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Veg/Non-Veg
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Carb Type
+                                </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Selected Plan
+                                </th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {mealDeliveryList.map((meal, index) => (
+                                <tr key={index} className="hover:bg-gray-100">
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                                    <div className="break-words">
+                                      {meal.name}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {meal.email}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {meal.mobile}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words max-w-[200px]">
+                                      {meal.address}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {meal?.plan || ""}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
 
                         {/* Mobile View */}
                         <div className="md:hidden space-y-4">
@@ -227,19 +243,35 @@ export const UserListOfMealDelivery = () => {
                               <div className="space-y-2">
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Name:</span>
-                                  <span className="text-gray-900">{meal.name}</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.name}</span>
                                 </div>
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Email:</span>
-                                  <span className="text-gray-900">{meal.email}</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.email}</span>
                                 </div>
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Mobile:</span>
-                                  <span className="text-gray-900">{meal.mobile}</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.mobile}</span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Address:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.address}</span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Veg/Non-Veg:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between border-b pb-2">
+                                  <span className="font-medium text-gray-500">Carb Type:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
+                                  </span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="font-medium text-gray-500">Address:</span>
-                                  <span className="text-gray-900 text-right">{meal.address}</span>
+                                  <span className="font-medium text-gray-500">Selected Plan:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
                                 </div>
                               </div>
                             </div>
