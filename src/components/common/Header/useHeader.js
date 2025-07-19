@@ -34,7 +34,7 @@ export const useHeader = () => {
         navigate("/");
       })
       .catch((err) => {
-        console.log("Logout error: ", err);
+        console.error("Logout error: ", err);
       });
   };
 

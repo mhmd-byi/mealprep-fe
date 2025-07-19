@@ -11,7 +11,6 @@ const Header = ({ toggleSidebar }) => {
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const { logout } = useHeader();
   const { currentPlan } = useSubscription();
-  console.log('this is current plan', currentPlan)
 
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-lg">

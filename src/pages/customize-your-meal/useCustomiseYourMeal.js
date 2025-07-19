@@ -42,7 +42,6 @@ export const useCustomiseYourMeal = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("this is response", response);
 
       const subsForNonVeg = subscribedFor.toLowerCase().includes("non");
 

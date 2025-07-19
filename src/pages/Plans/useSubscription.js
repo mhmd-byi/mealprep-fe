@@ -22,7 +22,6 @@ export const useSubscription = () => {
           description: `Subscribed to ${mealPlan}`,
         },
       });
-      console.log("Activity added successfully:", res.data);
     } catch (e) {
       console.error("Error adding activity:", e);
     }

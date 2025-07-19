@@ -47,7 +47,6 @@ const useProfile = (setUserDetails) => {
 
     try {
       await s3.deleteObject(params).promise();
-      console.log("File deleted successfully:", fileName);
     } catch (err) {
       console.error("Error deleting file:", err);
     }
@@ -68,7 +67,6 @@ const useProfile = (setUserDetails) => {
 
     try {
       const data = await s3.upload(params).promise();
-      console.log("File uploaded successfully:", data.Location);
       return data.Location;
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -119,7 +117,6 @@ const useProfile = (setUserDetails) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log('line 121', { name, value })
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
@@ -136,7 +133,6 @@ const useProfile = (setUserDetails) => {
           },
           data: updatedFormData,
         });
-        console.log("Profile updated successfully:", response);
         setFormData(response.data);
       } catch (error) {
         console.error("Error submitting profile:", error);

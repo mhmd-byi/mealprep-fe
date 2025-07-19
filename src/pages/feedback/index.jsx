@@ -19,13 +19,12 @@ export const Feedback = () => {
       )
       .then(
         (result) => {
-          console.log(result);
           setResultMessage(
             "Thank you for your message! We'll get in touch soon."
           );
         },
         (error) => {
-          console.log(error.text);
+          console.error(error.text);
         }
       );
     e.target.reset();

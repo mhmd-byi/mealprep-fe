@@ -22,7 +22,7 @@ export const useData = () => {
       });
       setAllRegisteredUsersCount(response.data.length);
     } catch (e) {
-      console.log("error processing request", e);
+      console.error("error processing request", e);
     }
   };
 
@@ -90,7 +90,7 @@ export const useData = () => {
       });
       setCustomisationRequestCount(response.data.length);
     } catch (e) {
-      console.log("error processing request", e);
+      console.error("error processing request", e);
     }
   };
 

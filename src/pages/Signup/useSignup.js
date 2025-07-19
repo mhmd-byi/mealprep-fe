@@ -93,7 +93,6 @@ export const useSignup = () => {
           description: "Account created",
         },
       });
-      console.log("Activity added successfully:", res.data);
     } catch (e) {
       console.error("Error adding activity:", e);
     }

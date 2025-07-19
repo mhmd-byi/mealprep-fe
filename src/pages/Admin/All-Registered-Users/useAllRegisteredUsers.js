@@ -16,7 +16,7 @@ export const useAllRegisteredUsers = () => {
       });
       setAllRegisteredUsers(response.data);
     } catch (e) {
-      console.log('error processing request', e);
+      console.error('error processing request', e);
     }
   };
 

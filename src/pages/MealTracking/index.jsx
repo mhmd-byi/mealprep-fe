@@ -12,7 +12,6 @@ export const MealTracking = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}activity/get-activities?userId=${userId}`,
       );
-      console.log('this is res', response.data)
       setActivityRecords(response.data);
       setIsLoading(false);
     } catch (error) {

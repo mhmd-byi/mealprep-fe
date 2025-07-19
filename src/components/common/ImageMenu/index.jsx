@@ -12,8 +12,6 @@ export const ImageMenu = ({ images, handleDelete, currentDate }) => {
     src,
   }));
   const handleOnSelect = (index, item) => {
-    console.log('this is index', index)
-    console.log('this is item', item)
     handleDelete(item.src, currentDate)
   }
   return (

@@ -31,7 +31,6 @@ export const useMealCalendar = () => {
           },
         }
       );
-      console.log('this is response', response)
       setMeals(response.data);
     } catch (error) {
       console.error("Error fetching meals:", error);
