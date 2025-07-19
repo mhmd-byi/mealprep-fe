@@ -119,7 +119,7 @@ export const useSubscription = () => {
               },
             });
 
-            if (verifyResponse.data) {
+            if (verifyResponse.status === 201) {
               activityEntry(userId, planName);
               sendEmail(userId, "", "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
                 Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
@@ -139,7 +139,10 @@ export const useSubscription = () => {
                   new Date().getDate() + (planName === "Weekly Plan" ? 7 : 30)
                 ),
               });
-              window.location.reload();
+              setTimeout(() => {
+                window.location.href = "/dashboard/plans";
+              }, 5000);
+              // window.location.reload();
             }
           } catch (error) {
             console.error("Payment verification failed:", error);
