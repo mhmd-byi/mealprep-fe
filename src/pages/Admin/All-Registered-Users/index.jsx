@@ -82,7 +82,7 @@ export const AllRegisteredUsers = () => {
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-900">
                                     <div className="break-words">
-                                      Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
+                                      Lunch: {(user.mealCounts.lunchMeals || 0 + user.mealCounts.nextDayLunchMeals || 0)}, Dinner: {(user.mealCounts.dinnerMeals || 0 + user.mealCounts.nextDayDinnerMeals || 0)}
                                     </div>
                                   </td>
                                 </tr>
