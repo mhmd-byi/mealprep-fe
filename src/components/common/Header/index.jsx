@@ -11,6 +11,7 @@ const Header = ({ toggleSidebar }) => {
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const { logout } = useHeader();
   const { currentPlan } = useSubscription();
+  console.log('this is current plan', currentPlan)
 
   return (
     <header className="bg-white py-3 px-5 flex justify-between items-center shadow-lg">
@@ -21,7 +22,7 @@ const Header = ({ toggleSidebar }) => {
         {userDetails?.role !== "admin" &&<div className="flex items-center gap-2">
           <img src={Diet} alt="meal-icon" className="w-6" />
           <span className="text-gray-800 text-sm">
-            {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
+            {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0) + (currentPlan?.nextDayLunchMeals || 0) + (currentPlan?.nextDayDinnerMeals || 0)) || 0} meals left
           </span>
         </div>}
         <button onClick={toggleSidebar}>
@@ -32,7 +33,7 @@ const Header = ({ toggleSidebar }) => {
       {userDetails?.role !== "admin" && <div className="flex flex-row ml-5 space-x-4 items-center">
         <img src={Diet} alt="meal-icon" className="w-10" />
         <span className="text-gray-800 hover:text-gray-600 transition-colors">
-          {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0)) || 0} meals left
+          {((currentPlan?.lunchMeals || 0) + (currentPlan?.dinnerMeals || 0) + (currentPlan?.nextDayLunchMeals || 0) + (currentPlan?.nextDayDinnerMeals || 0)) || 0} meals left
         </span>
       </div>}
         <div className="flex items-center">
