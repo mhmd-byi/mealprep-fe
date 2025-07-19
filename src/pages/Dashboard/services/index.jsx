@@ -17,7 +17,7 @@ export const Services = () => {
     if (currentPlan) {
       if (currentPlan?.meals <= 0) {
         return false;
-      } else if (currentPlan?.lunchMeals + currentPlan?.dinnerMeals === 0) {
+      } else if (currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals === 0) {
         return false;
       } else {
         return true;
