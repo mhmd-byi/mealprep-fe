@@ -29,11 +29,13 @@ const Sidebar = ({ closeSidebar }) => {
     closeSidebar();
   };
 
+  const mealConditions = currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals === 0 || currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals === null || isNaN(currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals)
+
   const isItemVisible = (item) => {
     if (item.requiresSubscription && !isSubscribed) {
       return false;
     }
-    if (item.requiresSubscription && (currentPlan?.lunchMeals + currentPlan?.dinnerMeals === 0 || currentPlan?.lunchMeals + currentPlan?.dinnerMeals === null || isNaN(currentPlan?.lunchMeals + currentPlan?.dinnerMeals))) {
+    if (item.requiresSubscription && (mealConditions)) {
       return false;
     }
     if (item.adminOnly && userRole !== "admin") {
