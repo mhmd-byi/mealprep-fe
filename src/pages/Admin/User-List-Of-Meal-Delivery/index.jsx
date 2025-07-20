@@ -20,6 +20,12 @@ export const UserListOfMealDelivery = () => {
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
     const currentDate = getCurrentDate();
+    const dayOfWeek = new Date(selectedDate).getDay();
+
+    if (dayOfWeek === 0) {
+      alert("Sundays are not allowed. Please select another date.");
+      return;
+    }
 
     if (selectedDate >= currentDate) {
       setFormData((prev) => ({ ...prev, date: selectedDate }));
