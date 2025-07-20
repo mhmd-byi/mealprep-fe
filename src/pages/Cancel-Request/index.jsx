@@ -129,7 +129,16 @@ const CancelRequest = () => {
                         type="date"
                         id="startDate"
                         value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          if (selectedDate.getDay() === 0) {
+                            setErrorMessage("Sundays cannot be selected. Please choose another date.");
+                            setStartDate("");
+                          } else {
+                            setErrorMessage("");
+                            setStartDate(e.target.value);
+                          }
+                        }}
                         min={getTomorrow()}
                         className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
