@@ -17,6 +17,8 @@ import { CustomizeYourMeal } from "./pages/customize-your-meal";
 import { AllRegisteredUsers } from "./pages/Admin/All-Registered-Users";
 import { UserListWithCustomisationRequest } from "./pages/Admin/User-List-of-Customisation-Request";
 import { MealTracking } from "./pages/MealTracking";
+import AddHoliday from "./pages/Add-Holiday";
+import AllHolidays from "./pages/All-Holidays";
 export const routes = [
   {
     path: "/",
@@ -121,6 +123,16 @@ export const routes = [
   {
     path: "/dashboard/meal-tracking",
     component: MealTracking,
+    exact: true,
+  },
+  {
+    path: "/dashboard/add-holiday",
+    component: AddHoliday,
+    exact: true,
+  },
+  {
+    path: "/dashboard/all-holiday",
+    component: AllHolidays,
     exact: true,
   }
 ];

@@ -101,5 +101,19 @@
     "path": "/dashboard/all-registered-users",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Add Holiday",
+    "icon": "FoodBank",
+    "path": "/dashboard/add-holiday",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
+    "name": "All Holiday",
+    "icon": "FoodBank",
+    "path": "/dashboard/all-holiday",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
