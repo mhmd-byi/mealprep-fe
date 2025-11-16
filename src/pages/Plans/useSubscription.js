@@ -142,7 +142,7 @@ export const useSubscription = () => {
                 ),
               });
               setTimeout(() => {
-                window.location.href = "/dashboard/plans";
+                window.location.href = "/dashboard";
               }, 5000);
               // window.location.reload();
             }
