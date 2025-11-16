@@ -58,7 +58,8 @@ export const useSubscription = () => {
     mealType,
     carbType,
     lunchDinner,
-    setErrorMessage
+    mealStartDate,
+    setErrorMessage,
   ) => {
     if (isSubscribed) {
       setErrorMessage(
@@ -84,6 +85,7 @@ export const useSubscription = () => {
           mealType,
           carbType,
           lunchDinner,
+          mealStartDate,
         },
         headers: {
           Authorization: `Bearer ${token}`,

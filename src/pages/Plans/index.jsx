@@ -9,39 +9,68 @@ const SubscriptionPlans = () => {
   const { plans } = data;
   const { handleSubscribe, isSubscribedTo } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
-  
+
+  const getTomorrow = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    // If tomorrow is Sunday (0), set it to Monday (add 1 more day)
+    if (tomorrow.getDay() === 0) {
+      tomorrow.setDate(tomorrow.getDate() + 1);
+    }
+    const dateString = tomorrow.toISOString().split("T")[0];
+    return dateString;
+  };
+
   // Create separate state for each plan's details
-  const [planDetails, setPlanDetails] = useState(
-    plans.reduce((acc, plan) => ({
-      ...acc,
-      [plan.name]: {
-        mealType: 'veg',
-        carbType: 'low-carb-high-protein',
-        lunchDinner: 'lunch',
-      }
-    }), {})
+  const [planDetails, setPlanDetails] = useState(() =>
+    plans.reduce((acc, plan) => {
+      const initialDate = getTomorrow();
+      return {
+        ...acc,
+        [plan.name]: {
+          mealType: "veg",
+          carbType: "low-carb-high-protein",
+          lunchDinner: "lunch",
+          mealStartDate: initialDate,
+        },
+      };
+    }, {})
   );
 
   const getAdjustedPlanDetails = (plan) => {
-    const multiplier = planDetails[plan.name].lunchDinner === 'lunchAndDinner' ? 2 : 1;
+    const multiplier =
+      planDetails[plan.name].lunchDinner === "lunchAndDinner" ? 2 : 1;
     return {
       price: plan.price * multiplier,
       meals: plan.meals * multiplier,
-      duration: plan.duration.replace(/\d+/g, (match) => parseInt(match) * multiplier)
+      duration: plan.duration.replace(
+        /\d+/g,
+        (match) => parseInt(match) * multiplier
+      ),
     };
   };
 
-  const handlePlanSubscribe = (planName, mealCount, price, mealType, carbType, lunchDinner) => {
-    const plan = plans.find(p => p.name === planName);
-    const { price: adjustedPrice, meals: adjustedMeals } = getAdjustedPlanDetails(plan);
-    
+  const handlePlanSubscribe = (
+    planName,
+    mealCount,
+    price,
+    mealType,
+    carbType,
+    lunchDinner,
+    mealStartDate
+  ) => {
+    const plan = plans.find((p) => p.name === planName);
+    const { price: adjustedPrice, meals: adjustedMeals } =
+      getAdjustedPlanDetails(plan);
+
     handleSubscribe(
-      planName, 
-      adjustedMeals, 
-      adjustedPrice, 
-      mealType, 
-      carbType, 
-      lunchDinner, 
+      planName,
+      adjustedMeals,
+      adjustedPrice,
+      mealType,
+      carbType,
+      lunchDinner,
+      mealStartDate,
       (message) => {
         setErrorMessages({ ...errorMessages, [planName]: message });
       }
@@ -49,12 +78,23 @@ const SubscriptionPlans = () => {
   };
 
   const handleDetailChange = (planName, field, value) => {
-    setPlanDetails(prev => ({
+    let finalValue = value;
+
+    // If changing meal start date, check if it's Sunday and adjust to Monday
+    if (field === "mealStartDate") {
+      const selectedDate = new Date(value);
+      if (selectedDate.getDay() === 0) {
+        selectedDate.setDate(selectedDate.getDate() + 1);
+        finalValue = selectedDate.toISOString().split("T")[0];
+      }
+    }
+
+    setPlanDetails((prev) => ({
       ...prev,
       [planName]: {
         ...prev[planName],
-        [field]: value
-      }
+        [field]: finalValue,
+      },
     }));
   };
 
@@ -65,12 +105,12 @@ const SubscriptionPlans = () => {
           <h2 className="text-2xl lg:text-3xl text-black font-semibold text-center mb-8">
             Subscribe Your Meal Plans
           </h2>
-          
+
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-0">
             {plans.map((plan, index) => {
               const { price, meals, duration } = getAdjustedPlanDetails(plan);
               const currentPlanDetails = planDetails[plan.name];
-              
+
               return (
                 <div
                   key={index}
@@ -95,7 +135,13 @@ const SubscriptionPlans = () => {
                         <select
                           className="border-2 border-grey-500 rounded-md p-1"
                           value={currentPlanDetails.mealType}
-                          onChange={(e) => handleDetailChange(plan.name, 'mealType', e.target.value)}
+                          onChange={(e) =>
+                            handleDetailChange(
+                              plan.name,
+                              "mealType",
+                              e.target.value
+                            )
+                          }
                         >
                           <option value="veg">Veg</option>
                           <option value="non-veg">Non-Veg</option>
@@ -107,7 +153,13 @@ const SubscriptionPlans = () => {
                         <select
                           className="border-2 border-grey-500 rounded-md p-1"
                           value={currentPlanDetails.lunchDinner}
-                          onChange={(e) => handleDetailChange(plan.name, 'lunchDinner', e.target.value)}
+                          onChange={(e) =>
+                            handleDetailChange(
+                              plan.name,
+                              "lunchDinner",
+                              e.target.value
+                            )
+                          }
                         >
                           <option value="lunch">Only Lunch</option>
                           <option value="dinner">Only Dinner</option>
@@ -119,14 +171,41 @@ const SubscriptionPlans = () => {
                         <select
                           className="border-2 border-grey-500 rounded-md p-1"
                           value={currentPlanDetails.carbType}
-                          onChange={(e) => handleDetailChange(plan.name, 'carbType', e.target.value)}
+                          onChange={(e) =>
+                            handleDetailChange(
+                              plan.name,
+                              "carbType",
+                              e.target.value
+                            )
+                          }
                         >
-                          <option value="low-carb-high-protein">Low Carb High Protein Meal</option>
+                          <option value="low-carb-high-protein">
+                            Low Carb High Protein Meal
+                          </option>
                           <option value="balanced-meal">Balanced Meal</option>
-                          <option value="high-carb-high-protein">High Carb High Protein Meal</option>
+                          <option value="high-carb-high-protein">
+                            High Carb High Protein Meal
+                          </option>
                           <option value="zero-carb">Zero Carb Meal</option>
                           <option value="keto-meal">Keto Meal</option>
                         </select>
+                      </div>
+                      <div className="flex items-center">
+                        <label className="mr-2">Meal Start Date:</label>
+                        <input
+                          type="date"
+                          className="border-2 border-grey-500 rounded-md p-1"
+                          onChange={(e) =>
+                            handleDetailChange(
+                              plan.name,
+                              "mealStartDate",
+                              e.target.value
+                            )
+                          }
+                          value={currentPlanDetails.mealStartDate}
+                          min={getTomorrow()}
+                          onKeyDown={(e) => e.preventDefault()} // Prevent manual typing
+                        />
                       </div>
                     </div>
                     {isSubscribedTo(plan.name) ? (
@@ -135,14 +214,17 @@ const SubscriptionPlans = () => {
                       </p>
                     ) : (
                       <Button
-                        onClick={() => handlePlanSubscribe(
-                          plan.name,
-                          meals,
-                          price,
-                          currentPlanDetails.mealType,
-                          currentPlanDetails.carbType,
-                          currentPlanDetails.lunchDinner
-                        )}
+                        onClick={() =>
+                          handlePlanSubscribe(
+                            plan.name,
+                            meals,
+                            price,
+                            currentPlanDetails.mealType,
+                            currentPlanDetails.carbType,
+                            currentPlanDetails.lunchDinner,
+                            currentPlanDetails.mealStartDate
+                          )
+                        }
                         classes="w-full"
                       >
                         Select
