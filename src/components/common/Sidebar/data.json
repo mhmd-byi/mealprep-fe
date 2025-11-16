@@ -115,5 +115,12 @@
     "path": "/dashboard/all-holiday",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "User Meal Trackings",
+    "icon": "Assessment",
+    "path": "/dashboard/user-meal-tracking",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

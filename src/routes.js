@@ -19,6 +19,7 @@ import { UserListWithCustomisationRequest } from "./pages/Admin/User-List-of-Cus
 import { MealTracking } from "./pages/MealTracking";
 import AddHoliday from "./pages/Add-Holiday";
 import AllHolidays from "./pages/All-Holidays";
+import { UserMealTracking } from "./pages/Admin/User-Meal-Tracking";
 export const routes = [
   {
     path: "/",
@@ -133,6 +134,11 @@ export const routes = [
   {
     path: "/dashboard/all-holiday",
     component: AllHolidays,
+    exact: true,
+  },
+  {
+    path: "/dashboard/user-meal-tracking",
+    component: UserMealTracking,
     exact: true,
   }
 ];
