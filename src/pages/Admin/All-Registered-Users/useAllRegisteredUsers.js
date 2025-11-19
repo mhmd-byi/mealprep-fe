@@ -25,14 +25,15 @@ export const useAllRegisteredUsers = () => {
   }, []);
 
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts'];
+    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts', 'Meal Start Date'];
     const rows = data.map(user => [
       `${user.firstName} ${user.lastName}`, // Name
       user.email, // Email
       user.mobile, // Mobile
       (user.postalAddress || "").replaceAll(",", "-"), // Address
       (user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'), // Current plan
-      `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}` // Meal Counts
+      `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}`, // Meal Counts
+      (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A') // Meal Start Date
     ]);
   
     // Combine headers and rows into a single string

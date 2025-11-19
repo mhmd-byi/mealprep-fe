@@ -5,6 +5,7 @@ import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 
 export const AllRegisteredUsers = () => {
   const { allRegisteredUsers, downloadCSV } = useAllRegisteredUsers();
+  console.log('all registered users', allRegisteredUsers)
 
   return (
     <DashboardLayoutComponent>
@@ -50,6 +51,9 @@ export const AllRegisteredUsers = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Meal Counts
                                 </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Meal Start Date
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -82,7 +86,13 @@ export const AllRegisteredUsers = () => {
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-900">
                                     <div className="break-words">
-                                      Lunch: {(user.mealCounts.lunchMeals || 0 + user.mealCounts.nextDayLunchMeals || 0)}, Dinner: {(user.mealCounts.dinnerMeals || 0 + user.mealCounts.nextDayDinnerMeals || 0)}
+                                      {/* Lunch: {(user.mealCounts.lunchMeals || 0 + user.mealCounts.nextDayLunchMeals || 0)}, Dinner: {(user.mealCounts.dinnerMeals || 0 + user.mealCounts.nextDayDinnerMeals || 0)} */}
+                                      Lunch: {user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0 + user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0}, Dinner: {user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0 + user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      {user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate.split('T')[0].split('-').reverse().join('-') || 'N/A'}
                                     </div>
                                   </td>
                                 </tr>
