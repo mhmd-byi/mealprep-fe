@@ -26,8 +26,8 @@ export const useUserMealTracking = () => {
         }
       );
 
-      if (response.data && Array.isArray(response.data)) {
-        setAllUsers(response.data);
+      if (response.data.users && Array.isArray(response.data.users)) {
+        setAllUsers(response.data.users);
       }
     } catch (err) {
       console.error("Error fetching users:", err);

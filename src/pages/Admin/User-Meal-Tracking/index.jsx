@@ -105,7 +105,7 @@ export const UserMealTracking = () => {
     <DashboardLayoutComponent>
       <div className="flex flex-col p-4 sm:p-6 md:p-8 w-full h-full">
         <div className="w-full max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg overflow-hidden shadow-md">
+          <div className="bg-white rounded-lg overflow-visible shadow-md">
             <div className="p-4 md:p-6">
               <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">
                 User Meal Trackings
@@ -114,7 +114,7 @@ export const UserMealTracking = () => {
               {/* Search Form */}
               <form onSubmit={handleSearch} className="mb-6">
                 <div className="flex flex-col sm:flex-row gap-4 items-end">
-                  <div className="flex-1 w-full relative">
+                  <div className="flex-1 w-full relative z-[100]">
                     <div ref={inputRef}>
                       <Input
                         type="text"
@@ -135,7 +135,8 @@ export const UserMealTracking = () => {
                     {showSuggestions && (searchName.trim().length >= 2) && (
                       <div
                         ref={suggestionsRef}
-                        className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-80 overflow-y-auto"
+                        className="absolute z-[9999] w-full bg-white border border-gray-300 rounded-md shadow-2xl mt-1 max-h-80 overflow-y-auto"
+                        style={{ top: '100%' }}
                       >
                         {isFetchingUsers ? (
                           <div className="px-4 py-3 text-sm text-gray-500">
