@@ -21,16 +21,48 @@ const SubscriptionPlans = () => {
     return dateString;
   };
 
+  const getMinimumDate = (lunchDinner) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    let minDate = new Date();
+
+    // Determine if user can select today based on meal type and time
+    if (lunchDinner === "lunch") {
+      // For lunch only: must book before 9 AM
+      if (currentHour >= 9) {
+        minDate.setDate(minDate.getDate() + 1);
+      }
+    } else if (lunchDinner === "dinner") {
+      // For dinner only: must book before 4 PM (16:00)
+      if (currentHour >= 16) {
+        minDate.setDate(minDate.getDate() + 1);
+      }
+    } else if (lunchDinner === "lunchAndDinner") {
+      // For both lunch and dinner: follow dinner condition (4 PM)
+      if (currentHour >= 16) {
+        minDate.setDate(minDate.getDate() + 1);
+      }
+    }
+
+    // If minimum date is Sunday (0), set it to Monday
+    if (minDate.getDay() === 0) {
+      minDate.setDate(minDate.getDate() + 1);
+    }
+
+    return minDate.toISOString().split("T")[0];
+  };
+
   // Create separate state for each plan's details
   const [planDetails, setPlanDetails] = useState(() =>
     plans.reduce((acc, plan) => {
-      const initialDate = getTomorrow();
+      const initialLunchDinner = "lunch";
+      const initialDate = getMinimumDate(initialLunchDinner);
       return {
         ...acc,
         [plan.name]: {
           mealType: "veg",
           carbType: "low-carb-high-protein",
-          lunchDinner: "lunch",
+          lunchDinner: initialLunchDinner,
           mealStartDate: initialDate,
         },
       };
@@ -86,6 +118,25 @@ const SubscriptionPlans = () => {
       if (selectedDate.getDay() === 0) {
         selectedDate.setDate(selectedDate.getDate() + 1);
         finalValue = selectedDate.toISOString().split("T")[0];
+      }
+    }
+
+    // If changing lunch/dinner option, update the meal start date based on new minimum
+    if (field === "lunchDinner") {
+      const currentStartDate = planDetails[planName].mealStartDate;
+      const newMinDate = getMinimumDate(value);
+      
+      // If current start date is before the new minimum, update it
+      if (currentStartDate < newMinDate) {
+        setPlanDetails((prev) => ({
+          ...prev,
+          [planName]: {
+            ...prev[planName],
+            [field]: value,
+            mealStartDate: newMinDate,
+          },
+        }));
+        return;
       }
     }
 
@@ -203,7 +254,7 @@ const SubscriptionPlans = () => {
                             )
                           }
                           value={currentPlanDetails.mealStartDate}
-                          min={getTomorrow()}
+                          min={getMinimumDate(currentPlanDetails.lunchDinner)}
                           onKeyDown={(e) => e.preventDefault()} // Prevent manual typing
                         />
                       </div>
