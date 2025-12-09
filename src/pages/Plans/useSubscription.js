@@ -115,6 +115,7 @@ export const useSubscription = () => {
                 mealType,
                 carbType,
                 lunchDinner,
+                mealStartDate,
               },
               headers: {
                 Authorization: `Bearer ${token}`,
