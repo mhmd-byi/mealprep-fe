@@ -10,6 +10,13 @@ const SubscriptionPlans = () => {
   const { handleSubscribe, isSubscribedTo } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
 
+  const formatDateLocal = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const getTomorrow = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -17,8 +24,7 @@ const SubscriptionPlans = () => {
     if (tomorrow.getDay() === 0) {
       tomorrow.setDate(tomorrow.getDate() + 1);
     }
-    const dateString = tomorrow.toISOString().split("T")[0];
-    return dateString;
+    return formatDateLocal(tomorrow);
   };
 
   const getMinimumDate = (lunchDinner) => {
@@ -49,7 +55,7 @@ const SubscriptionPlans = () => {
       minDate.setDate(minDate.getDate() + 1);
     }
 
-    return minDate.toISOString().split("T")[0];
+    return formatDateLocal(minDate);
   };
 
   // Create separate state for each plan's details
@@ -114,10 +120,13 @@ const SubscriptionPlans = () => {
 
     // If changing meal start date, check if it's Sunday and adjust to Monday
     if (field === "mealStartDate") {
-      const selectedDate = new Date(value);
+      // Parse local date from YYYY-MM-DD
+      const [year, month, day] = value.split("-").map(Number);
+      const selectedDate = new Date(year, month - 1, day);
+
       if (selectedDate.getDay() === 0) {
         selectedDate.setDate(selectedDate.getDate() + 1);
-        finalValue = selectedDate.toISOString().split("T")[0];
+        finalValue = formatDateLocal(selectedDate);
       }
     }
 
@@ -125,7 +134,7 @@ const SubscriptionPlans = () => {
     if (field === "lunchDinner") {
       const currentStartDate = planDetails[planName].mealStartDate;
       const newMinDate = getMinimumDate(value);
-      
+
       // If current start date is before the new minimum, update it
       if (currentStartDate < newMinDate) {
         setPlanDetails((prev) => ({
@@ -165,9 +174,8 @@ const SubscriptionPlans = () => {
               return (
                 <div
                   key={index}
-                  className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${
-                    index === plans.length - 1 ? "lg:border-r-0" : ""
-                  }`}
+                  className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${index === plans.length - 1 ? "lg:border-r-0" : ""
+                    }`}
                 >
                   <div className="py-5">
                     <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">
