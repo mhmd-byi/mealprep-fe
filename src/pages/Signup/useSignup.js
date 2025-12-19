@@ -46,7 +46,7 @@ export const useSignup = () => {
         url: `${process.env.REACT_APP_API_URL}activity/send-otp`,
         data: {
           mobileNumber: formData.mobile,
-          name: `${formData.firstName} ${formData.lastName}`,
+          name: formData.firstName,
         },
       });
       setOtpSent(true);
