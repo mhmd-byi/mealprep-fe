@@ -122,8 +122,8 @@ export const useLogin = () => {
       sessionStorage.setItem("userId", res.data.userId);
       sessionStorage.setItem("mobile", formData.mobile);
       sessionStorage.setItem("email", res.data.email);
-      setLoaderState(false);
-      navigate("/dashboard");
+      // setLoaderState(false);
+      // navigate("/dashboard");
     } catch (err) {
       setLoaderState(false);
       setErrMsg(err.response?.data?.message || "Failed to login with OTP");
