@@ -74,11 +74,11 @@ export const AdminServices = () => {
 
   return (
     <div className="px-4 mt-16 lg:mt-0">
-      <section className="flex justify-center mb-6">
+      {/* <section className="flex justify-center mb-6">
         <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
           <p className="text-2xl sm:text-xl">Features</p>
         </div>
-      </section>
+      </section> */}
 
       {/* Mobile view - 4 columns */}
       {/* <section className="flex justify-center mt-6 lg:hidden">
