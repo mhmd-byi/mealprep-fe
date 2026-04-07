@@ -9,9 +9,11 @@ import useSubscription from "../../../pages/Plans/useSubscription";
 import userProfileImg from "../../../assets/images/user/user-placeholder.png";
 
 const Sidebar = ({ closeSidebar }) => {
-  const { userDetails } = useDashboard();
+  const { userDetails, isLoading: isUserLoading } = useDashboard();
   const { logout } = useHeader();
-  const { isSubscribed, currentPlan } = useSubscription();
+  const { isSubscribed, currentPlan, isLoading: isSubscriptionLoading } = useSubscription();
+
+  const isLoading = isUserLoading || isSubscriptionLoading;
 
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
@@ -64,25 +66,33 @@ const Sidebar = ({ closeSidebar }) => {
         />
         <span>Hi, {fetchUserName}</span>
       </div>
-      {sidebarData.map(
-        (item, index) =>
-          isItemVisible(item) && (
-            <button
-              key={index}
-              className={`flex items-center space-x-3 p-2 rounded ${
-                location.pathname === item.path
-                  ? "bg-gray-800"
-                  : "hover:bg-gray-800"
-              }`}
-              onClick={() => handleNavigate(item.path)}
-            >
-              {React.createElement(require(`@mui/icons-material`)[item.icon], {
-                className: "h-6 w-6",
-              })}
-              <span>{item.name}</span>
-            </button>
-          )
+
+      {isLoading ? (
+        <div className="flex justify-center items-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      ) : (
+        sidebarData.map(
+          (item, index) =>
+            isItemVisible(item) && (
+              <button
+                key={index}
+                className={`flex items-center space-x-3 p-2 rounded ${
+                  location.pathname === item.path
+                    ? "bg-gray-800"
+                    : "hover:bg-gray-800"
+                }`}
+                onClick={() => handleNavigate(item.path)}
+              >
+                {React.createElement(require(`@mui/icons-material`)[item.icon], {
+                  className: "h-6 w-6",
+                })}
+                <span>{item.name}</span>
+              </button>
+            )
+        )
       )}
+
       <div
         className="mt-auto flex md:hidden items-center space-x-3 p-2"
         onClick={logout}

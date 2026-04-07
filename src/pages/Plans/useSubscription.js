@@ -5,6 +5,8 @@ import { sendEmail } from "../../utils";
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [currentPlan, setCurrentPlan] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -45,6 +47,8 @@ export const useSubscription = () => {
         response.data.isSubscribed && setCurrentPlan(response.data.subscription);
       } catch (error) {
         console.error("Error fetching subscription status:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -191,6 +195,7 @@ export const useSubscription = () => {
     handleSubscribe,
     isSubscribedTo,
     currentPlan,
+    isLoading,
   };
 };
 

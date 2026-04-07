@@ -13,6 +13,7 @@ export const useDashboard = () => {
     confirmPassword: "",
     role: "user", // Add role field with default value
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
@@ -22,25 +23,30 @@ export const useDashboard = () => {
   }, [token, userId]);
 
   const getUserData = () => {
+    setIsLoading(true);
     axios({
       method: "GET",
       url: `${process.env.REACT_APP_API_URL}user/${userId}`,
       headers: {
         Authorization: "Bearer " + sessionStorage.getItem("token"),
       },
-    }).then((res) => {
-      setUserDetails({
-        firstName: res.data.firstName,
-        lastName: res.data.lastName,
-        mobile: res.data.mobile,
-        email: res.data.email,
-        profileImageUrl: res.data.profileImageUrl,
-        postalAddress: res.data.postalAddress,
-        password: res.data.password,
-        confirmPassword: res.data.confirmPassword,
-        role: res.data.role || "user", // Include role, default to "user" if not provided
+    })
+      .then((res) => {
+        setUserDetails({
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
+          mobile: res.data.mobile,
+          email: res.data.email,
+          profileImageUrl: res.data.profileImageUrl,
+          postalAddress: res.data.postalAddress,
+          password: res.data.password,
+          confirmPassword: res.data.confirmPassword,
+          role: res.data.role || "user", // Include role, default to "user" if not provided
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    });
     return false;
   };
 
@@ -59,5 +65,6 @@ export const useDashboard = () => {
     userDetails,
     getInitials,
     setUserDetails,
+    isLoading,
   };
 };
