@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 export const AllRegisteredUsers = () => {
   const { allRegisteredUsers, isLoading, downloadCSV } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const location = useLocation();
   const [filterCriteria, setFilterCriteria] = useState({
-    planType: 'All',
+    planType: location.state?.planType || 'All',
     mealCount: '',
     operator: '>'
   });
+
+  useEffect(() => {
+    if (location.state?.planType) {
+      setFilterCriteria(prev => ({
+        ...prev,
+        planType: location.state.planType
+      }));
+    }
+  }, [location.state]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleSort = (key) => {

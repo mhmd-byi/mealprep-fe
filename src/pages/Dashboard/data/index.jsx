@@ -1,4 +1,5 @@
 import { useData } from "./useData";
+import { useNavigate } from "react-router-dom";
 
 export const Data = () => {
   const { 
@@ -10,6 +11,11 @@ export const Data = () => {
     weeklyCount,
     monthlyCount 
   } = useData();
+  const navigate = useNavigate();
+
+  const handlePlanClick = (planType) => {
+    navigate('/dashboard/all-registered-users', { state: { planType } });
+  };
 
   return (
     <div className="px-4 my-16 lg:mt-4">
@@ -38,8 +44,19 @@ export const Data = () => {
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{customisationRequestCount}</td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{cancelledMealsCount}</td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900 font-bold">
-                Weekly: {weeklyCount} <br /> 
-                Monthly: {monthlyCount}
+                <span 
+                  className="cursor-pointer hover:text-theme-color-1 transition-colors duration-200"
+                  onClick={() => handlePlanClick('Weekly')}
+                >
+                  Weekly: {weeklyCount}
+                </span>
+                <br /> 
+                <span 
+                   className="cursor-pointer hover:text-theme-color-1 transition-colors duration-200"
+                   onClick={() => handlePlanClick('Monthly')}
+                >
+                  Monthly: {monthlyCount}
+                </span>
               </td>
             </tr>
           </tbody>
@@ -68,11 +85,17 @@ export const Data = () => {
         <div className="bg-white p-4 rounded-lg border-2 shadow-sm border-green-200">
           <h3 className="text-green-700 text-sm font-medium uppercase mb-2">Active Subscriptions</h3>
           <div className="flex justify-between items-center">
-            <div>
+            <div 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => handlePlanClick('Weekly')}
+            >
               <p className="text-xs text-gray-500">Weekly</p>
               <p className="text-xl font-bold text-gray-900">{weeklyCount}</p>
             </div>
-            <div>
+            <div 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => handlePlanClick('Monthly')}
+            >
               <p className="text-xs text-gray-500">Monthly</p>
               <p className="text-xl font-bold text-gray-900">{monthlyCount}</p>
             </div>
