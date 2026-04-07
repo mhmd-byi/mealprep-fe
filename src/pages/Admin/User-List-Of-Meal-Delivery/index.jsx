@@ -3,6 +3,7 @@ import axios from "axios";
 import { Button, Input } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
+import Popup from "../../../components/common/Popup/Popup";
 
 export const UserListOfMealDelivery = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
@@ -13,6 +14,23 @@ export const UserListOfMealDelivery = () => {
     mealType: '',
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isPopupLoading, setIsPopupLoading] = useState(false);
+
+  const fetchUserDetails = async (userId) => {
+    try {
+      setIsPopupLoading(true);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}user/${userId}`, {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+      });
+      setSelectedUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user details", error);
+      alert("Failed to fetch user details. Please try again.");
+    } finally {
+      setIsPopupLoading(false);
+    }
+  };
 
   const filteredMeals = mealDeliveryList.filter(meal => 
     meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -118,7 +136,8 @@ export const UserListOfMealDelivery = () => {
     );
   }
   return (
-    <DashboardLayoutComponent>
+    <>
+      <DashboardLayoutComponent>
       <div className="block lg:flex flex-col justify-start items-start p-5 w-full">
         <div className="w-full max-w-full py-8 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto">
@@ -223,8 +242,11 @@ export const UserListOfMealDelivery = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                               {filteredMeals.map((meal, index) => (
                                 <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                                    <div className="break-words">
+                                  <td className="px-4 py-4 text-sm font-medium">
+                                    <div 
+                                      className="break-words cursor-pointer text-theme-color-1 hover:underline"
+                                      onClick={() => fetchUserDetails(meal.userId)}
+                                    >
                                       {meal.name}
                                     </div>
                                   </td>
@@ -277,7 +299,12 @@ export const UserListOfMealDelivery = () => {
                               <div className="space-y-2">
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Name:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.name}</span>
+                                  <span 
+                                    className="text-theme-color-1 cursor-pointer hover:underline text-right break-words max-w-[60%]"
+                                    onClick={() => fetchUserDetails(meal.userId)}
+                                  >
+                                    {meal.name}
+                                  </span>
                                 </div>
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Email:</span>
@@ -335,5 +362,86 @@ export const UserListOfMealDelivery = () => {
         </div>
       </div>
     </DashboardLayoutComponent>
+
+    <Popup
+      isOpen={!!selectedUser || isPopupLoading}
+      onClose={() => setSelectedUser(null)}
+      title="Customer Details"
+      content={
+        isPopupLoading ? (
+          <div className="flex justify-center p-10">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-theme-color-1"></div>
+          </div>
+        ) : (
+          selectedUser && (
+            <div className="space-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 border-b pb-4">
+                <div>
+                  <p className="text-gray-500">Name</p>
+                  <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Email</p>
+                  <p className="font-semibold">{selectedUser.email}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Mobile</p>
+                  <p className="font-semibold">{selectedUser.mobile}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-gray-500">Address</p>
+                  <p className="font-semibold">{selectedUser.postalAddress}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg mb-4">
+                <div>
+                  <p className="text-gray-500">Meal Counts Left</p>
+                  <p className="font-bold text-lg text-theme-color-1">
+                    Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)}, 
+                    Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold mb-2">Subscription History</h3>
+                <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
+                  {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
+                    [...selectedUser.subscriptions].reverse().map((sub, i) => (
+                      <div key={i} className="border p-3 rounded-lg bg-white shadow-sm">
+                        <div className="flex justify-between font-bold text-theme-color-1">
+                          <span>{sub.plan}</span>
+                          <span>₹{sub.price}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+                          <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
+                          <div><span className="text-gray-500">Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                          <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
+                          <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
+                          {sub.allergy && (
+                            <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="text-red-500 font-bold">{sub.allergy}</span></div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No subscription history found.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        )
+      }
+      buttons={[
+        {
+          label: "Close",
+          onClick: () => setSelectedUser(null),
+          className: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }
+      ]}
+    />
+    </>
   );
 };
