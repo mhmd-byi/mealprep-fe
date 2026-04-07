@@ -28,7 +28,7 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
             </div>
           )}
           <main
-            className={`flex-1 items-center justify-center overflow-auto ml-0 ${
+            className={`flex-1 overflow-auto ml-0 ${
               isSidebarOpen
                 ? "filter blur-sm lg:blur-0 pointer-events-none md:pointer-events-auto"
                 : ""

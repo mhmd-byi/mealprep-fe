@@ -25,7 +25,7 @@ export const useAllRegisteredUsers = () => {
   }, []);
 
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts', 'Meal Start Date'];
+    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Meal Start Date'];
     const rows = data.map(user => [
       `${user.firstName} ${user.lastName}`, // Name
       user.email, // Email

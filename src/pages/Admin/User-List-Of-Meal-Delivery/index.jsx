@@ -68,7 +68,7 @@ export const UserListOfMealDelivery = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Selected Plan"];
+    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Selected Plan", "Meal Counts Left"];
     
     // Convert data to CSV format
     const csvData = mealDeliveryList.map(meal => [
@@ -79,6 +79,7 @@ export const UserListOfMealDelivery = () => {
       meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1),
       meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1),
       meal.plan,
+      `Lunch: ${meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: ${meal.dinnerMeals + meal.nextDayDinnerMeals}`,
     ]);
     
     // Combine headers and data
@@ -110,8 +111,8 @@ export const UserListOfMealDelivery = () => {
   }
   return (
     <DashboardLayoutComponent>
-      <div className="block lg:flex flex-col justify-center items-center p-5 w-full h-full">
-        <div className="w-full max-w-full py-12 px-4 sm:px-6 lg:px-8">
+      <div className="block lg:flex flex-col justify-start items-start p-5 w-full">
+        <div className="w-full max-w-full py-8 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto">
             <h2 className="text-2xl font-bold mb-4">Meal Delivery List</h2>
             <div className="bg-white rounded-lg overflow-hidden shadow">
@@ -196,6 +197,9 @@ export const UserListOfMealDelivery = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Selected Plan
                                 </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Meal Counts Left
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -234,6 +238,11 @@ export const UserListOfMealDelivery = () => {
                                   <td className="px-4 py-4 text-sm text-gray-900">
                                     <div className="break-words">
                                       {meal?.plan || ""}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                    <div className="break-words">
+                                      Lunch: {meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: {meal.dinnerMeals + meal.nextDayDinnerMeals}
                                     </div>
                                   </td>
                                 </tr>
@@ -275,9 +284,15 @@ export const UserListOfMealDelivery = () => {
                                     {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
                                   </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Selected Plan:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-gray-500">Meal Counts Left:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    Lunch: {meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: {meal.dinnerMeals + meal.nextDayDinnerMeals}
+                                  </span>
                                 </div>
                               </div>
                             </div>

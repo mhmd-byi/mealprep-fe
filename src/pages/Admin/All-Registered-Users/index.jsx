@@ -49,7 +49,7 @@ export const AllRegisteredUsers = () => {
                                   Current Plan
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Meal Counts
+                                  Meal Counts Left
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Meal Start Date
@@ -87,7 +87,7 @@ export const AllRegisteredUsers = () => {
                                   <td className="px-4 py-4 text-sm text-gray-900">
                                     <div className="break-words">
                                       {/* Lunch: {(user.mealCounts.lunchMeals || 0 + user.mealCounts.nextDayLunchMeals || 0)}, Dinner: {(user.mealCounts.dinnerMeals || 0 + user.mealCounts.nextDayDinnerMeals || 0)} */}
-                                      Lunch: {user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0 + user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0}, Dinner: {user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0 + user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0}
+                                      Lunch: {(user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0)}, Dinner: {(user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0)}
                                     </div>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-900">
@@ -151,10 +151,10 @@ export const AllRegisteredUsers = () => {
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="font-medium text-gray-500">
-                                    Meal Counts:
+                                    Meal Counts Left:
                                   </span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    Lunch: {user.mealCounts.lunchMeals || 0}, Dinner: {user.mealCounts.dinnerMeals || 0}
+                                    Lunch: {(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: {(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}
                                   </span>
                                 </div>
                               </div>

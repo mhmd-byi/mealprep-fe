@@ -142,7 +142,7 @@ export const UserListWithCancelRequest = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-4 w-full h-full sm:p-6 md:p-8">
+      <div className="flex flex-col justify-start items-start p-4 w-full sm:p-6 md:p-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="overflow-hidden bg-white rounded-lg shadow-md">
             <div className="p-4 md:p-6">
