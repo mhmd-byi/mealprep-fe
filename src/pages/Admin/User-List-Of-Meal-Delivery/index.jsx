@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Button, Input } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
+import SearchBar from "../../../components/common/SearchBar/SearchBar";
 
 export const UserListOfMealDelivery = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
@@ -11,6 +12,12 @@ export const UserListOfMealDelivery = () => {
     date: '',
     mealType: '',
   });
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredMeals = mealDeliveryList.filter(meal => 
+    meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    meal.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -71,7 +78,7 @@ export const UserListOfMealDelivery = () => {
     const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Allergy", "Selected Plan", "Meal Counts Left"];
     
     // Convert data to CSV format
-    const csvData = mealDeliveryList.map(meal => [
+    const csvData = filteredMeals.map(meal => [
       meal.name,
       meal.email,
       meal.mobile,
@@ -155,12 +162,19 @@ export const UserListOfMealDelivery = () => {
                       </Button>
                       
                       {mealDeliveryList.length > 0 && (
-                        <Button
-                          onClick={exportToCSV}
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                        >
-                          Export CSV
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                          <SearchBar 
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            placeholder="Search name or email..."
+                          />
+                          <Button
+                            onClick={exportToCSV}
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                          >
+                            Export to CSV
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </form>
@@ -170,7 +184,7 @@ export const UserListOfMealDelivery = () => {
                   )}
 
                   <div className="mt-4 w-full">
-                    {mealDeliveryList.length > 0 ? (
+                    {filteredMeals.length > 0 ? (
                       <div className="w-full">
                         {/* Desktop View */}
                         <div className="hidden md:block overflow-x-auto">
@@ -207,7 +221,7 @@ export const UserListOfMealDelivery = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {mealDeliveryList.map((meal, index) => (
+                              {filteredMeals.map((meal, index) => (
                                 <tr key={index} className="hover:bg-gray-100">
                                   <td className="px-4 py-4 text-sm font-medium text-gray-900">
                                     <div className="break-words">
@@ -257,8 +271,8 @@ export const UserListOfMealDelivery = () => {
                         </div>
 
                         {/* Mobile View */}
-                        <div className="md:hidden space-y-4">
-                          {mealDeliveryList.map((meal, index) => (
+                        <div className="md:hidden mt-4 space-y-4">
+                          {filteredMeals.map((meal, index) => (
                             <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                               <div className="space-y-2">
                                 <div className="flex justify-between border-b pb-2">

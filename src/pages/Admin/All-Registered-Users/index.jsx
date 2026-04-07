@@ -1,11 +1,16 @@
-"use client";
-
+import { useState } from "react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
+import SearchBar from "../../../components/common/SearchBar/SearchBar";
 
 export const AllRegisteredUsers = () => {
   const { allRegisteredUsers, downloadCSV } = useAllRegisteredUsers();
-  console.log('all registered users', allRegisteredUsers)
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredUsers = allRegisteredUsers.filter(user => 
+    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <DashboardLayoutComponent>
@@ -16,17 +21,24 @@ export const AllRegisteredUsers = () => {
               <div className="flex flex-col p-5">
                 <div className="flex flex-row justify-between items-center mb-4 p-4 bg-white rounded-t-lg">
                   <h2 className="text-2xl font-bold">All Users</h2>
-                  <button
-                    onClick={() => downloadCSV(allRegisteredUsers)}
-                    type="button"
-                    className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:text-theme-color-1 hover:bg-white text-white transition-colors duration-300"
-                  >
-                    Export to CSV
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <SearchBar 
+                      value={searchQuery}
+                      onChange={setSearchQuery}
+                      placeholder="Search name or email..."
+                    />
+                    <button
+                      onClick={() => downloadCSV(filteredUsers)}
+                      type="button"
+                      className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:text-theme-color-1 hover:bg-white text-white transition-colors duration-300"
+                    >
+                      Export to CSV
+                    </button>
+                  </div>
                 </div>
                 <div className="flex flex-col text-center w-full">
                   <div className="mt-4 w-full">
-                    {allRegisteredUsers.length > 0 ? (
+                    {filteredUsers.length > 0 ? (
                       <div className="w-full">
                         {/* Desktop View */}
                         <div className="hidden md:block overflow-x-auto">
@@ -60,7 +72,7 @@ export const AllRegisteredUsers = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {allRegisteredUsers.map((user, index) => (
+                              {filteredUsers.map((user, index) => (
                                 <tr key={index} className="hover:bg-gray-100">
                                   <td className="px-4 py-4 text-sm font-medium text-gray-900">
                                     <div className="break-words">
@@ -110,7 +122,7 @@ export const AllRegisteredUsers = () => {
 
                         {/* Mobile View */}
                         <div className="md:hidden space-y-4">
-                          {allRegisteredUsers.map((user, index) => (
+                          {filteredUsers.map((user, index) => (
                             <div
                               key={index}
                               className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
