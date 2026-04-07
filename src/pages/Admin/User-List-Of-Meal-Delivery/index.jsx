@@ -4,6 +4,7 @@ import { Button, Input } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
+import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 
 export const UserListOfMealDelivery = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
@@ -16,6 +17,12 @@ export const UserListOfMealDelivery = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isPopupLoading, setIsPopupLoading] = useState(false);
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [filterCriteria, setFilterCriteria] = useState({
+    planType: 'All',
+    mealCount: '',
+    operator: '>'
+  });
 
   const fetchUserDetails = async (userId) => {
     try {
@@ -32,10 +39,31 @@ export const UserListOfMealDelivery = () => {
     }
   };
 
-  const filteredMeals = mealDeliveryList.filter(meal => 
-    meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    meal.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMeals = mealDeliveryList.filter(meal => {
+    // Search filter
+    const searchMatch = meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      meal.email.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Plan Type filter
+    let planMatch = true;
+    if (filterCriteria.planType !== 'All') {
+      planMatch = meal.plan?.includes(filterCriteria.planType);
+    }
+
+    // Meal Count filter
+    let mealCountMatch = true;
+    if (filterCriteria.mealCount !== '') {
+      const totalMeals = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0) + 
+                        (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
+      const targetCount = parseInt(filterCriteria.mealCount);
+      
+      if (filterCriteria.operator === '>') mealCountMatch = totalMeals > targetCount;
+      else if (filterCriteria.operator === '<') mealCountMatch = totalMeals < targetCount;
+      else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
+    }
+
+    return searchMatch && planMatch && mealCountMatch;
+  });
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -187,6 +215,16 @@ export const UserListOfMealDelivery = () => {
                             onChange={setSearchQuery}
                             placeholder="Search name or email..."
                           />
+                          <button
+                            onClick={() => setShowFilterPopup(true)}
+                            type="button"
+                            className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-white text-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:bg-theme-color-1 hover:text-white transition-colors duration-300"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            Filter
+                          </button>
                           <Button
                             onClick={exportToCSV}
                             className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -362,6 +400,14 @@ export const UserListOfMealDelivery = () => {
         </div>
       </div>
     </DashboardLayoutComponent>
+
+    <FilterPopup
+      isOpen={showFilterPopup}
+      onClose={() => setShowFilterPopup(false)}
+      criteria={filterCriteria}
+      setCriteria={setFilterCriteria}
+      title="Filter Meal Delivery"
+    />
 
     <Popup
       isOpen={!!selectedUser || isPopupLoading}

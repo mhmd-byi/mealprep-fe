@@ -3,16 +3,50 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
+import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 
 export const AllRegisteredUsers = () => {
   const { allRegisteredUsers, downloadCSV } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [filterCriteria, setFilterCriteria] = useState({
+    planType: 'All',
+    mealCount: '',
+    operator: '>'
+  });
 
-  const filteredUsers = allRegisteredUsers.filter(user => 
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = allRegisteredUsers.filter(user => {
+    const latestSub = user.subscriptions && user.subscriptions.length > 0 
+      ? user.subscriptions[user.subscriptions.length - 1] 
+      : null;
+    
+    // Name/Email filter
+    const searchMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Plan Type filter
+    let planMatch = true;
+    if (filterCriteria.planType !== 'All') {
+      planMatch = latestSub?.plan?.includes(filterCriteria.planType);
+    }
+
+    // Meal Count filter
+    let mealCountMatch = true;
+    if (filterCriteria.mealCount !== '') {
+      const totalMeals = (user.mealCounts?.lunchMeals || 0) + 
+                        (user.mealCounts?.nextDayLunchMeals || 0) + 
+                        (user.mealCounts?.dinnerMeals || 0) + 
+                        (user.mealCounts?.nextDayDinnerMeals || 0);
+      const targetCount = parseInt(filterCriteria.mealCount);
+      
+      if (filterCriteria.operator === '>') mealCountMatch = totalMeals > targetCount;
+      else if (filterCriteria.operator === '<') mealCountMatch = totalMeals < targetCount;
+      else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
+    }
+
+    return searchMatch && planMatch && mealCountMatch;
+  });
 
   return (
     <>
@@ -30,6 +64,15 @@ export const AllRegisteredUsers = () => {
                       onChange={setSearchQuery}
                       placeholder="Search name or email..."
                     />
+                    <button
+                      onClick={() => setShowFilterPopup(true)}
+                      className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-white text-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:bg-theme-color-1 hover:text-white transition-colors duration-300"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                      </svg>
+                      Filter
+                    </button>
                     <button
                       onClick={() => downloadCSV(filteredUsers)}
                       type="button"
@@ -220,6 +263,13 @@ export const AllRegisteredUsers = () => {
       </div>
     </DashboardLayoutComponent>
     
+    <FilterPopup
+      isOpen={showFilterPopup}
+      onClose={() => setShowFilterPopup(false)}
+      criteria={filterCriteria}
+      setCriteria={setFilterCriteria}
+    />
+
     <Popup
       isOpen={!!selectedUser}
       onClose={() => setSelectedUser(null)}
