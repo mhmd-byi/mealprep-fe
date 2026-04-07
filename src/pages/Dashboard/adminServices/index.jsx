@@ -34,14 +34,14 @@ export const AdminServices = () => {
         }
       }}
     >
-      <div className="mb-3 rounded-md flex items-center justify-center">
+      <div className="flex justify-center items-center mb-3 rounded-md">
         <img
           src={service.icon}
           alt={service.name}
-          className="w-16 h-16  object-contain"
+          className="object-contain w-16 h-16"
         />
       </div>
-      <h3 className="text-sm lg:text-base font-medium text-gray-800 text-center">
+      <h3 className="text-sm font-medium text-center text-gray-800 lg:text-base">
         {service.name}
       </h3>
     </div>
@@ -50,7 +50,7 @@ export const AdminServices = () => {
   const renderMobileServiceItem = (service, index) => (
     <div
       key={index}
-      className="w-full p-2 flex flex-col items-center justify-start cursor-pointer"
+      className="flex flex-col justify-start items-center p-2 w-full cursor-pointer"
       onClick={() => {
         if (service.path.startsWith('http')) {
           window.open(service.path, '_blank');
@@ -59,14 +59,14 @@ export const AdminServices = () => {
         }
       }}
     >
-      <div className="mb-2 rounded-md flex items-center justify-center w-full">
+      <div className="flex justify-center items-center mb-2 w-full rounded-md">
         <img
           src={service.icon}
           alt={service.name}
-          className="w-14 h-14 object-contain"
+          className="object-contain w-14 h-14"
         />
       </div>
-      <h3 className="text-xs font-medium text-gray-800 text-center mt-1">
+      <h3 className="mt-1 text-xs font-medium text-center text-gray-800">
         {service.name}
       </h3>
     </div>
@@ -74,25 +74,25 @@ export const AdminServices = () => {
 
   return (
     <div className="px-4 mt-16 lg:mt-0">
-      <section className="mb-6 flex justify-center">
+      <section className="flex justify-center mb-6">
         <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
           <p className="text-2xl sm:text-xl">Features</p>
         </div>
       </section>
 
       {/* Mobile view - 4 columns */}
-      <section className="mt-6 lg:hidden flex justify-center">
+      {/* <section className="flex justify-center mt-6 lg:hidden">
         <div className="grid grid-cols-4 gap-1 w-full max-w-[500px] mx-auto">
           {services.map(renderMobileServiceItem)}
         </div>
-      </section>
+      </section> */}
 
       {/* Desktop view - 4 columns */}
-      <section className="my-20 hidden lg:block flex justify-center">
+      {/* <section className="flex hidden justify-center my-20 lg:block">
         <div className="grid grid-cols-4 gap-4 lg:gap-10 max-w-[1500px] w-full mx-auto justify-items-center">
           {services.map(renderServiceItem)}
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };
