@@ -57,7 +57,7 @@ export const CustomizeYourMeal = () => {
       <Helmet>
         <title>Customise Meal Request | Mealprep</title>
       </Helmet>
-      <div className="block lg:flex flex-col justify-center items-center p-2 sm:p-5 w-full h-full">
+      <div className="block lg:flex flex-col justify-start items-center p-2 sm:p-5 w-full pt-5">
         <div className="py-6 sm:py-12 px-2 sm:px-6 lg:px-8 w-full">
           <div className="mx-auto">
             <div className="bg-white shadow-xl rounded-lg overflow-hidden w-full">

@@ -70,6 +70,7 @@ const SubscriptionPlans = () => {
           carbType: "low-carb-high-protein",
           lunchDinner: initialLunchDinner,
           mealStartDate: initialDate,
+          allergy: "",
         },
       };
     }, {})
@@ -95,7 +96,8 @@ const SubscriptionPlans = () => {
     mealType,
     carbType,
     lunchDinner,
-    mealStartDate
+    mealStartDate,
+    allergy
   ) => {
     const plan = plans.find((p) => p.name === planName);
     const { price: adjustedPrice, meals: adjustedMeals } =
@@ -109,6 +111,7 @@ const SubscriptionPlans = () => {
       carbType,
       lunchDinner,
       mealStartDate,
+      allergy,
       (message) => {
         setErrorMessages({ ...errorMessages, [planName]: message });
       }
@@ -160,7 +163,7 @@ const SubscriptionPlans = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-5 w-full lg:h-full my-auto">
+      <div className="flex flex-col justify-start items-center p-5 w-full pt-10">
         <div className="bg-white shadow-md rounded-lg p-5 lg:p-20 w-full max-w-[1500px] lg:w-[1200px]">
           <h2 className="text-2xl lg:text-3xl text-black font-semibold text-center mb-8">
             Subscribe Your Meal Plans
@@ -266,6 +269,22 @@ const SubscriptionPlans = () => {
                           onKeyDown={(e) => e.preventDefault()} // Prevent manual typing
                         />
                       </div>
+                      <div className="flex items-center">
+                        <label className="mr-2">Allergy:</label>
+                        <input
+                          type="text"
+                          placeholder="Any allergies?"
+                          className="border-2 border-grey-500 rounded-md p-1 w-full max-w-[200px]"
+                          value={currentPlanDetails.allergy}
+                          onChange={(e) =>
+                            handleDetailChange(
+                              plan.name,
+                              "allergy",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                     {isSubscribedTo(plan.name) ? (
                       <p className="text-theme-color-1 font-bold py-3 border-2 rounded-md border-theme-color-1">
@@ -281,7 +300,8 @@ const SubscriptionPlans = () => {
                             currentPlanDetails.mealType,
                             currentPlanDetails.carbType,
                             currentPlanDetails.lunchDinner,
-                            currentPlanDetails.mealStartDate
+                            currentPlanDetails.mealStartDate,
+                            currentPlanDetails.allergy
                           )
                         }
                         classes="w-full"

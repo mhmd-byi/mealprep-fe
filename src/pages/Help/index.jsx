@@ -11,8 +11,8 @@ export const HelpPage = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-5 w-full h-auto lg:h-full">
-        <div className="bg-white shadow-md rounded-lg p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto my-auto">
+      <div className="flex flex-col justify-start items-center p-5 w-full pt-10">
+        <div className="bg-white shadow-md rounded-lg p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto">
           <div className="lg:w-1/3 mb-10 lg:mb-0">
             <h2 className="text-3xl font-bold text-theme-color-1 mb-4">Frequently Asked Questions</h2>
             <p className="text-gray-600">

@@ -63,6 +63,7 @@ export const useSubscription = () => {
     carbType,
     lunchDinner,
     mealStartDate,
+    allergy,
     setErrorMessage,
   ) => {
     if (isSubscribed) {
@@ -90,6 +91,7 @@ export const useSubscription = () => {
           carbType,
           lunchDinner,
           mealStartDate,
+          allergy,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -120,6 +122,7 @@ export const useSubscription = () => {
                 carbType,
                 lunchDinner,
                 mealStartDate,
+                allergy,
               },
               headers: {
                 Authorization: `Bearer ${token}`,
