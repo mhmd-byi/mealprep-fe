@@ -77,6 +77,15 @@ export const UserListWithCancelRequest = () => {
     return dateString ? new Date(dateString).toLocaleString() : "N/A";
   };
 
+  const calculateDaysOff = (startDate, endDate) => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+  };
+
   const exportToCSV = () => {
     // Define headers
     const headers = [
@@ -84,6 +93,7 @@ export const UserListWithCancelRequest = () => {
       "Name",
       "Start Date",
       "End Date",
+      "Days Off",
       "Meal Type",
       "Request Time",
     ];
@@ -94,6 +104,7 @@ export const UserListWithCancelRequest = () => {
       meal.name,
       formatDate(meal.startDate),
       formatDate(meal.endDate),
+      calculateDaysOff(meal.startDate, meal.endDate),
       meal.mealType,
       formatDateTime(meal.createdAt),
     ]);
@@ -193,6 +204,7 @@ export const UserListWithCancelRequest = () => {
                           "Name",
                           "Start Date",
                           "End Date",
+                          "Days Off",
                           "Meal Type",
                           "Request Time",
                         ].map((header) => (
@@ -231,6 +243,10 @@ export const UserListWithCancelRequest = () => {
                                 <span className="text-left">{formatDate(meal.endDate)}</span>
                               </div>
                               <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">Days Off:</span>
+                                <span className="text-left">{calculateDaysOff(meal.startDate, meal.endDate)}</span>
+                              </div>
+                              <div className="flex text-left justify-between">
                                 <span className="font-medium text-left">Meal Type:</span>
                                 <span className="capitalize text-left">
                                   {meal.mealType}
@@ -255,6 +271,9 @@ export const UserListWithCancelRequest = () => {
                           </td>
                           <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {formatDate(meal.endDate)}
+                          </td>
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
+                            {calculateDaysOff(meal.startDate, meal.endDate)}
                           </td>
                           <td className="hidden px-4 py-4 text-sm text-left text-gray-900 capitalize whitespace-nowrap md:table-cell">
                             {meal.mealType}
