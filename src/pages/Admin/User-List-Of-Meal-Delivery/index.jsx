@@ -5,6 +5,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
+import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 export const UserListOfMealDelivery = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
@@ -23,6 +24,15 @@ export const UserListOfMealDelivery = () => {
     mealCount: '',
     operator: '>'
   });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const fetchUserDetails = async (userId) => {
     try {
@@ -64,6 +74,34 @@ export const UserListOfMealDelivery = () => {
 
     return searchMatch && planMatch && mealCountMatch;
   });
+
+  const sortedMeals = [...filteredMeals].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    let aValue, bValue;
+    if (sortConfig.key === 'name') {
+      aValue = a.name.toLowerCase();
+      bValue = b.name.toLowerCase();
+    } else if (sortConfig.key === 'mealCount') {
+      aValue = (a.lunchMeals || 0) + (a.nextDayLunchMeals || 0) + 
+               (a.dinnerMeals || 0) + (a.nextDayDinnerMeals || 0);
+      bValue = (b.lunchMeals || 0) + (b.nextDayLunchMeals || 0) + 
+               (b.dinnerMeals || 0) + (b.nextDayDinnerMeals || 0);
+    }
+
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    ) : (
+      <ChevronDown className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    );
+  };
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -166,15 +204,15 @@ export const UserListOfMealDelivery = () => {
   return (
     <>
       <DashboardLayoutComponent>
-      <div className="block lg:flex flex-col justify-start items-start p-5 w-full">
-        <div className="w-full max-w-full py-8 px-4 sm:px-6 lg:px-8">
+      <div className="block flex-col justify-start items-start p-5 w-full lg:flex">
+        <div className="px-4 py-8 w-full max-w-full sm:px-6 lg:px-8">
           <div className="mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Meal Delivery List</h2>
-            <div className="bg-white rounded-lg overflow-hidden shadow">
+            <h2 className="mb-4 text-2xl font-bold">Meal Delivery List</h2>
+            <div className="overflow-hidden bg-white rounded-lg shadow">
               <div className="flex flex-col">
-                <div className="flex flex-col p-5 text-center w-full">
+                <div className="flex flex-col p-5 w-full text-center">
                   <form onSubmit={handleFormSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       <div>
                         <Input
                           type="date"
@@ -203,13 +241,13 @@ export const UserListOfMealDelivery = () => {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                        className="px-4 py-2 font-medium text-white bg-green-500 rounded-lg transition duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                       >
                         {isLoading ? "Submitting..." : "Submit"}
                       </Button>
                       
                       {mealDeliveryList.length > 0 && (
-                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                        <div className="flex flex-col gap-4 items-center sm:flex-row">
                           <SearchBar 
                             value={searchQuery}
                             onChange={setSearchQuery}
@@ -218,16 +256,16 @@ export const UserListOfMealDelivery = () => {
                           <button
                             onClick={() => setShowFilterPopup(true)}
                             type="button"
-                            className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-white text-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:bg-theme-color-1 hover:text-white transition-colors duration-300"
+                            className="flex justify-center items-center px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
                           >
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                             </svg>
                             Filter
                           </button>
                           <Button
-                            onClick={exportToCSV}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            onClick={() => exportToCSV(sortedMeals)}
+                            className="px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition duration-300 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                           >
                             Export to CSV
                           </Button>
@@ -237,22 +275,27 @@ export const UserListOfMealDelivery = () => {
                   </form>
                   
                   {error && (
-                    <p className="text-red-500 mt-4 mb-2">{error}</p>
+                    <p className="mt-4 mb-2 text-red-500">{error}</p>
                   )}
 
                   <div className="mt-4 w-full">
-                    {filteredMeals.length > 0 ? (
+                    {isLoading ? (
+                      <div className="flex flex-col justify-center items-center py-20">
+                        <div className="w-12 h-12 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
+                        <p className="mt-4 font-medium text-gray-500">Loading delivery list...</p>
+                      </div>
+                    ) : sortedMeals.length > 0 ? (
                       <div className="w-full">
                         {/* Desktop View */}
-                        <div className="hidden md:block overflow-x-auto">
-                          <table className="w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
-                            <thead className="bg-gray-50 sticky top-0 z-10">
+                        <div className="hidden overflow-x-auto md:block">
+                          <table className="w-full text-left divide-y divide-gray-200">
+                            <thead className="sticky top-0 z-10 bg-gray-50">
                               <tr>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                  Name
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
-                                  Email
+                                <th 
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('name')}
+                                >
+                                  Customer Info <SortIcon columnKey="name" />
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                   Mobile
@@ -260,68 +303,60 @@ export const UserListOfMealDelivery = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                   Address
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                  Veg/Non-Veg
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Meal Type
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Carb Type
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                  Allergy
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Selected Plan
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Meal Counts Left
+                                <th 
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('mealCount')}
+                                >
+                                  Meal Counts Left <SortIcon columnKey="mealCount" />
                                 </th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {filteredMeals.map((meal, index) => (
+                              {sortedMeals.map((meal, index) => (
                                 <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-4 py-4 text-sm font-medium">
+                                  <td className="px-4 py-4 text-sm font-medium border-b max-w-[250px]">
                                     <div 
-                                      className="break-words cursor-pointer text-theme-color-1 hover:underline"
+                                      className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
                                       onClick={() => fetchUserDetails(meal.userId)}
                                     >
                                       {meal.name}
                                     </div>
+                                    <div className="text-xs text-gray-500 break-all">{meal.email}</div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {meal.email}
-                                    </div>
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                    <div className="break-words">{meal.mobile}</div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {meal.mobile}
-                                    </div>
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                    <div className="break-words">{meal.address}</div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words max-w-[200px]">
-                                      {meal.address}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
                                     <div className="break-words">
                                       {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
                                     </div>
                                   </td>
-                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                  </td>
-                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {meal?.allergy || "None"}
-                                  </td>
-                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
                                     <div className="break-words">
-                                      {meal?.plan || ""}
+                                      {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
                                     </div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
                                     <div className="break-words">
-                                      Lunch: {meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: {meal.dinnerMeals + meal.nextDayDinnerMeals}
+                                      {meal?.plan}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                    <div className="break-words">
+                                      Lunch: {meal.lunchMeals + meal.nextDayLunchMeals},<br/>
+                                      Dinner: {meal.dinnerMeals + meal.nextDayDinnerMeals}
                                     </div>
                                   </td>
                                 </tr>
@@ -331,48 +366,48 @@ export const UserListOfMealDelivery = () => {
                         </div>
 
                         {/* Mobile View */}
-                        <div className="md:hidden mt-4 space-y-4">
-                          {filteredMeals.map((meal, index) => (
-                            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div className="mt-4 space-y-4 md:hidden">
+                          {sortedMeals.map((meal, index) => (
+                            <div key={index} className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
                               <div className="space-y-2">
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Name:</span>
                                   <span 
-                                    className="text-theme-color-1 cursor-pointer hover:underline text-right break-words max-w-[60%]"
+                                    className="font-bold text-right cursor-pointer text-theme-color-1 hover:underline"
                                     onClick={() => fetchUserDetails(meal.userId)}
                                   >
                                     {meal.name}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Email:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.email}</span>
+                                  <span className="text-gray-900 text-right break-all max-w-[60%]">{meal.email}</span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Mobile:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.mobile}</span>
+                                  <span className="text-right text-gray-900">{meal.mobile}</span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Address:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.address}</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.postalAddress}</span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
-                                  <span className="font-medium text-gray-500">Veg/Non-Veg:</span>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Meal Type:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">
                                     {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Carb Type:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">
                                     {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Selected Plan:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Allergy:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
                                 </div>
@@ -388,9 +423,9 @@ export const UserListOfMealDelivery = () => {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-center py-4 text-gray-500">
-                        No meal delivery data found
-                      </p>
+                      <div className="flex flex-col justify-center items-center py-10">
+                        <p className="font-medium text-center text-gray-500">No meal delivery data found</p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -416,12 +451,12 @@ export const UserListOfMealDelivery = () => {
       content={
         isPopupLoading ? (
           <div className="flex justify-center p-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-theme-color-1"></div>
+            <div className="w-8 h-8 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
           </div>
         ) : (
           selectedUser && (
             <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 border-b pb-4">
+              <div className="grid grid-cols-2 gap-4 pb-4 border-b">
                 <div>
                   <p className="text-gray-500">Name</p>
                   <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
@@ -440,10 +475,10 @@ export const UserListOfMealDelivery = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg mb-4">
+              <div className="flex justify-between items-center p-3 mb-4 bg-gray-50 rounded-lg">
                 <div>
                   <p className="text-gray-500">Meal Counts Left</p>
-                  <p className="font-bold text-lg text-theme-color-1">
+                  <p className="text-lg font-bold text-theme-color-1">
                     Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)}, 
                     Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
                   </p>
@@ -451,11 +486,11 @@ export const UserListOfMealDelivery = () => {
               </div>
 
               <div>
-                <h3 className="text-lg font-bold mb-2">Subscription History</h3>
+                <h3 className="mb-2 text-lg font-bold">Subscription History</h3>
                 <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
                   {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
                     [...selectedUser.subscriptions].reverse().map((sub, i) => (
-                      <div key={i} className="border p-3 rounded-lg bg-white shadow-sm">
+                      <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
                         <div className="flex justify-between font-bold text-theme-color-1">
                           <span>{sub.plan}</span>
                           <span>₹{sub.price}</span>
@@ -466,13 +501,13 @@ export const UserListOfMealDelivery = () => {
                           <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
                           <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                           {sub.allergy && (
-                            <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="text-red-500 font-bold">{sub.allergy}</span></div>
+                            <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No subscription history found.</p>
+                    <p className="py-4 text-center text-gray-500">No subscription history found.</p>
                   )}
                 </div>
               </div>

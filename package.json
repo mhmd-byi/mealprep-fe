@@ -20,6 +20,7 @@
     "emailjs-com": "^3.2.0",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.9.0",
+    "lucide-react": "^1.7.0",
     "razorpay": "^2.9.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -4,9 +4,10 @@ import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
+import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 export const AllRegisteredUsers = () => {
-  const { allRegisteredUsers, downloadCSV } = useAllRegisteredUsers();
+  const { allRegisteredUsers, isLoading, downloadCSV } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -15,6 +16,15 @@ export const AllRegisteredUsers = () => {
     mealCount: '',
     operator: '>'
   });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const filteredUsers = allRegisteredUsers.filter(user => {
     const latestSub = user.subscriptions && user.subscriptions.length > 0 
@@ -48,17 +58,50 @@ export const AllRegisteredUsers = () => {
     return searchMatch && planMatch && mealCountMatch;
   });
 
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    let aValue, bValue;
+    if (sortConfig.key === 'name') {
+      aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
+      bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
+    } else if (sortConfig.key === 'mealCount') {
+      aValue = (a.mealCounts?.lunchMeals || 0) + (a.mealCounts?.nextDayLunchMeals || 0) + 
+               (a.mealCounts?.dinnerMeals || 0) + (a.mealCounts?.nextDayDinnerMeals || 0);
+      bValue = (b.mealCounts?.lunchMeals || 0) + (b.mealCounts?.nextDayLunchMeals || 0) + 
+               (b.mealCounts?.dinnerMeals || 0) + (b.mealCounts?.nextDayDinnerMeals || 0);
+    } else if (sortConfig.key === 'startDate') {
+      const subA = a.subscriptions?.[a.subscriptions.length - 1];
+      const subB = b.subscriptions?.[b.subscriptions.length - 1];
+      aValue = subA ? new Date(subA.subscriptionStartDate).getTime() : 0;
+      bValue = subB ? new Date(subB.subscriptionStartDate).getTime() : 0;
+    }
+
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    ) : (
+      <ChevronDown className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    );
+  };
+
   return (
     <>
       <DashboardLayoutComponent>
-      <div className="block lg:flex flex-col justify-center items-center p-5 w-full">
-        <div className="w-full max-w-full py-6 px-4 sm:px-6 lg:px-8">
+      <div className="block flex-col justify-center items-center p-5 w-full lg:flex">
+        <div className="px-4 py-6 w-full max-w-full sm:px-6 lg:px-8">
           <div className="flex flex-col mx-auto mt-8 mb-4">
-            <div className="bg-white rounded-lg overflow-hidden shadow">
+            <div className="overflow-hidden bg-white rounded-lg shadow">
               <div className="flex flex-col p-5">
-                <div className="flex flex-row justify-between items-center mb-4 p-4 bg-white rounded-t-lg">
+                <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg">
                   <h2 className="text-2xl font-bold">All Users</h2>
-                  <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <div className="flex flex-col gap-4 items-center sm:flex-row">
                     <SearchBar 
                       value={searchQuery}
                       onChange={setSearchQuery}
@@ -66,36 +109,41 @@ export const AllRegisteredUsers = () => {
                     />
                     <button
                       onClick={() => setShowFilterPopup(true)}
-                      className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-white text-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:bg-theme-color-1 hover:text-white transition-colors duration-300"
+                      className="flex justify-center items-center px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
                     >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                       </svg>
                       Filter
                     </button>
                     <button
-                      onClick={() => downloadCSV(filteredUsers)}
+                      onClick={() => downloadCSV(sortedUsers)}
                       type="button"
-                      className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-theme-color-1 shadow-sm border-2 border-theme-color-1 hover:text-theme-color-1 hover:bg-white text-white transition-colors duration-300"
+                      className="flex justify-center items-center px-4 py-2 text-sm font-semibold text-white rounded-md border-2 shadow-sm transition-colors duration-300 bg-theme-color-1 border-theme-color-1 hover:text-theme-color-1 hover:bg-white"
                     >
                       Export to CSV
                     </button>
                   </div>
                 </div>
-                <div className="flex flex-col text-center w-full">
+                <div className="flex flex-col w-full text-center">
                   <div className="mt-4 w-full">
-                    {filteredUsers.length > 0 ? (
+                    {isLoading ? (
+                      <div className="flex flex-col justify-center items-center py-20">
+                        <div className="w-12 h-12 rounded-full border-b-2 animate-spin" style={{ borderColor: '#3c9b62' }}></div>
+                        <p className="mt-4 font-medium text-gray-500">Loading user data...</p>
+                      </div>
+                    ) : sortedUsers.length > 0 ? (
                       <div className="w-full">
                         {/* Desktop View */}
-                        <div className="hidden md:block overflow-x-auto">
-                          <table className="w-full divide-y divide-gray-200 dark:divide-neutral-700 text-left">
-                            <thead className="bg-gray-50 sticky top-0 z-10">
+                        <div className="hidden overflow-x-auto md:block">
+                          <table className="w-full text-left divide-y divide-gray-200 dark:divide-neutral-700">
+                            <thead className="sticky top-0 z-10 bg-gray-50">
                               <tr>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                  Name
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
-                                  Email
+                                <th 
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('name')}
+                                >
+                                  Customer Info <SortIcon columnKey="name" />
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                   Mobile
@@ -106,32 +154,34 @@ export const AllRegisteredUsers = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                   Current Plan
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Meal Counts Left
+                                <th 
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('mealCount')}
+                                >
+                                  Meal Counts Left <SortIcon columnKey="mealCount" />
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Allergy
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Meal Start Date
+                                <th 
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('startDate')}
+                                >
+                                  Meal Start Date <SortIcon columnKey="startDate" />
                                 </th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {filteredUsers.map((user, index) => (
+                              {sortedUsers.map((user, index) => (
                                 <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-4 py-4 text-sm font-medium border-b">
+                                  <td className="px-4 py-4 text-sm font-medium border-b max-w-[250px]">
                                     <div 
-                                      className="break-words cursor-pointer text-theme-color-1 hover:underline"
+                                      className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
                                       onClick={() => setSelectedUser(user)}
                                     >
                                       {user.firstName} {user.lastName}
                                     </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {user.email}
-                                    </div>
+                                    <div className="text-xs text-gray-500 break-all">{user.email}</div>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-900">
                                     <div className="break-words">
@@ -170,14 +220,14 @@ export const AllRegisteredUsers = () => {
                         </div>
 
                         {/* Mobile View */}
-                        <div className="md:hidden space-y-4">
-                          {filteredUsers.map((user, index) => (
+                        <div className="space-y-4 md:hidden">
+                          {sortedUsers.map((user, index) => (
                             <div
                               key={index}
-                              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+                              className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
                             >
                               <div className="space-y-2">
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Name:
                                   </span>
@@ -188,7 +238,7 @@ export const AllRegisteredUsers = () => {
                                     {user.firstName} {user.lastName}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Email:
                                   </span>
@@ -196,7 +246,7 @@ export const AllRegisteredUsers = () => {
                                     {user.email}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Mobile:
                                   </span>
@@ -204,7 +254,7 @@ export const AllRegisteredUsers = () => {
                                     {user.mobile}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Address:
                                   </span>
@@ -212,7 +262,7 @@ export const AllRegisteredUsers = () => {
                                     {user.postalAddress}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Current Plan:
                                   </span>
@@ -220,7 +270,7 @@ export const AllRegisteredUsers = () => {
                                     {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Meal Counts Left:
                                   </span>
@@ -228,7 +278,7 @@ export const AllRegisteredUsers = () => {
                                     Lunch: {(user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0)}, Dinner: {(user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0)}
                                   </span>
                                 </div>
-                                <div className="flex justify-between border-b pb-2">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">
                                     Allergy:
                                   </span>
@@ -250,9 +300,9 @@ export const AllRegisteredUsers = () => {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-center py-4 text-gray-500">
-                        No user data found
-                      </p>
+                      <div className="flex flex-col justify-center items-center py-10">
+                        <p className="font-medium text-gray-500">No user data found</p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -277,7 +327,7 @@ export const AllRegisteredUsers = () => {
       content={
         selectedUser && (
           <div className="space-y-4 text-sm">
-            <div className="grid grid-cols-2 gap-4 border-b pb-4">
+            <div className="grid grid-cols-2 gap-4 pb-4 border-b">
               <div>
                 <p className="text-gray-500">Name</p>
                 <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
@@ -296,10 +346,10 @@ export const AllRegisteredUsers = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg mb-4">
+            <div className="flex justify-between items-center p-3 mb-4 bg-gray-50 rounded-lg">
               <div>
                 <p className="text-gray-500">Meal Counts Left</p>
-                <p className="font-bold text-lg text-theme-color-1">
+                <p className="text-lg font-bold text-theme-color-1">
                   Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)}, 
                   Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
                 </p>
@@ -307,11 +357,11 @@ export const AllRegisteredUsers = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-bold mb-2">Subscription History</h3>
+              <h3 className="mb-2 text-lg font-bold">Subscription History</h3>
               <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
                 {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
                   [...selectedUser.subscriptions].reverse().map((sub, i) => (
-                    <div key={i} className="border p-3 rounded-lg bg-white shadow-sm">
+                    <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
                       <div className="flex justify-between font-bold text-theme-color-1">
                         <span>{sub.plan}</span>
                         <span>₹{sub.price}</span>
@@ -322,7 +372,7 @@ export const AllRegisteredUsers = () => {
                         <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
                         <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                         {sub.allergy && (
-                          <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="text-red-500 font-bold">{sub.allergy}</span></div>
+                          <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                         )}
                         <div><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
                         <div><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>
@@ -330,7 +380,7 @@ export const AllRegisteredUsers = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No subscription history found.</p>
+                  <p className="py-4 text-center text-gray-500">No subscription history found.</p>
                 )}
               </div>
             </div>

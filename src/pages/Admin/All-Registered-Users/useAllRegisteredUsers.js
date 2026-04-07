@@ -3,10 +3,12 @@ import axios from "axios";
 
 export const useAllRegisteredUsers = () => {
   const [allRegisteredUsers, setAllRegisteredUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const token = sessionStorage.getItem("token");
 
   const getAllUsers = async () => {
     try {
+      setIsLoading(true);
       const response = await axios({
         method: 'GET',
         url: `${process.env.REACT_APP_API_URL}user/all`,
@@ -17,6 +19,8 @@ export const useAllRegisteredUsers = () => {
       setAllRegisteredUsers(response.data);
     } catch (e) {
       console.error('error processing request', e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,6 +64,7 @@ export const useAllRegisteredUsers = () => {
 
   return {
     allRegisteredUsers,
-    downloadCSV,
+    isLoading,
+    downloadCSV
   };
 };

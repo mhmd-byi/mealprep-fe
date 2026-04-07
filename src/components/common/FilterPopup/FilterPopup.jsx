@@ -10,7 +10,7 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
       content={
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 font-bold">Plan Type</label>
+            <label className="text-sm text-gray-700 font-bold">Plan Type</label>
             <select 
               className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1"
               value={criteria.planType}
@@ -24,7 +24,7 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 font-bold">Meals Left Count</label>
+            <label className="text-sm text-gray-700 font-bold">Meals Left Count</label>
             <div className="flex gap-2">
               <select 
                 className="w-1/3 p-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1"
