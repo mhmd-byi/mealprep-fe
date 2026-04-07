@@ -1,7 +1,15 @@
 import { useData } from "./useData";
 
 export const Data = () => {
-  const { allRegisteredUsersCount, cancelledMealsCount, mealDeliveryListCountDinner, mealDeliveryListCountLunch, customisationRequestCount } = useData();
+  const { 
+    allRegisteredUsersCount, 
+    cancelledMealsCount, 
+    mealDeliveryListCountDinner, 
+    mealDeliveryListCountLunch, 
+    customisationRequestCount,
+    weeklyCount,
+    monthlyCount 
+  } = useData();
 
   return (
     <div className="px-4 my-16 lg:mt-4">
@@ -20,6 +28,7 @@ export const Data = () => {
               <th className="px-6 py-3 text-md font-medium text-gray-500 uppercase tracking-wider">Delivery count</th>
               <th className="px-6 py-3 text-md font-medium text-gray-500 uppercase tracking-wider">Customised request</th>
               <th className="px-6 py-3 text-md font-medium text-gray-500 uppercase tracking-wider">Cancelled request</th>
+              <th className="px-6 py-3 text-md font-medium uppercase tracking-wider text-green-600">Active Subscriptions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 text-center">
@@ -28,6 +37,10 @@ export const Data = () => {
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">Lunch: {mealDeliveryListCountLunch} <br />Dinner: {mealDeliveryListCountDinner}</td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{customisationRequestCount}</td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{cancelledMealsCount}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900 font-bold">
+                Weekly: {weeklyCount} <br /> 
+                Monthly: {monthlyCount}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -49,6 +62,20 @@ export const Data = () => {
             <p className="text-gray-900">
               <span className="font-medium">Dinner:</span> {mealDeliveryListCountDinner}
             </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg border-2 shadow-sm border-green-200">
+          <h3 className="text-green-700 text-sm font-medium uppercase mb-2">Active Subscriptions</h3>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-gray-500">Weekly</p>
+              <p className="text-xl font-bold text-gray-900">{weeklyCount}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Monthly</p>
+              <p className="text-xl font-bold text-gray-900">{monthlyCount}</p>
+            </div>
           </div>
         </div>
 

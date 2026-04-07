@@ -7,6 +7,8 @@ export const useData = () => {
   const [cancelledMealsCount, setCancelledMealsCount] = useState(0);
   const [mealDeliveryListCountLunch, setMealDeliveryListCountLunch] = useState(0);
   const [mealDeliveryListCountDinner, setMealDeliveryListCountDinner] = useState(0);
+  const [weeklyCount, setWeeklyCount] = useState(0);
+  const [monthlyCount, setMonthlyCount] = useState(0);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const token = sessionStorage.getItem("token");
@@ -21,6 +23,23 @@ export const useData = () => {
         },
       });
       setAllRegisteredUsersCount(response.data.length);
+    } catch (e) {
+      console.error("error processing request", e);
+    }
+  };
+
+  const getActiveSubscriptionCounts = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}subscription/active-subscription-counts`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setWeeklyCount(response.data.weeklyCount);
+      setMonthlyCount(response.data.monthlyCount);
     } catch (e) {
       console.error("error processing request", e);
     }
@@ -104,6 +123,7 @@ export const useData = () => {
     getCancelledRequests();
     fetchBothMealCOunts();
     getCustomisationRequestCount();
+    getActiveSubscriptionCounts();
   }, [token]);
 
   return {
@@ -112,5 +132,7 @@ export const useData = () => {
     mealDeliveryListCountLunch,
     mealDeliveryListCountDinner,
     customisationRequestCount,
+    weeklyCount,
+    monthlyCount,
   };
 };
