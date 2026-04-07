@@ -22,8 +22,9 @@ const AllHolidays = () => {
           },
         }
       );
+      const holidays = response.data.holidays || [];
       // Sort holidays by date (newest first)
-      const sortedHolidays = response.data.sort((a, b) => 
+      const sortedHolidays = [...holidays].sort((a, b) => 
         new Date(b.date) - new Date(a.date)
       );
       setAllHolidays(sortedHolidays);
