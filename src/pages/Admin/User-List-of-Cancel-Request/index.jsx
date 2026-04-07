@@ -73,9 +73,20 @@ export const UserListWithCancelRequest = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const formatDateTime = (dateString) => {
+    return dateString ? new Date(dateString).toLocaleString() : "N/A";
+  };
+
   const exportToCSV = () => {
     // Define headers
-    const headers = ["User Id", "Name", "Start Date", "End Date", "Meal Type"];
+    const headers = [
+      "User Id",
+      "Name",
+      "Start Date",
+      "End Date",
+      "Meal Type",
+      "Request Time",
+    ];
 
     // Convert data to CSV format
     const csvData = cancelledMeals.map((meal) => [
@@ -84,6 +95,7 @@ export const UserListWithCancelRequest = () => {
       formatDate(meal.startDate),
       formatDate(meal.endDate),
       meal.mealType,
+      formatDateTime(meal.createdAt),
     ]);
 
     // Combine headers and data
@@ -119,17 +131,17 @@ export const UserListWithCancelRequest = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 w-full h-full">
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg overflow-hidden shadow-md">
+      <div className="flex flex-col justify-center items-center p-4 w-full h-full sm:p-6 md:p-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="overflow-hidden bg-white rounded-lg shadow-md">
             <div className="p-4 md:p-6">
-              <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+              <h2 className="mb-4 text-xl font-bold text-center md:text-2xl">
                 Cancelled Meals
               </h2>
 
               {/* Form Container - Responsive Grid */}
               <form onSubmit={handleFormSubmit} className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <div className="grid grid-cols-1 gap-4 items-center md:grid-cols-3">
                   <div className="md:col-span-2">
                     <Input
                       type="date"
@@ -151,10 +163,10 @@ export const UserListWithCancelRequest = () => {
 
               {/* Export Button */}
               {cancelledMeals.length > 0 && (
-                <div className="mb-4 flex justify-end">
+                <div className="flex justify-end mb-4">
                   <Button
                     onClick={exportToCSV}
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                    className="flex gap-2 items-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition duration-300 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     {/* <Download size={16} /> */}
                     Export CSV
@@ -164,12 +176,13 @@ export const UserListWithCancelRequest = () => {
 
               {/* Error Message */}
               {error && (
-                <div className="text-center mb-4">
+                <div className="mb-4 text-center">
                   <p className="text-red-500">{error}</p>
                 </div>
               )}
 
               {/* Responsive Table Container */}
+              {console.log('these are cancelled meals', cancelledMeals)}
               <div className="overflow-x-auto">
                 {cancelledMeals.length > 0 ? (
                   <table className="w-full divide-y divide-gray-200">
@@ -181,10 +194,11 @@ export const UserListWithCancelRequest = () => {
                           "Start Date",
                           "End Date",
                           "Meal Type",
+                          "Request Time",
                         ].map((header) => (
                           <th
                             key={header}
-                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell"
+                            className="hidden px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase md:table-cell"
                           >
                             {header}
                           </th>
@@ -195,58 +209,65 @@ export const UserListWithCancelRequest = () => {
                       {cancelledMeals.map((meal, index) => (
                         <tr
                           key={index}
-                          className="hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row"
+                          className="flex flex-col border-b hover:bg-gray-100 md:border-none md:table-row"
                         >
                           {/* Mobile View - Card-like Layout */}
-                          <td className="md:hidden p-4">
+                          <td className="p-4 md:hidden">
                             <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <span className="font-medium">User Id:</span>
-                                <span>{meal.userId}</span>
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">User Id:</span>
+                                <span className="text-left">{meal.userId}</span>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Name:</span>
-                                <span>{meal.name}</span>
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">Name:</span>
+                                <span className="text-left">{meal.name}</span>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Start Date:</span>
-                                <span>{formatDate(meal.startDate)}</span>
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">Start Date:</span>
+                                <span className="text-left">{formatDate(meal.startDate)}</span>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">End Date:</span>
-                                <span>{formatDate(meal.endDate)}</span>
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">End Date:</span>
+                                <span className="text-left">{formatDate(meal.endDate)}</span>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Meal Type:</span>
-                                <span className="capitalize">
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">Meal Type:</span>
+                                <span className="capitalize text-left">
                                   {meal.mealType}
                                 </span>
+                              </div>
+                              <div className="flex text-left justify-between">
+                                <span className="font-medium text-left">Request Time:</span>
+                                <span className="text-left">{formatDateTime(meal.createdAt)}</span>
                               </div>
                             </div>
                           </td>
 
                           {/* Desktop View */}
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {meal.userId}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 hidden md:table-cell">
+                          <td className="hidden px-4 py-4 text-sm font-medium text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {meal.name}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {formatDate(meal.startDate)}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {formatDate(meal.endDate)}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize hidden md:table-cell">
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 capitalize whitespace-nowrap md:table-cell">
                             {meal.mealType}
+                          </td>
+                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
+                            {formatDateTime(meal.createdAt)}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 ) : (
-                  <p className="text-center py-4 text-gray-500">
+                  <p className="py-4 text-center text-gray-500">
                     No cancelled meals found
                   </p>
                 )}
