@@ -68,7 +68,7 @@ export const UserListOfMealDelivery = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Selected Plan", "Meal Counts Left"];
+    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Allergy", "Selected Plan", "Meal Counts Left"];
     
     // Convert data to CSV format
     const csvData = mealDeliveryList.map(meal => [
@@ -78,6 +78,7 @@ export const UserListOfMealDelivery = () => {
       meal.address,
       meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1),
       meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1),
+      meal.allergy,
       meal.plan,
       `Lunch: ${meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: ${meal.dinnerMeals + meal.nextDayDinnerMeals}`,
     ]);
@@ -194,6 +195,9 @@ export const UserListOfMealDelivery = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                   Carb Type
                                 </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                  Allergy
+                                </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Selected Plan
                                 </th>
@@ -230,12 +234,13 @@ export const UserListOfMealDelivery = () => {
                                       {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
                                     </div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                    </div>
+                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
+                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {meal?.allergy || "None"}
+                                  </td>
+                                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div className="break-words">
                                       {meal?.plan || ""}
                                     </div>
@@ -287,6 +292,10 @@ export const UserListOfMealDelivery = () => {
                                 <div className="flex justify-between border-b pb-2">
                                   <span className="font-medium text-gray-500">Selected Plan:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-gray-500">Allergy:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="font-medium text-gray-500">Meal Counts Left:</span>
