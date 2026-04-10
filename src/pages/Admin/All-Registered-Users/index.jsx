@@ -183,131 +183,149 @@ export const AllRegisteredUsers = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {sortedUsers.map((user, index) => (
-                                <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-4 py-4 text-sm font-medium border-b max-w-[250px]">
-                                    <div 
-                                      className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
-                                      onClick={() => setSelectedUser(user)}
-                                    >
-                                      {user.firstName} {user.lastName}
-                                    </div>
-                                    <div className="text-xs text-gray-500 break-all">{user.email}</div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {user.mobile}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words max-w-[200px]">
-                                      {user.postalAddress}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                    <div className="break-words">
-                                      Lunch: {(user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0)}, Dinner: {(user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0)}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                    <div className="break-words">
-                                      {user.subscriptions[user.subscriptions.length - 1]?.allergy || 'None'}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                    <div className="break-words">
-                                      {user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate?.split('T')[0].split('-').reverse().join('-') || 'N/A'}
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
+                              {sortedUsers.map((user, index) => {
+                                const latestSub = user.subscriptions && user.subscriptions.length > 0 
+                                  ? user.subscriptions[user.subscriptions.length - 1] 
+                                  : null;
+                                const lunchCount = (latestSub?.lunchMeals || 0) + (latestSub?.nextDayLunchMeals || 0);
+                                const dinnerCount = (latestSub?.dinnerMeals || 0) + (latestSub?.nextDayDinnerMeals || 0);
+                                const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+
+                                return (
+                                  <tr key={index} className={`hover:bg-gray-100 ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
+                                    <td className="px-4 py-4 text-sm font-medium border-b max-w-[250px]">
+                                      <div 
+                                        className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
+                                        onClick={() => setSelectedUser(user)}
+                                      >
+                                        {user.firstName} {user.lastName}
+                                      </div>
+                                      <div className="text-xs text-gray-500 break-all">{user.email}</div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words">
+                                        {user.mobile}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words max-w-[200px]">
+                                        {user.postalAddress}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words">
+                                        {latestSub?.plan || 'No active plan'}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words">
+                                        Lunch: {lunchCount}, Dinner: {dinnerCount}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words">
+                                        {latestSub?.allergy || 'None'}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      <div className="break-words">
+                                        {latestSub?.subscriptionStartDate?.split('T')[0].split('-').reverse().join('-') || 'N/A'}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>
 
                         {/* Mobile View */}
                         <div className="space-y-4 md:hidden">
-                          {sortedUsers.map((user, index) => (
-                            <div
-                              key={index}
-                              className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
-                            >
-                              <div className="space-y-2">
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Name:
-                                  </span>
-                                  <span 
-                                    className="text-theme-color-1 cursor-pointer hover:underline text-right break-words max-w-[60%]"
-                                    onClick={() => setSelectedUser(user)}
-                                  >
-                                    {user.firstName} {user.lastName}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Email:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {user.email}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Mobile:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {user.mobile}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Address:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {user.postalAddress}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Current Plan:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Meal Counts Left:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    Lunch: {(user.subscriptions[user.subscriptions.length - 1]?.lunchMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayLunchMeals || 0)}, Dinner: {(user.subscriptions[user.subscriptions.length - 1]?.dinnerMeals || 0) + (user.subscriptions[user.subscriptions.length - 1]?.nextDayDinnerMeals || 0)}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between pb-2 border-b">
-                                  <span className="font-medium text-gray-500">
-                                    Allergy:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {user.subscriptions[user.subscriptions.length - 1]?.allergy || "None"}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="font-medium text-gray-500">
-                                    Meal Start Date:
-                                  </span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {new Date(user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate).toLocaleDateString()}
-                                  </span>
+                          {sortedUsers.map((user, index) => {
+                            const latestSub = user.subscriptions && user.subscriptions.length > 0 
+                              ? user.subscriptions[user.subscriptions.length - 1] 
+                              : null;
+                            const lunchCount = (latestSub?.lunchMeals || 0) + (latestSub?.nextDayLunchMeals || 0);
+                            const dinnerCount = (latestSub?.dinnerMeals || 0) + (latestSub?.nextDayDinnerMeals || 0);
+                            const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+
+                            return (
+                              <div
+                                key={index}
+                                className={`p-4 rounded-lg border border-gray-200 shadow-sm ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}
+                              >
+                                <div className="space-y-2">
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Name:
+                                    </span>
+                                    <span 
+                                      className="text-theme-color-1 cursor-pointer hover:underline text-right break-words max-w-[60%]"
+                                      onClick={() => setSelectedUser(user)}
+                                    >
+                                      {user.firstName} {user.lastName}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Email:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-all max-w-[60%]">
+                                      {user.email}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Mobile:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {user.mobile}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Address:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {user.postalAddress}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Current Plan:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {latestSub?.plan || 'No active plan'}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Meal Counts Left:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      Lunch: {lunchCount}, Dinner: {dinnerCount}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between pb-2 border-b">
+                                    <span className="font-medium text-gray-500">
+                                      Allergy:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {latestSub?.allergy || "None"}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="font-medium text-gray-500">
+                                      Meal Start Date:
+                                    </span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {latestSub?.subscriptionStartDate ? new Date(latestSub.subscriptionStartDate).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     ) : (
