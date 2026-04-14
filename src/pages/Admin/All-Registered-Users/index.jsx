@@ -12,6 +12,7 @@ export const AllRegisteredUsers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [showZeroMeals, setShowZeroMeals] = useState(false);
   const location = useLocation();
   const [filterCriteria, setFilterCriteria] = useState({
     planType: location.state?.planType || 'All',
@@ -37,6 +38,64 @@ export const AllRegisteredUsers = () => {
     setSortConfig({ key, direction });
   };
 
+  const calculateSubEndDate = (user) => {
+    const latestSub = user.subscriptions?.[user.subscriptions.length - 1];
+    if (!latestSub) return 'N/A';
+
+    const lunchMeals = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
+    const dinnerMeals = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
+    let totalMealsLeft = lunchMeals + dinnerMeals;
+
+    if (totalMealsLeft <= 0) return 'Finished';
+
+    const cancellations = user.cancellations || [];
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
+    let daysCount = 0;
+    while (totalMealsLeft > 0 && daysCount < 365) { 
+      daysCount++;
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(currentDate.getDate() + daysCount);
+      
+      let mealsForThisDay = 0;
+      if (latestSub.mealType === 'both') {
+        const isLunchCancelled = cancellations.some(c => {
+          const start = new Date(c.startDate);
+          const end = new Date(c.endDate);
+          start.setHours(0,0,0,0);
+          end.setHours(0,0,0,0);
+          return nextDate >= start && nextDate <= end && (c.mealType === 'lunch' || c.mealType === 'both');
+        });
+        const isDinnerCancelled = cancellations.some(c => {
+          const start = new Date(c.startDate);
+          const end = new Date(c.endDate);
+          start.setHours(0,0,0,0);
+          end.setHours(0,0,0,0);
+          return nextDate >= start && nextDate <= end && (c.mealType === 'dinner' || c.mealType === 'both');
+        });
+        if (!isLunchCancelled) mealsForThisDay++;
+        if (!isDinnerCancelled) mealsForThisDay++;
+      } else {
+        const userMealType = latestSub.mealType?.toLowerCase();
+        const isCancelled = cancellations.some(c => {
+          const start = new Date(c.startDate);
+          const end = new Date(c.endDate);
+          start.setHours(0,0,0,0);
+          end.setHours(0,0,0,0);
+          return nextDate >= start && nextDate <= end && (c.mealType === userMealType || c.mealType === 'both');
+        });
+        if (!isCancelled) mealsForThisDay = 1;
+      }
+      
+      totalMealsLeft -= mealsForThisDay;
+      if (totalMealsLeft <= 0) {
+        return nextDate.toLocaleDateString('en-GB').split('/').join('-');
+      }
+    }
+    return 'Pending';
+  };
+
   const filteredUsers = allRegisteredUsers.filter(user => {
     const latestSub = user.subscriptions && user.subscriptions.length > 0 
       ? user.subscriptions[user.subscriptions.length - 1] 
@@ -52,13 +111,17 @@ export const AllRegisteredUsers = () => {
       planMatch = latestSub?.plan?.includes(filterCriteria.planType);
     }
 
-    // Meal Count filter
+    // Meal Count Presence filter
+    const totalMeals = (user.mealCounts?.lunchMeals || 0) + 
+                      (user.mealCounts?.nextDayLunchMeals || 0) + 
+                      (user.mealCounts?.dinnerMeals || 0) + 
+                      (user.mealCounts?.nextDayDinnerMeals || 0);
+    
+    const presenceMatch = showZeroMeals ? true : totalMeals > 0;
+
+    // Meal Count filter (from FilterPopup)
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== '') {
-      const totalMeals = (user.mealCounts?.lunchMeals || 0) + 
-                        (user.mealCounts?.nextDayLunchMeals || 0) + 
-                        (user.mealCounts?.dinnerMeals || 0) + 
-                        (user.mealCounts?.nextDayDinnerMeals || 0);
       const targetCount = parseInt(filterCriteria.mealCount);
       
       if (filterCriteria.operator === '>') mealCountMatch = totalMeals > targetCount;
@@ -66,7 +129,7 @@ export const AllRegisteredUsers = () => {
       else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
     }
 
-    return searchMatch && planMatch && mealCountMatch;
+    return searchMatch && planMatch && mealCountMatch && presenceMatch;
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -118,6 +181,18 @@ export const AllRegisteredUsers = () => {
                       onChange={setSearchQuery}
                       placeholder="Search name or email..."
                     />
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors hover:bg-gray-100">
+                      <input 
+                        type="checkbox" 
+                        checked={showZeroMeals} 
+                        onChange={(e) => setShowZeroMeals(e.target.checked)}
+                        className="w-4 h-4 rounded text-theme-color-1 focus:ring-theme-color-1 border-gray-300 cursor-pointer"
+                        id="showZeroMeals"
+                      />
+                      <label htmlFor="showZeroMeals" className="text-sm font-semibold text-gray-700 cursor-pointer whitespace-nowrap select-none">
+                        Show users with 0 meals
+                      </label>
+                    </div>
                     <button
                       onClick={() => setShowFilterPopup(true)}
                       className="flex justify-center items-center px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
@@ -180,6 +255,9 @@ export const AllRegisteredUsers = () => {
                                 >
                                   Meal Start Date <SortIcon columnKey="startDate" />
                                 </th>
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                  Est. End Date
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -231,6 +309,9 @@ export const AllRegisteredUsers = () => {
                                       <div className="break-words">
                                         {latestSub?.subscriptionStartDate?.split('T')[0].split('-').reverse().join('-') || 'N/A'}
                                       </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm font-bold text-theme-color-1 border-b">
+                                      {calculateSubEndDate(user)}
                                     </td>
                                   </tr>
                                 );
@@ -314,12 +395,20 @@ export const AllRegisteredUsers = () => {
                                       {latestSub?.allergy || "None"}
                                     </span>
                                   </div>
-                                  <div className="flex justify-between">
+                                  <div className="flex justify-between pb-2 border-b">
                                     <span className="font-medium text-gray-500">
                                       Meal Start Date:
                                     </span>
                                     <span className="text-gray-900 text-right break-words max-w-[60%]">
                                       {latestSub?.subscriptionStartDate ? new Date(latestSub.subscriptionStartDate).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="font-medium text-gray-500">
+                                      Est. End Date:
+                                    </span>
+                                    <span className="text-theme-color-1 font-bold text-right break-words max-w-[60%]">
+                                      {calculateSubEndDate(user)}
                                     </span>
                                   </div>
                                 </div>
