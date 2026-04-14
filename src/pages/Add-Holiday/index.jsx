@@ -84,8 +84,16 @@ const AddHoliday = () => {
           },
         }
       );
-      console.log(allUsers?.data)
-      allUsers?.data.forEach(async (user) => {
+      
+      const usersToNotify = allUsers?.data.filter(user => {
+        const mc = user.mealCounts;
+        if (!mc) return false;
+        const totalLunch = (mc.lunchMeals || 0) + (mc.nextDayLunchMeals || 0);
+        const totalDinner = (mc.dinnerMeals || 0) + (mc.nextDayDinnerMeals || 0);
+        return totalLunch > 0 || totalDinner > 0;
+      });
+
+      usersToNotify.forEach(async (user) => {
         await axios.post(
           `${process.env.REACT_APP_API_URL}activity/add-activity`,
           {
