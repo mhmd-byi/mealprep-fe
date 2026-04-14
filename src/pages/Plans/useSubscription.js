@@ -131,6 +131,8 @@ export const useSubscription = () => {
 
             if (verifyResponse.status === 201) {
               activityEntry(userId, planName);
+
+              // Notification to Customer
               sendEmail(userId, "", "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
                 Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
                   Important Information:\n
@@ -142,6 +144,26 @@ export const useSubscription = () => {
                   Wishing you a delicious and healthy journey!\n\n
                   Team Mealprep\n
                 `);
+
+              // Detailed Notification to Admin
+              sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `New Subscription: ${userName}`, `A new subscription has been received!\n
+                --- CUSTOMER DETAILS ---
+                Name: ${userName}
+                Email: ${userEmail}
+                User ID: ${userId}
+
+                --- SUBSCRIPTION DETAILS ---
+                Plan: ${planName}
+                Meals Total: ${mealCount}
+                Meal Type: ${mealType}
+                Carb Type: ${carbType}
+                Preference: ${lunchDinner}
+                Start Date: ${mealStartDate}
+                Allergy Info: ${allergy || "None"}
+                
+                Please update the system accordingly.
+                `);
+
               setIsSubscribed(true);
               setCurrentPlan({
                 plan: planName,
