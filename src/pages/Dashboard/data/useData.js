@@ -1,8 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const useData = () => {
   const [allRegisteredUsersCount, setAllRegisteredUsersCount] = useState(0);
+  const [endingSoonCount, setEndingSoonCount] = useState(0);
+  const [endingSoonUsers, setEndingSoonUsers] = useState([]);
   const [customisationRequestCount, setCustomisationRequestCount] = useState(0);
   const [cancelledMealsCount, setCancelledMealsCount] = useState(0);
   const [mealDeliveryListCountLunch, setMealDeliveryListCountLunch] = useState(0);
@@ -22,7 +25,28 @@ export const useData = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setAllRegisteredUsersCount(response.data.length);
+      const users = response.data;
+      setAllRegisteredUsersCount(users.length);
+
+      // Calculate subscriptions ending in next 3 days
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const threeDaysLater = new Date(today);
+      threeDaysLater.setDate(today.getDate() + 3);
+
+      const endingSoon = [];
+      users.forEach(user => {
+        const { date, formattedDate } = calculateSubEndDate(user);
+        if (date && date >= today && date <= threeDaysLater) {
+          endingSoon.push({
+            ...user,
+            estimatedEndDate: formattedDate,
+            estimatedEndDateObj: date
+          });
+        }
+      });
+      setEndingSoonCount(endingSoon.length);
+      setEndingSoonUsers(endingSoon);
     } catch (e) {
       console.error("error processing request", e);
     }
@@ -87,8 +111,9 @@ export const useData = () => {
           ? setMealDeliveryListCountLunch(response.data.length)
           : setMealDeliveryListCountDinner(response.data.length);
       } else {
-        setMealDeliveryListCountLunch(0);
-        setMealDeliveryListCountDinner(0);
+        mealType === "lunch"
+          ? setMealDeliveryListCountLunch(0)
+          : setMealDeliveryListCountDinner(0);
       }
     } catch (error) {
       setError(`Failed to fetch meal deliver list`);
@@ -128,6 +153,8 @@ export const useData = () => {
 
   return {
     allRegisteredUsersCount,
+    endingSoonCount,
+    endingSoonUsers,
     cancelledMealsCount,
     mealDeliveryListCountLunch,
     mealDeliveryListCountDinner,
