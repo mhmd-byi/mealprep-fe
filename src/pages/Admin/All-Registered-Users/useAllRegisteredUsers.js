@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 export const useAllRegisteredUsers = () => {
   const [allRegisteredUsers, setAllRegisteredUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const token = sessionStorage.getItem("token");
+  const [searchParams] = useSearchParams();
+  const planFilter = searchParams.get("plan"); // 'Weekly', 'Monthly', or null
 
   const getAllUsers = async () => {
     try {
       setIsLoading(true);
+      // Build URL — pass plan as query param so the API filters server-side
+      const url = new URL(`${process.env.REACT_APP_API_URL}user/all`);
+      if (planFilter) {
+        url.searchParams.set("plan", planFilter);
+      }
       const response = await axios({
         method: 'GET',
-        url: `${process.env.REACT_APP_API_URL}user/all`,
+        url: url.toString(),
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,7 +34,7 @@ export const useAllRegisteredUsers = () => {
 
   useEffect(() => {
     getAllUsers();
-  }, []);
+  }, [planFilter]); // re-fetch whenever plan query param changes
 
   const convertToCSV = (data) => {
     const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Meal Start Date'];
@@ -41,7 +49,6 @@ export const useAllRegisteredUsers = () => {
       (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A') // Meal Start Date
     ]);
   
-    // Combine headers and rows into a single string
     return [
       headers.join(','),
       ...rows.map(row => row.join(','))
@@ -60,11 +67,11 @@ export const useAllRegisteredUsers = () => {
     link.click();
     document.body.removeChild(link);
   };
-  
 
   return {
     allRegisteredUsers,
     isLoading,
+    planFilter,
     downloadCSV
   };
-};
+};

@@ -13,13 +13,24 @@ export const Data = () => {
     endingSoonCount,
     endingSoonUsers,
     weeklyCount,
-    monthlyCount 
+    monthlyCount,
+    isLoading
   } = useData();
+
+  const StatValue = ({ value, className = "text-lg text-gray-900" }) => (
+    isLoading ? (
+      <div className="flex justify-center items-center py-1">
+        <div className="w-5 h-5 border-2 border-theme-color-1 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    ) : (
+      <span className={className}>{value}</span>
+    )
+  );
   const navigate = useNavigate();
   const [showEndingSoonModal, setShowEndingSoonModal] = useState(false);
 
   const handlePlanClick = (planType) => {
-    navigate('/dashboard/all-registered-users', { state: { planType } });
+    navigate(`/dashboard/all-registered-users?plan=${planType}`);
   };
 
   return (
@@ -45,27 +56,36 @@ export const Data = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 text-center">
             <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{allRegisteredUsersCount}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">Lunch: {mealDeliveryListCountLunch} <br />Dinner: {mealDeliveryListCountDinner}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{customisationRequestCount}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">{cancelledMealsCount}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">
+                <StatValue value={allRegisteredUsersCount} />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">
+                Lunch: <StatValue value={mealDeliveryListCountLunch} /> <br />
+                Dinner: <StatValue value={mealDeliveryListCountDinner} />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">
+                <StatValue value={customisationRequestCount} />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900">
+                <StatValue value={cancelledMealsCount} />
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-gray-900 font-bold">
                 <span 
                   className="cursor-pointer hover:text-theme-color-1 transition-colors duration-200"
                   onClick={() => handlePlanClick('Weekly')}
                 >
-                  Weekly: {weeklyCount}
+                  Weekly: <StatValue value={weeklyCount} className="font-bold" />
                 </span>
                 <br /> 
                 <span 
                    className="cursor-pointer hover:text-theme-color-1 transition-colors duration-200"
                    onClick={() => handlePlanClick('Monthly')}
                 >
-                  Monthly: {monthlyCount}
+                  Monthly: <StatValue value={monthlyCount} className="font-bold" />
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-lg text-red-600 font-bold underline cursor-pointer hover:text-red-700" onClick={() => setShowEndingSoonModal(true)}>
-                {endingSoonCount}
+                <StatValue value={endingSoonCount} className="text-red-600 font-bold underline" />
               </td>
             </tr>
           </tbody>
@@ -76,17 +96,19 @@ export const Data = () => {
       <section className="md:hidden space-y-4">
         <div className="bg-white p-4 rounded-lg border-2 border-theme-color-1 shadow-sm">
           <h3 className="text-gray-500 text-sm font-medium uppercase mb-2">All Registered Users</h3>
-          <p className="text-xl font-semibold text-gray-900">{allRegisteredUsersCount}</p>
+          <p className="text-xl font-semibold text-gray-900">
+            <StatValue value={allRegisteredUsersCount} className="text-xl font-semibold text-gray-900" />
+          </p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border-2 border-theme-color-1 shadow-sm">
           <h3 className="text-gray-500 text-sm font-medium uppercase mb-2">Delivery Count</h3>
           <div className="space-y-1">
             <p className="text-gray-900">
-              <span className="font-medium">Lunch:</span> {mealDeliveryListCountLunch}
+              <span className="font-medium">Lunch:</span> <StatValue value={mealDeliveryListCountLunch} />
             </p>
             <p className="text-gray-900">
-              <span className="font-medium">Dinner:</span> {mealDeliveryListCountDinner}
+              <span className="font-medium">Dinner:</span> <StatValue value={mealDeliveryListCountDinner} />
             </p>
           </div>
         </div>
@@ -99,31 +121,41 @@ export const Data = () => {
               onClick={() => handlePlanClick('Weekly')}
             >
               <p className="text-xs text-gray-500">Weekly</p>
-              <p className="text-xl font-bold text-gray-900">{weeklyCount}</p>
+              <p className="text-xl font-bold text-gray-900">
+                <StatValue value={weeklyCount} className="text-xl font-bold text-gray-900" />
+              </p>
             </div>
             <div 
               className="cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => handlePlanClick('Monthly')}
             >
               <p className="text-xs text-gray-500">Monthly</p>
-              <p className="text-xl font-bold text-gray-900">{monthlyCount}</p>
+              <p className="text-xl font-bold text-gray-900">
+                <StatValue value={monthlyCount} className="text-xl font-bold text-gray-900" />
+              </p>
             </div>
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg border-2 border-theme-color-1 shadow-sm">
           <h3 className="text-gray-500 text-sm font-medium uppercase mb-2">Customised Request</h3>
-          <p className="text-xl font-semibold text-gray-900">{customisationRequestCount}</p>
+          <p className="text-xl font-semibold text-gray-900">
+            <StatValue value={customisationRequestCount} className="text-xl font-semibold text-gray-900" />
+          </p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border-2 border-theme-color-1 shadow-sm">
           <h3 className="text-gray-500 text-sm font-medium uppercase mb-2">Cancelled Request</h3>
-          <p className="text-xl font-semibold text-gray-900">{cancelledMealsCount}</p>
+          <p className="text-xl font-semibold text-gray-900">
+            <StatValue value={cancelledMealsCount} className="text-xl font-semibold text-gray-900" />
+          </p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border-2 border-red-200 shadow-sm">
           <h3 className="text-red-700 text-sm font-medium uppercase mb-2">Subscriptions Ending Soon (3 Days)</h3>
-          <p className="text-xl font-bold text-red-600 underline cursor-pointer" onClick={() => setShowEndingSoonModal(true)}>{endingSoonCount}</p>
+          <p className="text-xl font-bold text-red-600 underline cursor-pointer" onClick={() => setShowEndingSoonModal(true)}>
+            <StatValue value={endingSoonCount} className="text-xl font-bold text-red-600 underline" />
+          </p>
         </div>
       </section>
 

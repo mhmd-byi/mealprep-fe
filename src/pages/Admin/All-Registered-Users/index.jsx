@@ -1,34 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
-import { useLocation } from "react-router-dom";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const AllRegisteredUsers = () => {
-  const { allRegisteredUsers, isLoading, downloadCSV } = useAllRegisteredUsers();
+  const { allRegisteredUsers, isLoading, planFilter, downloadCSV } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [showZeroMeals, setShowZeroMeals] = useState(false);
-  const location = useLocation();
   const [filterCriteria, setFilterCriteria] = useState({
-    planType: location.state?.planType || 'All',
     mealCount: '',
     operator: '>'
   });
-
-  useEffect(() => {
-    if (location.state?.planType) {
-      setFilterCriteria(prev => ({
-        ...prev,
-        planType: location.state.planType
-      }));
-    }
-  }, [location.state]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleSort = (key) => {
@@ -41,39 +29,29 @@ export const AllRegisteredUsers = () => {
 
 
   const filteredUsers = allRegisteredUsers.filter(user => {
-    const latestSub = user.subscriptions && user.subscriptions.length > 0 
-      ? user.subscriptions[user.subscriptions.length - 1] 
-      : null;
-    
-    // Name/Email filter
+    // Name/Email search
     const searchMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Plan Type filter
-    let planMatch = true;
-    if (filterCriteria.planType !== 'All') {
-      planMatch = latestSub?.plan?.includes(filterCriteria.planType);
-    }
 
-    // Meal Count Presence filter
-    const totalMeals = (user.mealCounts?.lunchMeals || 0) + 
-                      (user.mealCounts?.nextDayLunchMeals || 0) + 
-                      (user.mealCounts?.dinnerMeals || 0) + 
+    // Meal count totals
+    const totalMeals = (user.mealCounts?.lunchMeals || 0) +
+                      (user.mealCounts?.nextDayLunchMeals || 0) +
+                      (user.mealCounts?.dinnerMeals || 0) +
                       (user.mealCounts?.nextDayDinnerMeals || 0);
-    
+
+    // Toggle: show users with 0 meals
     const presenceMatch = showZeroMeals ? true : totalMeals > 0;
 
-    // Meal Count filter (from FilterPopup)
+    // Meal count filter (from FilterPopup)
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== '') {
       const targetCount = parseInt(filterCriteria.mealCount);
-      
       if (filterCriteria.operator === '>') mealCountMatch = totalMeals > targetCount;
       else if (filterCriteria.operator === '<') mealCountMatch = totalMeals < targetCount;
       else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
     }
 
-    return searchMatch && planMatch && mealCountMatch && presenceMatch;
+    return searchMatch && mealCountMatch && presenceMatch;
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -118,7 +96,9 @@ export const AllRegisteredUsers = () => {
             <div className="overflow-hidden bg-white rounded-lg shadow">
               <div className="flex flex-col p-5">
                 <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg">
-                  <h2 className="text-2xl font-bold">All Users</h2>
+                  <h2 className="text-2xl font-bold">
+                    {planFilter ? `${planFilter} Plan Subscribers` : 'All Users'}
+                  </h2>
                   <div className="flex flex-col gap-4 items-center sm:flex-row">
                     <SearchBar 
                       value={searchQuery}

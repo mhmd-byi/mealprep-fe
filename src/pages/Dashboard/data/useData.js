@@ -54,16 +54,17 @@ export const useData = () => {
 
   const getActiveSubscriptionCounts = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}subscription/active-subscription-counts`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setWeeklyCount(response.data.weeklyCount);
-      setMonthlyCount(response.data.monthlyCount);
+      // Use the same API as the list page — count = length of what the list will show
+      const [weeklyRes, monthlyRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_URL}user/all?plan=Weekly`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${process.env.REACT_APP_API_URL}user/all?plan=Monthly`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      setWeeklyCount(weeklyRes.data.length);
+      setMonthlyCount(monthlyRes.data.length);
     } catch (e) {
       console.error("error processing request", e);
     }
@@ -77,7 +78,6 @@ export const useData = () => {
 
   const getCancelledRequests = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}subscription/cancelled-meals?date=${currentDate}`,
         {
@@ -90,14 +90,11 @@ export const useData = () => {
     } catch (error) {
       setError('Failed to fetch cancelled meals');
       setCancelledMealsCount(0);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const getDeliveryCount = async (mealType) => {
     try {
-      setIsLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${currentDate}&mealType=${mealType}`,
         {
@@ -118,8 +115,6 @@ export const useData = () => {
     } catch (error) {
       setError(`Failed to fetch meal deliver list`);
       setMealDeliveryListCountLunch(0);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -138,17 +133,28 @@ export const useData = () => {
     }
   };
 
-  const fetchBothMealCOunts = () => {
-    getDeliveryCount("lunch");
-    getDeliveryCount("dinner");
-  };
-
   useEffect(() => {
-    getAllUsers();
-    getCancelledRequests();
-    fetchBothMealCOunts();
-    getCustomisationRequestCount();
-    getActiveSubscriptionCounts();
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await Promise.all([
+          getAllUsers(),
+          getCancelledRequests(),
+          getDeliveryCount("lunch"),
+          getDeliveryCount("dinner"),
+          getCustomisationRequestCount(),
+          getActiveSubscriptionCounts(),
+        ]);
+      } catch (e) {
+        console.error("Error fetching dashboard data", e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchData();
+    }
   }, [token]);
 
   return {
@@ -161,5 +167,6 @@ export const useData = () => {
     customisationRequestCount,
     weeklyCount,
     monthlyCount,
+    isLoading
   };
 };
