@@ -68,7 +68,7 @@ export const useSubscription = () => {
   ) => {
     if (isSubscribed) {
       setErrorMessage(
-        `You already have an active plan. Please wait until ${currentPlan.plan} expires to subscribe to a new one.`
+        `Your current subscription still has meals left. You can purchase a new plan once the remaining meals become 0.`
       );
       return;
     }
@@ -167,6 +167,7 @@ export const useSubscription = () => {
               setIsSubscribed(true);
               setCurrentPlan({
                 plan: planName,
+                subscriptionStartDate: mealStartDate,
                 subscriptionEndDate: new Date().setDate(
                   new Date().getDate() + (planName === "Weekly Plan" ? 7 : 30)
                 ),
@@ -211,7 +212,7 @@ export const useSubscription = () => {
     return (
       currentPlan &&
       currentPlan.plan === planName &&
-      new Date(currentPlan.subscriptionEndDate) > new Date()
+      (currentPlan?.totalAvailableMeals ?? currentPlan?.totalMeals ?? 0) > 0
     );
   };
 
