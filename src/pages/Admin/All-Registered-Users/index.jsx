@@ -6,6 +6,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const AllRegisteredUsers = () => {
   const { allRegisteredUsers, isLoading, downloadCSV } = useAllRegisteredUsers();
@@ -38,63 +39,6 @@ export const AllRegisteredUsers = () => {
     setSortConfig({ key, direction });
   };
 
-  const calculateSubEndDate = (user) => {
-    const latestSub = user.subscriptions?.[user.subscriptions.length - 1];
-    if (!latestSub) return 'N/A';
-
-    const lunchMeals = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
-    const dinnerMeals = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
-    let totalMealsLeft = lunchMeals + dinnerMeals;
-
-    if (totalMealsLeft <= 0) return 'Finished';
-
-    const cancellations = user.cancellations || [];
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-    
-    let daysCount = 0;
-    while (totalMealsLeft > 0 && daysCount < 365) { 
-      daysCount++;
-      const nextDate = new Date(currentDate);
-      nextDate.setDate(currentDate.getDate() + daysCount);
-      
-      let mealsForThisDay = 0;
-      if (latestSub.mealType === 'both') {
-        const isLunchCancelled = cancellations.some(c => {
-          const start = new Date(c.startDate);
-          const end = new Date(c.endDate);
-          start.setHours(0,0,0,0);
-          end.setHours(0,0,0,0);
-          return nextDate >= start && nextDate <= end && (c.mealType === 'lunch' || c.mealType === 'both');
-        });
-        const isDinnerCancelled = cancellations.some(c => {
-          const start = new Date(c.startDate);
-          const end = new Date(c.endDate);
-          start.setHours(0,0,0,0);
-          end.setHours(0,0,0,0);
-          return nextDate >= start && nextDate <= end && (c.mealType === 'dinner' || c.mealType === 'both');
-        });
-        if (!isLunchCancelled) mealsForThisDay++;
-        if (!isDinnerCancelled) mealsForThisDay++;
-      } else {
-        const userMealType = latestSub.mealType?.toLowerCase();
-        const isCancelled = cancellations.some(c => {
-          const start = new Date(c.startDate);
-          const end = new Date(c.endDate);
-          start.setHours(0,0,0,0);
-          end.setHours(0,0,0,0);
-          return nextDate >= start && nextDate <= end && (c.mealType === userMealType || c.mealType === 'both');
-        });
-        if (!isCancelled) mealsForThisDay = 1;
-      }
-      
-      totalMealsLeft -= mealsForThisDay;
-      if (totalMealsLeft <= 0) {
-        return nextDate.toLocaleDateString('en-GB').split('/').join('-');
-      }
-    }
-    return 'Pending';
-  };
 
   const filteredUsers = allRegisteredUsers.filter(user => {
     const latestSub = user.subscriptions && user.subscriptions.length > 0 
@@ -311,7 +255,7 @@ export const AllRegisteredUsers = () => {
                                       </div>
                                     </td>
                                     <td className="px-4 py-4 text-sm font-bold text-theme-color-1 border-b">
-                                      {calculateSubEndDate(user)}
+                                      {calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status}
                                     </td>
                                   </tr>
                                 );
@@ -408,7 +352,7 @@ export const AllRegisteredUsers = () => {
                                       Est. End Date:
                                     </span>
                                     <span className="text-theme-color-1 font-bold text-right break-words max-w-[60%]">
-                                      {calculateSubEndDate(user)}
+                                      {calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status}
                                     </span>
                                   </div>
                                 </div>
