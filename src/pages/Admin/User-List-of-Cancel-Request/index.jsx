@@ -86,6 +86,15 @@ export const UserListWithCancelRequest = () => {
     return diffDays;
   };
 
+  const generateCustomUserId = (firstName = '', lastName = '', mobile = '') => {
+    console.log(firstName, lastName, mobile);
+    const fName = firstName.slice(0, 4).toUpperCase();
+    const lName = lastName.slice(0, 4).toUpperCase();
+    const phone = mobile.slice(0, 4);
+    
+    return `${fName}${lName}${phone}`;
+  };
+
   const exportToCSV = () => {
     // Define headers
     const headers = [
@@ -100,7 +109,7 @@ export const UserListWithCancelRequest = () => {
 
     // Convert data to CSV format
     const csvData = cancelledMeals.map((meal) => [
-      meal.userId,
+      generateCustomUserId(meal.name.split(" ")[0], meal.name.split(" ")[1], meal.mobile),
       meal.name,
       formatDate(meal.startDate),
       formatDate(meal.endDate),
@@ -226,33 +235,33 @@ export const UserListWithCancelRequest = () => {
                           {/* Mobile View - Card-like Layout */}
                           <td className="p-4 md:hidden">
                             <div className="space-y-2">
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">User Id:</span>
-                                <span className="text-left">{meal.userId}</span>
+                                <span className="font-mono text-left">{generateCustomUserId(meal.name.split(" ")[0], meal.name.split(" ")[1], meal.mobile)}</span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">Name:</span>
                                 <span className="text-left">{meal.name}</span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">Start Date:</span>
                                 <span className="text-left">{formatDate(meal.startDate)}</span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">End Date:</span>
                                 <span className="text-left">{formatDate(meal.endDate)}</span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">Days Off:</span>
                                 <span className="text-left">{calculateDaysOff(meal.startDate, meal.endDate)}</span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">Meal Type:</span>
-                                <span className="capitalize text-left">
+                                <span className="text-left capitalize">
                                   {meal.mealType}
                                 </span>
                               </div>
-                              <div className="flex text-left justify-between">
+                              <div className="flex justify-between text-left">
                                 <span className="font-medium text-left">Request Time:</span>
                                 <span className="text-left">{formatDateTime(meal.createdAt)}</span>
                               </div>
@@ -260,8 +269,8 @@ export const UserListWithCancelRequest = () => {
                           </td>
 
                           {/* Desktop View */}
-                          <td className="hidden px-4 py-4 text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
-                            {meal.userId}
+                          <td className="hidden px-4 py-4 font-mono text-sm text-left text-gray-900 whitespace-nowrap md:table-cell">
+                            {generateCustomUserId(meal.name.split(" ")[0], meal.name.split(" ")[1], meal.mobile)}
                           </td>
                           <td className="hidden px-4 py-4 text-sm font-medium text-left text-gray-900 whitespace-nowrap md:table-cell">
                             {meal.name}

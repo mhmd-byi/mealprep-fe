@@ -37,7 +37,7 @@ export const useAllRegisteredUsers = () => {
   }, [planFilter]); // re-fetch whenever plan query param changes
 
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Meal Start Date'];
+    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Meal Start Date', 'Registered Date'];
     const rows = data.map(user => [
       `${user.firstName} ${user.lastName}`, // Name
       user.email, // Email
@@ -46,7 +46,8 @@ export const useAllRegisteredUsers = () => {
       (user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'), // Current plan
       `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}`, // Meal Counts
       (user.subscriptions[user.subscriptions.length - 1]?.allergy || 'None'), // Allergy
-      (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A') // Meal Start Date
+      (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A'), // Meal Start Date
+      (user.createdAt || user.created_date || 'N/A') // Registered Date
     ]);
   
     return [

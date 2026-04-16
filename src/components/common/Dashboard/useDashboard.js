@@ -11,7 +11,7 @@ export const useDashboard = () => {
     postalAddress: "",
     password: "",
     confirmPassword: "",
-    role: "user", // Add role field with default value
+    role: "", // Default to empty string while loading
   });
   const [isLoading, setIsLoading] = useState(true);
 

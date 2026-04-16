@@ -15,7 +15,8 @@ export const AllRegisteredUsers = () => {
   const [showZeroMeals, setShowZeroMeals] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState({
     mealCount: '',
-    operator: '>'
+    operator: '>',
+    planType: 'All'
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
@@ -42,6 +43,15 @@ export const AllRegisteredUsers = () => {
     // Toggle: show users with 0 meals
     const presenceMatch = showZeroMeals ? true : totalMeals > 0;
 
+    // Plan Type filter
+    let planMatch = true;
+    if (filterCriteria.planType !== 'All') {
+      const latestSub = user.subscriptions && user.subscriptions.length > 0 
+        ? user.subscriptions[user.subscriptions.length - 1] 
+        : null;
+      planMatch = latestSub?.plan?.includes(filterCriteria.planType);
+    }
+
     // Meal count filter (from FilterPopup)
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== '') {
@@ -51,7 +61,7 @@ export const AllRegisteredUsers = () => {
       else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
     }
 
-    return searchMatch && mealCountMatch && presenceMatch;
+    return searchMatch && mealCountMatch && presenceMatch && planMatch;
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -105,15 +115,15 @@ export const AllRegisteredUsers = () => {
                       onChange={setSearchQuery}
                       placeholder="Search name or email..."
                     />
-                    <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors hover:bg-gray-100">
+                    <div className="flex items-center px-3 py-2 space-x-2 bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors hover:bg-gray-100">
                       <input 
                         type="checkbox" 
                         checked={showZeroMeals} 
                         onChange={(e) => setShowZeroMeals(e.target.checked)}
-                        className="w-4 h-4 rounded text-theme-color-1 focus:ring-theme-color-1 border-gray-300 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 cursor-pointer text-theme-color-1 focus:ring-theme-color-1"
                         id="showZeroMeals"
                       />
-                      <label htmlFor="showZeroMeals" className="text-sm font-semibold text-gray-700 cursor-pointer whitespace-nowrap select-none">
+                      <label htmlFor="showZeroMeals" className="text-sm font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none">
                         Show users with 0 meals
                       </label>
                     </div>
@@ -234,7 +244,7 @@ export const AllRegisteredUsers = () => {
                                         {latestSub?.subscriptionStartDate?.split('T')[0].split('-').reverse().join('-') || 'N/A'}
                                       </div>
                                     </td>
-                                    <td className="px-4 py-4 text-sm font-bold text-theme-color-1 border-b">
+                                    <td className="px-4 py-4 text-sm font-bold border-b text-theme-color-1">
                                       {calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status}
                                     </td>
                                   </tr>
@@ -369,6 +379,7 @@ export const AllRegisteredUsers = () => {
       content={
         selectedUser && (
           <div className="space-y-4 text-sm">
+            {console.log('selectedUser',selectedUser)}
             <div className="grid grid-cols-2 gap-4 pb-4 border-b">
               <div>
                 <p className="text-gray-500">Name</p>
@@ -381,6 +392,10 @@ export const AllRegisteredUsers = () => {
               <div>
                 <p className="text-gray-500">Mobile</p>
                 <p className="font-semibold">{selectedUser.mobile}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Registered Date</p>
+                <p className="font-semibold">{(selectedUser.createdAt || selectedUser.created_date)?.split('T')[0].split('-').reverse().join('-') || 'N/A'}</p>
               </div>
               <div className="col-span-2">
                 <p className="text-gray-500">Address</p>
@@ -406,7 +421,7 @@ export const AllRegisteredUsers = () => {
                     <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
                       <div className="flex justify-between font-bold text-theme-color-1">
                         <span>{sub.plan}</span>
-                        <span>₹{sub.price}</span>
+                        {/* <span>₹{sub.price}</span> */}
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
                         <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
