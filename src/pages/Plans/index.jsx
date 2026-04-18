@@ -28,24 +28,30 @@ const SubscriptionPlans = () => {
   };
 
   const getMinimumDate = (lunchDinner) => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    let minDate = new Date();
+    // Get current time in IST
+    const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const currentHour = nowIST.getHours();
+    const currentMinutes = nowIST.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinutes;
+
+    let minDate = new Date(nowIST);
 
     // Determine if user can select today based on meal type and time
+    // Using backend cutoffs: 10:30 AM for lunch, 4:00 PM for dinner
     if (lunchDinner === "lunch") {
-      // For lunch only: must book before 9 AM
-      if (currentHour >= 9) {
+      // For lunch only: must book before 10:30 AM
+      if (currentTimeInMinutes >= 10.5 * 60) {
         minDate.setDate(minDate.getDate() + 1);
       }
     } else if (lunchDinner === "dinner") {
-      // For dinner only: must book before 4 PM (16:00)
-      if (currentHour >= 16) {
+      // For dinner only: must book before 4:00 PM (16:00)
+      if (currentTimeInMinutes >= 16 * 60) {
         minDate.setDate(minDate.getDate() + 1);
       }
     } else if (lunchDinner === "lunchAndDinner") {
-      // For both lunch and dinner: follow dinner condition (4 PM)
-      if (currentHour >= 16) {
+      // For both: if lunch time has passed, we should ideally start from tomorrow 
+      // to ensure the user gets a full day's worth of meals
+      if (currentTimeInMinutes >= 10.5 * 60) {
         minDate.setDate(minDate.getDate() + 1);
       }
     }
@@ -123,8 +129,12 @@ const SubscriptionPlans = () => {
 
     // If changing meal start date, check if it's Sunday and adjust to Monday
     if (field === "mealStartDate") {
+      const minDate = getMinimumDate(planDetails[planName].lunchDinner);
+      if (value < minDate) {
+        finalValue = minDate;
+      }
       // Parse local date from YYYY-MM-DD
-      const [year, month, day] = value.split("-").map(Number);
+      const [year, month, day] = finalValue.split("-").map(Number);
       const selectedDate = new Date(year, month - 1, day);
 
       if (selectedDate.getDay() === 0) {
@@ -138,7 +148,6 @@ const SubscriptionPlans = () => {
       const currentStartDate = planDetails[planName].mealStartDate;
       const newMinDate = getMinimumDate(value);
 
-      // If current start date is before the new minimum, update it
       if (currentStartDate < newMinDate) {
         setPlanDetails((prev) => ({
           ...prev,
