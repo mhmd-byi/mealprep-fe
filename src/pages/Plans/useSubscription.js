@@ -5,6 +5,8 @@ import { sendEmail } from "../../utils";
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [currentPlan, setCurrentPlan] = useState(null);
+  const [nextPlan, setNextPlan] = useState(null);
+  const [hasQueuedPlan, setHasQueuedPlan] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const getCurrentDate = () => {
@@ -44,7 +46,17 @@ export const useSubscription = () => {
           }
         );
         setIsSubscribed(response.data.isSubscribed);
-        response.data.isSubscribed && setCurrentPlan(response.data.subscription);
+        if (response.data.isSubscribed) {
+          // Prefer the explicit currentPlan key; fall back to legacy 'subscription' key
+          setCurrentPlan(response.data.currentPlan || response.data.subscription);
+        }
+        if (response.data.nextPlan) {
+          setNextPlan(response.data.nextPlan);
+          setHasQueuedPlan(true);
+        } else {
+          setNextPlan(null);
+          setHasQueuedPlan(false);
+        }
       } catch (error) {
         console.error("Error fetching subscription status:", error);
       } finally {
@@ -66,9 +78,10 @@ export const useSubscription = () => {
     allergy,
     setErrorMessage,
   ) => {
-    if (isSubscribed) {
+    // Block if a queued plan already exists — only 1 plan can be queued at a time
+    if (hasQueuedPlan) {
       setErrorMessage(
-        `Your current subscription still has meals left. You can purchase a new plan once the remaining meals become 0.`
+        `You already have a plan queued up. It will activate once your current plan finishes.`
       );
       return;
     }
@@ -130,52 +143,65 @@ export const useSubscription = () => {
             });
 
             if (verifyResponse.status === 201) {
+              const isQueued = verifyResponse.data?.isQueued || false;
               activityEntry(userId, planName);
 
-              // Notification to Customer
-              sendEmail(userId, "", "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
-                Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
-                  Important Information:\n
-                  ✅ Mealprep Kitchen operates from Monday to Saturday.\n
-                  ✅ Meal Cancellation & Customization Requests:\n
-                  Lunch: 12 Midnight – 11:00 AM\n
-                  Dinner: 12 Midnight – 4:30 PM\n
-                  For any assistance, feel free to reach out.\n
-                  Wishing you a delicious and healthy journey!\n\n
-                  Team Mealprep\n
-                `);
+              if (isQueued) {
+                // Notification to Customer — queued plan
+                sendEmail(userId, "", "Your Next Mealprep Plan is Queued!", `Dear Customer,\n
+Thank you for subscribing to our ${planName}! 🥗\n
+Your current plan is still active — this new plan has been queued and will activate automatically once your current meals run out.\n\n
+Team Mealprep\n`);
 
-              // Detailed Notification to Admin
-              sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `New Subscription: ${userName}`, `A new subscription has been received!\n
-                --- CUSTOMER DETAILS ---
-                Name: ${userName}
-                Email: ${userEmail}
-                User ID: ${userId}
+                // Notification to Admin
+                sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `Queued Subscription: ${userName}`, `A new subscription has been queued!\n
+--- CUSTOMER DETAILS ---
+Name: ${userName}\nEmail: ${userEmail}\nUser ID: ${userId}\n
+--- QUEUED SUBSCRIPTION DETAILS ---
+Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\n
+This plan is QUEUED and will activate when the user's current plan runs out.`);
 
-                --- SUBSCRIPTION DETAILS ---
-                Plan: ${planName}
-                Meals Total: ${mealCount}
-                Meal Type: ${mealType}
-                Carb Type: ${carbType}
-                Preference: ${lunchDinner}
-                Start Date: ${mealStartDate}
-                Allergy Info: ${allergy || "None"}
-                
-                Please update the system accordingly.
-                `);
+                setHasQueuedPlan(true);
+                setNextPlan({
+                  plan: planName,
+                  totalMeals: mealCount,
+                  mealType,
+                  carbType,
+                  status: 'queued'
+                });
+                setTimeout(() => {
+                  window.location.href = "/dashboard/my-billing";
+                }, 3000);
+              } else {
+                // Notification to Customer — active plan
+                sendEmail(userId, "", "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
+Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
+Important Information:\n
+✅ Mealprep Kitchen operates from Monday to Saturday.\n
+✅ Meal Cancellation & Customization Requests:\nLunch: 12 Midnight – 11:00 AM\nDinner: 12 Midnight – 4:30 PM\n
+For any assistance, feel free to reach out.\nWishing you a delicious and healthy journey!\n\n
+Team Mealprep\n`);
 
-              setIsSubscribed(true);
-              setCurrentPlan({
-                plan: planName,
-                subscriptionStartDate: mealStartDate,
-                subscriptionEndDate: new Date().setDate(
-                  new Date().getDate() + (planName === "Weekly Plan" ? 7 : 30)
-                ),
-              });
-              setTimeout(() => {
-                window.location.href = "/dashboard";
-              }, 5000);
-              // window.location.reload();
+                // Detailed Notification to Admin
+                sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `New Subscription: ${userName}`, `A new subscription has been received!\n
+--- CUSTOMER DETAILS ---
+Name: ${userName}\nEmail: ${userEmail}\nUser ID: ${userId}\n
+--- SUBSCRIPTION DETAILS ---
+Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\n
+Please update the system accordingly.`);
+
+                setIsSubscribed(true);
+                setCurrentPlan({
+                  plan: planName,
+                  subscriptionStartDate: mealStartDate,
+                  subscriptionEndDate: new Date().setDate(
+                    new Date().getDate() + (planName === "Weekly Plan" ? 7 : 30)
+                  ),
+                });
+                setTimeout(() => {
+                  window.location.href = "/dashboard";
+                }, 5000);
+              }
             }
           } catch (error) {
             console.error("Payment verification failed:", error);
@@ -208,19 +234,29 @@ export const useSubscription = () => {
     }
   };
 
+  // isSubscribedTo: returns true only if this plan is the currently ACTIVE plan (not queued)
   const isSubscribedTo = (planName) => {
     return (
       currentPlan &&
       currentPlan.plan === planName &&
+      currentPlan.status !== 'queued' &&
       (currentPlan?.totalAvailableMeals ?? currentPlan?.totalMeals ?? 0) > 0
     );
+  };
+
+  // isQueuedTo: returns true if this plan is saved as the next (queued) plan
+  const isQueuedTo = (planName) => {
+    return nextPlan && nextPlan.plan === planName;
   };
 
   return {
     isSubscribed,
     handleSubscribe,
     isSubscribedTo,
+    isQueuedTo,
     currentPlan,
+    nextPlan,
+    hasQueuedPlan,
     isLoading,
   };
 };

@@ -7,7 +7,7 @@ import { CheckmarkCircleOutline } from "./circleCheckmark";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
-  const { handleSubscribe, isSubscribedTo } = useSubscription();
+  const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
 
   const formatDateLocal = (date) => {
@@ -174,20 +174,39 @@ const SubscriptionPlans = () => {
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-start items-center p-5 w-full pt-10">
         <div className="bg-white shadow-md rounded-lg p-5 lg:p-20 w-full max-w-[1500px] lg:w-[1200px]">
-          <h2 className="text-2xl lg:text-3xl text-black font-semibold text-center mb-8">
+          <h2 className="text-2xl lg:text-3xl text-black font-semibold text-center mb-4">
             Subscribe Your Meal Plans
           </h2>
+
+          {/* Info banner: user has active plan but no queued plan yet */}
+          {isSubscribed && !hasQueuedPlan && (
+            <div className="mb-6 bg-amber-50 border border-amber-300 text-amber-800 rounded-lg px-4 py-3 text-sm">
+              ⚠️ <strong>You have an active plan.</strong> You can queue up one more plan now — it will
+              activate automatically when your current plan's meals run out.
+            </div>
+          )}
+
+          {/* Info banner: next plan already queued */}
+          {hasQueuedPlan && (
+            <div className="mb-6 bg-blue-50 border border-blue-300 text-blue-800 rounded-lg px-4 py-3 text-sm">
+              🔵 <strong>You have a plan queued.</strong> It will activate as soon as your current plan finishes.
+              Only one plan can be queued at a time.
+            </div>
+          )}
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-0">
             {plans.map((plan, index) => {
               const { price, meals, duration } = getAdjustedPlanDetails(plan);
               const currentPlanDetails = planDetails[plan.name];
+              const isActive = isSubscribedTo(plan.name);
+              const isQueued = isQueuedTo(plan.name);
 
               return (
                 <div
                   key={index}
-                  className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${index === plans.length - 1 ? "lg:border-r-0" : ""
-                    }`}
+                  className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${
+                    index === plans.length - 1 ? "lg:border-r-0" : ""
+                  }`}
                 >
                   <div className="py-5">
                     <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">
@@ -275,7 +294,7 @@ const SubscriptionPlans = () => {
                           }
                           value={currentPlanDetails.mealStartDate}
                           min={getMinimumDate(currentPlanDetails.lunchDinner)}
-                          onKeyDown={(e) => e.preventDefault()} // Prevent manual typing
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                       </div>
                       <div className="flex items-center">
@@ -295,29 +314,51 @@ const SubscriptionPlans = () => {
                         />
                       </div>
                     </div>
-                    {isSubscribedTo(plan.name) ? (
-                      <p className="text-theme-color-1 font-bold py-3 border-2 rounded-md border-theme-color-1">
-                        You are subscribed to this plan
+
+                    {/* ── Status area ── */}
+                    {isActive ? (
+                      // This plan is the user's current active plan
+                      <p className="text-green-700 font-bold py-3 border-2 rounded-md border-green-500 bg-green-50">
+                        ✅ Currently Active Plan
+                      </p>
+                    ) : isQueued ? (
+                      // This plan is already queued as next
+                      <p className="text-amber-700 font-bold py-3 border-2 rounded-md border-amber-400 bg-amber-50">
+                        🕐 Queued as Your Next Plan
+                      </p>
+                    ) : hasQueuedPlan ? (
+                      // User already has a different plan queued — can't queue another
+                      <p className="text-gray-500 font-medium py-3 border-2 rounded-md border-gray-300 bg-gray-50">
+                        🔒 Next plan slot is already taken
                       </p>
                     ) : (
-                      <Button
-                        onClick={() =>
-                          handlePlanSubscribe(
-                            plan.name,
-                            meals,
-                            price,
-                            currentPlanDetails.mealType,
-                            currentPlanDetails.carbType,
-                            currentPlanDetails.lunchDinner,
-                            currentPlanDetails.mealStartDate,
-                            currentPlanDetails.allergy
-                          )
-                        }
-                        classes="w-full"
-                      >
-                        Select
-                      </Button>
+                      // Normal subscribe / queue-as-next
+                      <>
+                        {isSubscribed && (
+                          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mb-2">
+                            ℹ️ This will be queued and activate when your current plan finishes.
+                          </p>
+                        )}
+                        <Button
+                          onClick={() =>
+                            handlePlanSubscribe(
+                              plan.name,
+                              meals,
+                              price,
+                              currentPlanDetails.mealType,
+                              currentPlanDetails.carbType,
+                              currentPlanDetails.lunchDinner,
+                              currentPlanDetails.mealStartDate,
+                              currentPlanDetails.allergy
+                            )
+                          }
+                          classes="w-full"
+                        >
+                          {isSubscribed ? "Queue as Next Plan" : "Select"}
+                        </Button>
+                      </>
                     )}
+
                     {errorMessages[plan.name] && (
                       <p className="mt-1 error text-red-500">
                         {errorMessages[plan.name]}
