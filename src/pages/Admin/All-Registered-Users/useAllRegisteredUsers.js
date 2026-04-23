@@ -69,10 +69,29 @@ export const useAllRegisteredUsers = () => {
     document.body.removeChild(link);
   };
 
+  const cancelQueuedPlan = async (subscriptionId) => {
+    try {
+      const response = await axios({
+        method: 'DELETE',
+        url: `${process.env.REACT_APP_API_URL}subscription/queued/${subscriptionId}/cancel`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Refresh the list after successful cancellation
+      await getAllUsers();
+      return response.data;
+    } catch (e) {
+      console.error('Error cancelling queued plan:', e);
+      throw e;
+    }
+  };
+
   return {
     allRegisteredUsers,
     isLoading,
     planFilter,
-    downloadCSV
+    downloadCSV,
+    cancelQueuedPlan
   };
 };
