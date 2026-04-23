@@ -8,7 +8,7 @@ import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const AllRegisteredUsers = () => {
-  const { allRegisteredUsers, isLoading, planFilter, downloadCSV } = useAllRegisteredUsers();
+  const { allRegisteredUsers, isLoading, planFilter, downloadCSV, cancelQueuedPlan } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -26,6 +26,18 @@ export const AllRegisteredUsers = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+  };
+  
+  const handleCancelPlan = async (subId, userName) => {
+    if (window.confirm(`Are you sure you want to cancel the queued plan for ${userName}?`)) {
+      try {
+        await cancelQueuedPlan(subId);
+        alert("Queued plan cancelled successfully.");
+        setSelectedUser(null); // Close popup to reflect changes (or could find user in list and update)
+      } catch (err) {
+        alert("Failed to cancel queued plan: " + (err.response?.data?.message || err.message));
+      }
+    }
   };
 
 
@@ -421,10 +433,27 @@ export const AllRegisteredUsers = () => {
                     <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
                       <div className="flex justify-between font-bold text-theme-color-1">
                         <span>{sub.plan}</span>
-                        {/* <span>₹{sub.price}</span> */}
+                        {sub.status === 'queued' && (
+                          <button 
+                            onClick={() => handleCancelPlan(sub._id, `${selectedUser.firstName} ${selectedUser.lastName}`)}
+                            className="px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-md hover:bg-red-600"
+                          >
+                            Cancel Queued Plan
+                          </button>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                        <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
+                        <div>
+                          <span className="text-gray-500">Status:</span> 
+                          <span className={`${
+                            sub.status === 'active' || sub.status === 'Active' ? 'text-green-600' : 
+                            sub.status === 'queued' ? 'text-amber-600' : 
+                            sub.status === 'cancelled' ? 'text-red-600' :
+                            'text-gray-600'
+                          } font-bold`}>
+                            {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
+                          </span>
+                        </div>
                         <div><span className="text-gray-500">Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
                         <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
                         <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
