@@ -8,7 +8,7 @@ import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const AllRegisteredUsers = () => {
-  const { allRegisteredUsers, isLoading, planFilter, downloadCSV, cancelQueuedPlan } = useAllRegisteredUsers();
+  const { allRegisteredUsers, isLoading, isBackgroundLoading, planFilter, downloadCSV, cancelQueuedPlan } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -112,12 +112,12 @@ export const AllRegisteredUsers = () => {
   return (
     <>
       <DashboardLayoutComponent>
-      <div className="block flex-col justify-center items-center p-5 w-full lg:flex">
-        <div className="px-4 py-6 w-full max-w-full sm:px-6 lg:px-8">
-          <div className="flex flex-col mx-auto mt-8 mb-4">
-            <div className="overflow-hidden bg-white rounded-lg shadow">
-              <div className="flex flex-col p-5">
-                <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg">
+        <div className="block flex-col justify-center items-center p-5 w-full lg:flex">
+          <div className="px-4 py-6 w-full max-w-full sm:px-6 lg:px-8">
+            <div className="flex flex-col mx-auto mt-8 mb-4">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
+                <div className="flex flex-col p-5">
+                  <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg">
                   <h2 className="text-2xl font-bold">
                     {planFilter ? `${planFilter} Plan Subscribers` : 'All Users'}
                   </h2>
@@ -137,6 +137,9 @@ export const AllRegisteredUsers = () => {
                       />
                       <label htmlFor="showZeroMeals" className="text-sm font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none">
                         Show users with 0 meals
+                        {isBackgroundLoading && showZeroMeals && (
+                          <span className="ml-2 text-xs text-gray-400 italic">(Loading all...)</span>
+                        )}
                       </label>
                     </div>
                     <button
