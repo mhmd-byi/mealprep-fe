@@ -9,6 +9,7 @@ const SubscriptionPlans = () => {
   const { plans } = data;
   const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
+  const [dateWarnings, setDateWarnings] = useState({});
 
   const formatDateLocal = (date) => {
     const year = date.getFullYear();
@@ -126,22 +127,57 @@ const SubscriptionPlans = () => {
 
   const handleDetailChange = (planName, field, value) => {
     let finalValue = value;
+    let newWarning = null;
 
-    // If changing meal start date, check if it's Sunday and adjust to Monday
+    // If changing meal start date, enforce the minimum date
+    // (mobile browsers often ignore the HTML `min` attribute in their native date picker)
     if (field === "mealStartDate") {
-      const minDate = getMinimumDate(planDetails[planName].lunchDinner);
+      const lunchDinner = planDetails[planName].lunchDinner;
+      const minDate = getMinimumDate(lunchDinner);
+
       if (value < minDate) {
+        // Snap back to the minimum allowed date
         finalValue = minDate;
+
+        // Build a human-readable reason for the warning
+        const nowIST = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        );
+        const currentHour = nowIST.getHours();
+        const currentMinutes = nowIST.getMinutes();
+        const currentTimeInMinutes = currentHour * 60 + currentMinutes;
+
+        if (
+          (lunchDinner === "lunch" || lunchDinner === "lunchAndDinner") &&
+          currentTimeInMinutes >= 10.5 * 60
+        ) {
+          newWarning = `Lunch booking cutoff (10:30 AM) has passed — start date moved to ${minDate}.`;
+        } else if (
+          lunchDinner === "dinner" &&
+          currentTimeInMinutes >= 16 * 60
+        ) {
+          newWarning = `Dinner booking cutoff (4:00 PM) has passed — start date moved to ${minDate}.`;
+        } else {
+          newWarning = `Selected date is not available — start date moved to ${minDate}.`;
+        }
       }
+
       // Parse local date from YYYY-MM-DD
       const [year, month, day] = finalValue.split("-").map(Number);
       const selectedDate = new Date(year, month - 1, day);
 
+      // Skip Sundays — move to Monday
       if (selectedDate.getDay() === 0) {
         selectedDate.setDate(selectedDate.getDate() + 1);
         finalValue = formatDateLocal(selectedDate);
       }
     }
+
+    // Update date warnings
+    setDateWarnings((prev) => ({
+      ...prev,
+      [planName]: newWarning,
+    }));
 
     // If changing lunch/dinner option, update the meal start date based on new minimum
     if (field === "lunchDinner") {
@@ -280,22 +316,29 @@ const SubscriptionPlans = () => {
                           <option value="keto-meal">Keto Meal</option>
                         </select>
                       </div>
-                      <div className="flex items-center">
-                        <label className="mr-2">Meal Start Date:</label>
-                        <input
-                          type="date"
-                          className="border-2 border-grey-500 rounded-md p-1"
-                          onChange={(e) =>
-                            handleDetailChange(
-                              plan.name,
-                              "mealStartDate",
-                              e.target.value
-                            )
-                          }
-                          value={currentPlanDetails.mealStartDate}
-                          min={getMinimumDate(currentPlanDetails.lunchDinner)}
-                          onKeyDown={(e) => e.preventDefault()}
-                        />
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <label className="mr-2">Meal Start Date:</label>
+                          <input
+                            type="date"
+                            className="border-2 border-grey-500 rounded-md p-1"
+                            onChange={(e) =>
+                              handleDetailChange(
+                                plan.name,
+                                "mealStartDate",
+                                e.target.value
+                              )
+                            }
+                            value={currentPlanDetails.mealStartDate}
+                            min={getMinimumDate(currentPlanDetails.lunchDinner)}
+                            onKeyDown={(e) => e.preventDefault()}
+                          />
+                        </div>
+                        {dateWarnings[plan.name] && (
+                          <p className="mt-1 text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1">
+                            ⚠️ {dateWarnings[plan.name]}
+                          </p>
+                        )}
                       </div>
                       <div className="flex items-center">
                         <label className="mr-2">Allergy:</label>
