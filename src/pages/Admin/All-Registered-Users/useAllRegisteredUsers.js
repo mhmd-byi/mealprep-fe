@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const useAllRegisteredUsers = () => {
   const [searchParams] = useSearchParams();
@@ -59,7 +60,7 @@ export const useAllRegisteredUsers = () => {
   };
 
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Meal Start Date', 'Registered Date'];
+    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Meal Start Date', 'Est. End Date', 'Registered Date'];
     const rows = data.map(user => [
       `${user.firstName} ${user.lastName}`, 
       user.email, 
@@ -69,6 +70,7 @@ export const useAllRegisteredUsers = () => {
       `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}`, 
       (user.subscriptions[user.subscriptions.length - 1]?.allergy || 'None'), 
       (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A'), 
+      (calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status),
       (user.createdAt || user.created_date || 'N/A') 
     ]);
   
@@ -100,4 +102,4 @@ export const useAllRegisteredUsers = () => {
     downloadCSV,
     cancelQueuedPlan
   };
-};
+};

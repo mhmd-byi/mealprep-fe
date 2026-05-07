@@ -2,11 +2,26 @@ export const calculateSubEndDate = (user) => {
   const latestSub = user.subscriptions?.[user.subscriptions.length - 1];
   if (!latestSub) return { date: null, status: 'N/A' };
 
+  const formatDate = (date) => date.toLocaleDateString('en-GB').split('/').join('-');
+
   const lunchMeals = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
   const dinnerMeals = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
   let totalMealsLeft = lunchMeals + dinnerMeals;
 
-  if (totalMealsLeft <= 0) return { date: null, status: 'Finished' };
+  if (totalMealsLeft <= 0) {
+    const completedSub = [...(user.subscriptions || [])]
+      .reverse()
+      .find((sub) => sub.status === 'completed');
+    const finishedDateValue = completedSub?.updatedAt || latestSub.completedAt;
+    const finishedDate = finishedDateValue ? new Date(finishedDateValue) : null;
+    const hasValidFinishedDate = finishedDate && !Number.isNaN(finishedDate.getTime());
+
+    return {
+      date: hasValidFinishedDate ? finishedDate : null,
+      formattedDate: hasValidFinishedDate ? `Finished on\n${formatDate(finishedDate)}` : null,
+      status: 'Finished'
+    };
+  }
 
   const cancellations = user.cancellations || [];
   let currentDate = new Date();
@@ -52,7 +67,7 @@ export const calculateSubEndDate = (user) => {
     if (totalMealsLeft <= 0) {
       return { 
         date: nextDate, 
-        formattedDate: nextDate.toLocaleDateString('en-GB').split('/').join('-'),
+        formattedDate: formatDate(nextDate),
         status: 'Active' 
       };
     }
