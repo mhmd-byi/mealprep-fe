@@ -176,9 +176,9 @@ const CancelRequest = () => {
                         required
                       >
                         <option value="">Select meal type</option>
-                        {currentPlan && (currentPlan.lunchMeals > 0) ? <option value="lunch">Lunch</option> : null}
-                        {currentPlan && (currentPlan.dinnerMeals > 0) ? <option value="dinner">Dinner</option> : null}
-                        {currentPlan && (currentPlan.dinnerMeals > 0 && currentPlan.lunchMeals > 0) ? <option value="both">Both</option> : null}
+                        {currentPlan && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0) ? <option value="lunch">Lunch</option> : null}
+                        {currentPlan && ((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) ? <option value="dinner">Dinner</option> : null}
+                        {currentPlan && (((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0)) ? <option value="both">Both</option> : null}
                       </select>
                     </div>
                     <div>
