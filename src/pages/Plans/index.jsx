@@ -361,9 +361,35 @@ const SubscriptionPlans = () => {
                     {/* ── Status area ── */}
                     {isActive ? (
                       // This plan is the user's current active plan
-                      <p className="text-green-700 font-bold py-3 border-2 rounded-md border-green-500 bg-green-50">
-                        ✅ Currently Active Plan
-                      </p>
+                      <>
+                        <p className="text-green-700 font-bold py-3 border-2 rounded-md border-green-500 bg-green-50">
+                          ✅ Currently Active Plan
+                        </p>
+                        {!hasQueuedPlan && (
+                          <>
+                            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mt-2 mb-2">
+                              ℹ️ This will be queued and activate when your current plan finishes.
+                            </p>
+                            <Button
+                              onClick={() =>
+                                handlePlanSubscribe(
+                                  plan.name,
+                                  meals,
+                                  price,
+                                  currentPlanDetails.mealType,
+                                  currentPlanDetails.carbType,
+                                  currentPlanDetails.lunchDinner,
+                                  currentPlanDetails.mealStartDate,
+                                  currentPlanDetails.allergy
+                                )
+                              }
+                              classes="w-full mt-2"
+                            >
+                              Queue as Next Plan
+                            </Button>
+                          </>
+                        )}
+                      </>
                     ) : isQueued ? (
                       // This plan is already queued as next
                       <p className="text-amber-700 font-bold py-3 border-2 rounded-md border-amber-400 bg-amber-50">
