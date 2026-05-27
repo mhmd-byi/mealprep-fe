@@ -109,15 +109,6 @@ const Login = () => {
                           Forgot password
                         </a>
                       </p>
-                      <p className="mt-2">
-                        Don't have an account? &nbsp;
-                        <a
-                          onClick={navigateToSignup}
-                          className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
-                        >
-                          Sign Up
-                        </a>
-                      </p>
                     </div>
                   </div>
 
@@ -201,6 +192,17 @@ const Login = () => {
                   </div>
                 </form>
               </TabPanel>
+            </div>
+
+            <div className="mt-6 border-t border-gray-200 pt-6 text-center">
+              <p className="text-sm text-gray-500 mb-3">New to Mealprep?</p>
+              <Button
+                type="button"
+                onClick={navigateToSignup}
+                classes="w-full !bg-white border-2 border-theme-color-1 !text-theme-color-1 hover:!bg-theme-color-1 hover:!text-white transition-colors"
+              >
+                Create an Account
+              </Button>
             </div>
           </div>
         </div>

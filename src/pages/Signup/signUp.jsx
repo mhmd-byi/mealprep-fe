@@ -114,9 +114,13 @@ const Signup = () => {
                   </div>
                 </div>
               )}
-              {otpVerified && (
-                <div className="text-green-600 text-sm text-center">
-                  ✓ Phone number verified
+              {otpVerified ? (
+                <div className="text-green-600 text-sm text-center bg-green-50 border border-green-200 rounded-lg px-4 py-2">
+                  ✓ Phone number verified — fill in the rest of your details below.
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-300 text-amber-800 rounded-lg px-4 py-3 text-sm">
+                  ⚠️ <strong>Verify your phone number above</strong> to unlock the rest of the form.
                 </div>
               )}
               <div className="w-full">
@@ -127,6 +131,7 @@ const Signup = () => {
                   required={true}
                   placeholder={"Email Address"}
                   onChange={handleChange}
+                  disabled={!otpVerified}
                 />
               </div>
               <div className="flex flex-wrap -mx-3 mb-6">
@@ -138,6 +143,7 @@ const Signup = () => {
                     required={true}
                     placeholder={"Enter Password"}
                     onChange={handleChange}
+                    disabled={!otpVerified}
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
@@ -148,6 +154,7 @@ const Signup = () => {
                     required={true}
                     placeholder={"Confirm Password"}
                     onChange={handleChange}
+                    disabled={!otpVerified}
                   />
                   <ValidationMessage />
                 </div>
@@ -161,6 +168,7 @@ const Signup = () => {
                     required={true}
                     placeholder={"Enter area pincode"}
                     onChange={handleChange}
+                    disabled={!otpVerified}
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
@@ -175,6 +183,7 @@ const Signup = () => {
                   type={"text"}
                   placeholder={"Address"}
                   onChange={handleChange}
+                  disabled={!otpVerified}
                 />
               </div>
 
