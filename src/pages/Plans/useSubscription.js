@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { sendEmail } from "../../utils";
+import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../emailTemplates";
 
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -148,10 +149,8 @@ export const useSubscription = () => {
 
               if (isQueued) {
                 // Notification to Customer — queued plan
-                sendEmail(userId, "", "Your Next Mealprep Plan is Queued!", `Dear Customer,\n
-Thank you for subscribing to our ${planName}! 🥗\n
-Your current plan is still active — this new plan has been queued and will activate automatically once your current meals run out.\n\n
-Team Mealprep\n`);
+                const queuedTpl = getQueuedEmailTemplate(planName, userName);
+                sendEmail(userId, "", queuedTpl.subject, queuedTpl.text);
 
                 // Notification to Admin
                 sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `Queued Subscription: ${userName}`, `A new subscription has been queued!\n
@@ -174,13 +173,8 @@ This plan is QUEUED and will activate when the user's current plan runs out.`);
                 }, 3000);
               } else {
                 // Notification to Customer — active plan
-                sendEmail(userId, "", "Your Mealprep Subscription is Confirmed!", `Dear Customer,\n
-Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now taken care of.\n
-Important Information:\n
-✅ Mealprep Kitchen operates from Monday to Saturday.\n
-✅ Meal Cancellation & Customization Requests:\nLunch: 12 Midnight – 11:00 AM\nDinner: 12 Midnight – 4:30 PM\n
-For any assistance, feel free to reach out.\nWishing you a delicious and healthy journey!\n\n
-Team Mealprep\n`);
+                const activeTpl = getActiveEmailTemplate(planName, userName);
+                sendEmail(userId, "", activeTpl.subject, activeTpl.text);
 
                 // Detailed Notification to Admin
                 sendEmail("ermoinzafarsheikh@hotmail.com", "Admin", `New Subscription: ${userName}`, `A new subscription has been received!\n
