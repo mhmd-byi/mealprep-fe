@@ -16,7 +16,9 @@ export const AllRegisteredUsers = () => {
   const [filterCriteria, setFilterCriteria] = useState({
     mealCount: '',
     operator: '>',
-    planType: 'All'
+    planType: 'All',
+    endDateOperator: '',
+    endDate: ''
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
@@ -73,7 +75,27 @@ export const AllRegisteredUsers = () => {
       else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
     }
 
-    return searchMatch && mealCountMatch && presenceMatch && planMatch;
+    // Est. End Date filter
+    let endDateMatch = true;
+    if (filterCriteria.endDateOperator && filterCriteria.endDate) {
+      const { date } = calculateSubEndDate(user);
+      if (date) {
+        // Normalise both sides to midnight for fair comparison
+        const userEndDate = new Date(date);
+        userEndDate.setHours(0, 0, 0, 0);
+        const filterDate = new Date(filterCriteria.endDate);
+        filterDate.setHours(0, 0, 0, 0);
+
+        if (filterCriteria.endDateOperator === '<') endDateMatch = userEndDate < filterDate;
+        else if (filterCriteria.endDateOperator === '>') endDateMatch = userEndDate > filterDate;
+        else if (filterCriteria.endDateOperator === '=') endDateMatch = userEndDate.getTime() === filterDate.getTime();
+      } else {
+        // No calculable end date — exclude these users when a date filter is active
+        endDateMatch = false;
+      }
+    }
+
+    return searchMatch && mealCountMatch && presenceMatch && planMatch && endDateMatch;
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
