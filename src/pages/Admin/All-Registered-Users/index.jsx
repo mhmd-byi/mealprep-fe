@@ -4,6 +4,7 @@ import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
+import Pagination from "../../../components/common/Pagination/Pagination";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
@@ -21,6 +22,8 @@ export const AllRegisteredUsers = () => {
     endDate: ''
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -28,6 +31,7 @@ export const AllRegisteredUsers = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    setCurrentPage(1); // reset to first page on sort change
   };
   
   const handleCancelPlan = async (subId, userName) => {
@@ -122,6 +126,12 @@ export const AllRegisteredUsers = () => {
     return 0;
   });
 
+  // Paginated slice shown in the table/cards
+  const paginatedUsers = sortedUsers.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
     return sortConfig.direction === "asc" ? (
@@ -146,14 +156,14 @@ export const AllRegisteredUsers = () => {
                   <div className="flex flex-col gap-4 items-center sm:flex-row">
                     <SearchBar 
                       value={searchQuery}
-                      onChange={setSearchQuery}
+                      onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
                       placeholder="Search name or email..."
                     />
                     <div className="flex items-center px-3 py-2 space-x-2 bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors hover:bg-gray-100">
                       <input 
                         type="checkbox" 
                         checked={showZeroMeals} 
-                        onChange={(e) => setShowZeroMeals(e.target.checked)}
+                        onChange={(e) => { setShowZeroMeals(e.target.checked); setCurrentPage(1); }}
                         className="w-4 h-4 rounded border-gray-300 cursor-pointer text-theme-color-1 focus:ring-theme-color-1"
                         id="showZeroMeals"
                       />
@@ -232,7 +242,7 @@ export const AllRegisteredUsers = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {sortedUsers.map((user, index) => {
+                              {paginatedUsers.map((user, index) => {
                                 const latestSub = user.subscriptions && user.subscriptions.length > 0 
                                   ? user.subscriptions[user.subscriptions.length - 1] 
                                   : null;
@@ -293,7 +303,7 @@ export const AllRegisteredUsers = () => {
 
                         {/* Mobile View */}
                         <div className="space-y-4 md:hidden">
-                          {sortedUsers.map((user, index) => {
+                          {paginatedUsers.map((user, index) => {
                             const latestSub = user.subscriptions && user.subscriptions.length > 0 
                               ? user.subscriptions[user.subscriptions.length - 1] 
                               : null;
@@ -387,6 +397,15 @@ export const AllRegisteredUsers = () => {
                             );
                           })}
                         </div>
+
+                        {/* Mobile Pagination */}
+                        <Pagination
+                          totalItems={sortedUsers.length}
+                          currentPage={currentPage}
+                          rowsPerPage={rowsPerPage}
+                          onPageChange={setCurrentPage}
+                          onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-col justify-center items-center py-10">
@@ -406,7 +425,7 @@ export const AllRegisteredUsers = () => {
       isOpen={showFilterPopup}
       onClose={() => setShowFilterPopup(false)}
       criteria={filterCriteria}
-      setCriteria={setFilterCriteria}
+      setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
     />
 
     <Popup
