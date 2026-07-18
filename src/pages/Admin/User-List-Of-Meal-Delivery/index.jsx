@@ -5,6 +5,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
+import Pagination from "../../../components/common/Pagination/Pagination";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 export const UserListOfMealDelivery = () => {
@@ -25,6 +26,8 @@ export const UserListOfMealDelivery = () => {
     operator: '>'
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -32,6 +35,7 @@ export const UserListOfMealDelivery = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    setCurrentPage(1);
   };
 
   const fetchUserDetails = async (userId) => {
@@ -94,6 +98,12 @@ export const UserListOfMealDelivery = () => {
     return 0;
   });
 
+  // Paginated slice
+  const paginatedMeals = sortedMeals.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
     return sortConfig.direction === "asc" ? (
@@ -145,13 +155,16 @@ export const UserListOfMealDelivery = () => {
       if (Array.isArray(response.data)) {
         setMealDeliveryList(response.data);
         setError(null);
+        setCurrentPage(1);
       } else {
         setError("Received unexpected data format from server.");
         setMealDeliveryList([]);
+        setCurrentPage(1);
       }
     } catch (error) {
       setError(`Failed to fetch meal deliver list: ${error.response?.data?.message || error.message}`);
       setMealDeliveryList([]);
+      setCurrentPage(1);
     } finally {
       setIsLoading(false);
     }
@@ -250,7 +263,7 @@ export const UserListOfMealDelivery = () => {
                         <div className="flex flex-col gap-4 items-center sm:flex-row">
                           <SearchBar 
                             value={searchQuery}
-                            onChange={setSearchQuery}
+                            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
                             placeholder="Search name or email..."
                           />
                           <button
@@ -321,7 +334,7 @@ export const UserListOfMealDelivery = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {sortedMeals.map((meal, index) => {
+                              {paginatedMeals.map((meal, index) => {
                                 const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
                                 const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
                                 const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
@@ -373,7 +386,7 @@ export const UserListOfMealDelivery = () => {
 
                         {/* Mobile View */}
                         <div className="mt-4 space-y-4 md:hidden">
-                          {sortedMeals.map((meal, index) => {
+                          {paginatedMeals.map((meal, index) => {
                             const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
                             const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
                             const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
@@ -433,6 +446,15 @@ export const UserListOfMealDelivery = () => {
                             );
                           })}
                         </div>
+
+                        {/* Pagination */}
+                        <Pagination
+                          totalItems={sortedMeals.length}
+                          currentPage={currentPage}
+                          rowsPerPage={rowsPerPage}
+                          onPageChange={setCurrentPage}
+                          onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-col justify-center items-center py-10">
@@ -452,7 +474,7 @@ export const UserListOfMealDelivery = () => {
       isOpen={showFilterPopup}
       onClose={() => setShowFilterPopup(false)}
       criteria={filterCriteria}
-      setCriteria={setFilterCriteria}
+      setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
       title="Filter Meal Delivery"
     />
 
