@@ -64,7 +64,7 @@ export const useCustomiseYourMeal = () => {
     }
   };
 
-  const createMealRequest = async (date) => {
+  const createMealRequest = async (date, mealType) => {
     try {
       const response = await axios({
         method: "PUT",
@@ -75,6 +75,7 @@ export const useCustomiseYourMeal = () => {
         data: {
           userId,
           date,
+          mealType,
           items: {
             ...items,
           },
@@ -88,8 +89,8 @@ export const useCustomiseYourMeal = () => {
           Your meal customization request has been received! 🍽️\n
           With our customization feature, you can request changes to your dish from today’s menu.\n
           ⏳ Customization Request Timings:\n
-          Lunch: 12 Midnight – 11:00 AM\n
-          Dinner: 12 Midnight – 4:30 PM\n
+          Lunch: 12 Midnight – 10:30 AM\n
+          Dinner: 12 Midnight – 4:00 PM\n
           For any further modifications, please reach out to us.\n
           Enjoy your personalized meal!\n\n
           Team Mealprep\n
@@ -97,7 +98,7 @@ export const useCustomiseYourMeal = () => {
       }
     } catch (e) {
       console.error(e);
-      setErrorMessage(e.message);
+      setErrorMessage(e.response?.data?.message || e.message);
     }
   };
 

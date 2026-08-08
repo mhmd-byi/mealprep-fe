@@ -17,7 +17,11 @@ export const CustomizeYourMeal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValidTimeForCustomisation()) {
-      setErrorMessage("You can only customise your meal request between 10:30 AM and 4:30 PM");
+      setErrorMessage(
+        mealType === "lunch"
+          ? "Lunch customisation for today must be requested before 10:30 AM"
+          : "Dinner customisation for today must be requested before 4:00 PM"
+      );
       return;
     }
     getMealItems(startDate, mealType, currentPlan.mealType);
@@ -25,32 +29,50 @@ export const CustomizeYourMeal = () => {
 
   const handleSubmitCustomiseRequest = async (e) => {
     e.preventDefault();
-    createMealRequest(startDate);
+    createMealRequest(startDate, mealType);
+  };
+
+  // Uses local date parts (not toISOString, which is UTC and drifts a day off
+  // from the IST calendar date between midnight and 5:30 AM IST).
+  const getTodayString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // A meal type is still open for "today" while the current IST time is at or before
+  // its cutoff — matches the backend's `currentTimeInMinutes > cutoff` rejection check,
+  // so exactly 10:30:00/16:00:00 is still allowed on both sides.
+  const isMealTypeOpenToday = (type) => {
+    const now = new Date();
+    const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+    if (type === "lunch") return currentTimeInMinutes <= 10.5 * 60; // up to 10:30 AM
+    if (type === "dinner") return currentTimeInMinutes <= 16 * 60; // up to 4:00 PM
+    return false;
   };
 
   const isValidTimeForCustomisation = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    const minutes = now.getMinutes();
-    const today = now.toISOString().split('T')[0];
-
-    if (startDate === today) {
-        // Check if current time is after 10:30 AM
-        if (mealType === "lunch" && (hour > 10 || (hour === 10 && minutes >= 30))) {
-            return false;
-        }
-        // Check if current time is after 4:30 PM
-        if (mealType === "dinner" && (hour > 16 || (hour === 16 && minutes >= 30))) {
-            return false;
-        }
-    }
-    return true;
+    if (startDate !== getTodayString()) return true;
+    return isMealTypeOpenToday(mealType);
   };
 
   const getTomorrow = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split("T")[0];
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Today stays selectable as long as at least one meal type is still open;
+  // once both cutoffs have passed, today drops out of the picker entirely.
+  const getMinSelectableDate = () => {
+    return (isMealTypeOpenToday("lunch") || isMealTypeOpenToday("dinner"))
+      ? getTodayString()
+      : getTomorrow();
   };
   return (
     <DashboardLayoutComponent>
@@ -71,7 +93,7 @@ export const CustomizeYourMeal = () => {
                     <li>2. Input your requests</li>
                     <li>3. Submit the request</li>
                   </ul>
-                  Note: You Can Raise Cutomize Request From 12 Mid Night To Morning 11 For Lunch And 12 Mid Night Till 4:30 PM For Dinner
+                  Note: You Can Raise Customisation Request From 12 Midnight To 10:30 AM For Lunch And 12 Midnight Till 4:00 PM For Dinner
                 </p>
                 {message && (
                   <div className="mb-4 text-sm font-medium text-green-600 mt-5">
@@ -200,9 +222,13 @@ export const CustomizeYourMeal = () => {
                               } else {
                                 setErrorMessage("");
                                 setStartDate(e.target.value);
+                                // Clear a previously chosen meal type if it's no longer open for the new date
+                                if (e.target.value === getTodayString() && mealType && !isMealTypeOpenToday(mealType)) {
+                                  setMealType("");
+                                }
                               }
                             }}
-                            min={getTomorrow()}
+                            min={getMinSelectableDate()}
                             className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                           />
@@ -222,8 +248,8 @@ export const CustomizeYourMeal = () => {
                             required
                           >
                             <option value="">Select meal type</option>
-                            {currentPlan && (currentPlan.lunchMeals > 0) ? <option value="lunch">Lunch</option> : null}
-                            {currentPlan && (currentPlan.dinnerMeals > 0) ? <option value="dinner">Dinner</option> : null}
+                            {currentPlan && (currentPlan.lunchMeals > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("lunch")) ? <option value="lunch">Lunch</option> : null}
+                            {currentPlan && (currentPlan.dinnerMeals > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("dinner")) ? <option value="dinner">Dinner</option> : null}
                           </select>
                         </div>
                       </div>
