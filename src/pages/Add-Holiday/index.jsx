@@ -7,7 +7,8 @@ import { sendEmail } from "../../utils";
 
 const AddHoliday = () => {
   const [formData, setFormData] = useState({
-    date: "",
+    startDate: "",
+    endDate: "",
     description: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +23,20 @@ const AddHoliday = () => {
     return tomorrow.toISOString().split("T")[0];
   };
 
-  const handleDateChange = (e) => {
+  const handleStartDateChange = (e) => {
     const selectedDate = e.target.value;
-    setFormData((prev) => ({ ...prev, date: selectedDate }));
+    setFormData((prev) => ({
+      ...prev,
+      startDate: selectedDate,
+      // Keep endDate valid: if it's now before the new start, snap it to match
+      endDate: prev.endDate && prev.endDate < selectedDate ? selectedDate : prev.endDate,
+    }));
+    setError("");
+  };
+
+  const handleEndDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setFormData((prev) => ({ ...prev, endDate: selectedDate }));
     setError("");
   };
 
@@ -37,9 +49,15 @@ const AddHoliday = () => {
     e.preventDefault();
 
     // Validation
-    if (!formData.date) {
-      setError("Please select a date");
-      toast.error("Please select a date");
+    if (!formData.startDate) {
+      setError("Please select a start date");
+      toast.error("Please select a start date");
+      return;
+    }
+
+    if (formData.endDate && formData.endDate < formData.startDate) {
+      setError("End date must be on or after the start date");
+      toast.error("End date must be on or after the start date");
       return;
     }
 
@@ -52,12 +70,18 @@ const AddHoliday = () => {
     setIsLoading(true);
     setError("");
 
+    const rangeLabel =
+      formData.endDate && formData.endDate !== formData.startDate
+        ? `${formData.startDate} to ${formData.endDate}`
+        : formData.startDate;
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}holiday/add-holiday`,
         {
           userId,
-          date: formData.date,
+          startDate: formData.startDate,
+          endDate: formData.endDate || formData.startDate,
           description: formData.description,
         },
         {
@@ -68,10 +92,11 @@ const AddHoliday = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        toast.success("Holiday added successfully!");
+        toast.success(response.data?.message || "Holiday added successfully!");
         // Reset form
         setFormData({
-          date: "",
+          startDate: "",
+          endDate: "",
           description: "",
         });
       }
@@ -99,7 +124,7 @@ const AddHoliday = () => {
           {
             userId: user._id,
             date: todaysDate.toISOString().split("T")[0],
-            description: `Added a new holiday for date ${formData.date}: ${formData.description}`,
+            description: `Added a new holiday for ${rangeLabel}: ${formData.description}`,
           },
           {
             headers: {
@@ -112,7 +137,7 @@ const AddHoliday = () => {
           "",
           "New Holiday Added!",
           `Dear Customer,\n
-                      We wanted to inform you that there is a holiday on ${formData.date}, due to ${formData.description}. Please plan accordingly.\n\n
+                      We wanted to inform you that there is a holiday on ${rangeLabel}, due to ${formData.description}. Please plan accordingly.\n\n
                         Team Mealprep\n
                       `
         );
@@ -130,37 +155,56 @@ const AddHoliday = () => {
   };
   return (
     <DashboardLayoutComponent>
-      <div className="block lg:flex flex-col justify-center items-center p-5 w-full h-full">
-        <div className="py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
+      <div className="block flex-col justify-center items-center p-5 w-full h-full lg:flex">
+        <div className="px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl">
             <div className="bg-white shadow-xl rounded-lg overflow-hidden min-w[350px] max-w-xl ">
               <div className="p-6 sm:p-10">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">
+                <h2 className="mb-4 text-xl font-semibold text-gray-800 sm:text-2xl sm:mb-6">
                   Add Holiday
                 </h2>
                 <form onSubmit={handleSubmit}>
                   <div className="flex flex-col space-y-4">
-                    <div>
-                      <label
-                        htmlFor="date"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Date
-                      </label>
-                      <input
-                        type="date"
-                        id="date"
-                        value={formData.date}
-                        onChange={handleDateChange}
-                        min={getTomorrow()}
-                        className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
+                    <div className="flex flex-col gap-4 sm:flex-row">
+                      <div className="w-full">
+                        <label
+                          htmlFor="startDate"
+                          className="block mb-1 text-sm font-medium text-gray-700"
+                        >
+                          Start Date
+                        </label>
+                        <input
+                          type="date"
+                          id="startDate"
+                          value={formData.startDate}
+                          onChange={handleStartDateChange}
+                          min={getTomorrow()}
+                          className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      <div className="w-full">
+                        <label
+                          htmlFor="endDate"
+                          className="block mb-1 text-sm font-medium text-gray-700"
+                        >
+                          End Date
+                        </label>
+                        <input
+                          type="date"
+                          id="endDate"
+                          value={formData.endDate}
+                          onChange={handleEndDateChange}
+                          min={formData.startDate || getTomorrow()}
+                          className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="font-normal text-gray-400">(optional — same as start if left blank)</span>
+                      </div>
                     </div>
                     <div>
                       <label
                         htmlFor="description"
-                        className="block text-sm font-medium text-gray-700 mb-1"
+                        className="block mb-1 text-sm font-medium text-gray-700"
                       >
                         Description
                       </label>
@@ -170,13 +214,13 @@ const AddHoliday = () => {
                         value={formData.description}
                         onChange={handleDescriptionChange}
                         placeholder="Enter holiday description (e.g., Diwali, Christmas, etc.)"
-                        className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       ></textarea>
                     </div>
 
                     {error && (
-                      <div className="text-red-500 text-sm">{error}</div>
+                      <div className="text-sm text-red-500">{error}</div>
                     )}
 
                     <div>
