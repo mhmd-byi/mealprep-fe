@@ -129,5 +129,12 @@
     "path": "/dashboard/dietary-stock-report",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Expenses",
+    "icon": "Receipt",
+    "path": "/dashboard/expenses",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
