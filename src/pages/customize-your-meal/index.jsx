@@ -248,8 +248,8 @@ export const CustomizeYourMeal = () => {
                             required
                           >
                             <option value="">Select meal type</option>
-                            {currentPlan && (currentPlan.lunchMeals > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("lunch")) ? <option value="lunch">Lunch</option> : null}
-                            {currentPlan && (currentPlan.dinnerMeals > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("dinner")) ? <option value="dinner">Dinner</option> : null}
+                            {currentPlan && ((currentPlan.lunchMeals || 0) + (currentPlan.nextDayLunchMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("lunch")) ? <option value="lunch">Lunch</option> : null}
+                            {currentPlan && ((currentPlan.dinnerMeals || 0) + (currentPlan.nextDayDinnerMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("dinner")) ? <option value="dinner">Dinner</option> : null}
                           </select>
                         </div>
                       </div>
