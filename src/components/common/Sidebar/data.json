@@ -122,5 +122,12 @@
     "path": "/dashboard/user-meal-tracking",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Dietary Stock Report",
+    "icon": "Inventory2",
+    "path": "/dashboard/dietary-stock-report",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

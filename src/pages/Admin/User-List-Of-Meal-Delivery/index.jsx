@@ -118,6 +118,17 @@ export const UserListOfMealDelivery = () => {
     return today.toISOString().split("T")[0];
   };
 
+  const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
+  // "Both" plans don't say what to actually pack — show the resolved pick for
+  // this specific date instead, with a note that the plan itself is flexible.
+  const formatDietLabel = (meal) => {
+    if (meal?.mealType === "both") {
+      return `${capitalize(meal.dietaryPreference)} (Flexible plan)`;
+    }
+    return capitalize(meal?.mealType);
+  };
+
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
     const currentDate = getCurrentDate();
@@ -180,7 +191,7 @@ export const UserListOfMealDelivery = () => {
       meal.email,
       meal.mobile,
       meal.address,
-      meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1),
+      formatDietLabel(meal),
       meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1),
       meal.allergy,
       meal.plan,
@@ -358,7 +369,7 @@ export const UserListOfMealDelivery = () => {
                                     </td>
                                     <td className="px-4 py-4 text-sm text-gray-900 border-b">
                                       <div className="break-words">
-                                        {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                        {formatDietLabel(meal)}
                                       </div>
                                     </td>
                                     <td className="px-4 py-4 text-sm text-gray-900 border-b">
@@ -418,7 +429,7 @@ export const UserListOfMealDelivery = () => {
                                   <div className="flex justify-between pb-2 border-b">
                                     <span className="font-medium text-gray-500">Meal Type:</span>
                                     <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                      {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                      {formatDietLabel(meal)}
                                     </span>
                                   </div>
                                   <div className="flex justify-between pb-2 border-b">

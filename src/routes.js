@@ -20,6 +20,7 @@ import { MealTracking } from "./pages/MealTracking";
 import AddHoliday from "./pages/Add-Holiday";
 import AllHolidays from "./pages/All-Holidays";
 import { UserMealTracking } from "./pages/Admin/User-Meal-Tracking";
+import { DietaryStockReport } from "./pages/Admin/Dietary-Stock-Report";
 export const routes = [
   {
     path: "/",
@@ -139,6 +140,11 @@ export const routes = [
   {
     path: "/dashboard/user-meal-tracking",
     component: UserMealTracking,
+    exact: true,
+  },
+  {
+    path: "/dashboard/dietary-stock-report",
+    component: DietaryStockReport,
     exact: true,
   }
 ];
