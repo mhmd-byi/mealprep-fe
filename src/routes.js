@@ -22,6 +22,7 @@ import AllHolidays from "./pages/All-Holidays";
 import { UserMealTracking } from "./pages/Admin/User-Meal-Tracking";
 import { DietaryStockReport } from "./pages/Admin/Dietary-Stock-Report";
 import { Expenses } from "./pages/Admin/Expenses";
+import { ManageSubscriptions } from "./pages/Admin/Manage-Subscriptions";
 export const routes = [
   {
     path: "/",
@@ -151,6 +152,11 @@ export const routes = [
   {
     path: "/dashboard/expenses",
     component: Expenses,
+    exact: true,
+  },
+  {
+    path: "/dashboard/manage-subscriptions",
+    component: ManageSubscriptions,
     exact: true,
   }
 ];
