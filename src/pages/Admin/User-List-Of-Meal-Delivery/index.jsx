@@ -23,7 +23,8 @@ export const UserListOfMealDelivery = () => {
   const [filterCriteria, setFilterCriteria] = useState({
     planType: 'All',
     mealCount: '',
-    operator: '>'
+    operator: '>',
+    category: 'All', // veg / non-veg
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,16 +68,22 @@ export const UserListOfMealDelivery = () => {
     // Meal Count filter
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== '') {
-      const totalMeals = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0) + 
+      const totalMeals = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0) +
                         (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
       const targetCount = parseInt(filterCriteria.mealCount);
-      
+
       if (filterCriteria.operator === '>') mealCountMatch = totalMeals > targetCount;
       else if (filterCriteria.operator === '<') mealCountMatch = totalMeals < targetCount;
       else if (filterCriteria.operator === '=') mealCountMatch = totalMeals === targetCount;
     }
 
-    return searchMatch && planMatch && mealCountMatch;
+    // Category filter — matches resolved veg/non-veg pick for the day
+    let categoryMatch = true;
+    if (filterCriteria.category && filterCriteria.category !== 'All') {
+      categoryMatch = meal.dietaryPreference === filterCriteria.category;
+    }
+
+    return searchMatch && planMatch && mealCountMatch && categoryMatch;
   });
 
   const sortedMeals = [...filteredMeals].sort((a, b) => {
@@ -87,10 +94,16 @@ export const UserListOfMealDelivery = () => {
       aValue = a.name.toLowerCase();
       bValue = b.name.toLowerCase();
     } else if (sortConfig.key === 'mealCount') {
-      aValue = (a.lunchMeals || 0) + (a.nextDayLunchMeals || 0) + 
+      aValue = (a.lunchMeals || 0) + (a.nextDayLunchMeals || 0) +
                (a.dinnerMeals || 0) + (a.nextDayDinnerMeals || 0);
-      bValue = (b.lunchMeals || 0) + (b.nextDayLunchMeals || 0) + 
+      bValue = (b.lunchMeals || 0) + (b.nextDayLunchMeals || 0) +
                (b.dinnerMeals || 0) + (b.nextDayDinnerMeals || 0);
+    } else if (sortConfig.key === 'plan') {
+      aValue = (a.plan || '').toLowerCase();
+      bValue = (b.plan || '').toLowerCase();
+    } else if (sortConfig.key === 'category') {
+      aValue = (a.dietaryPreference || '').toLowerCase();
+      bValue = (b.dietaryPreference || '').toLowerCase();
     }
 
     if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -271,11 +284,34 @@ export const UserListOfMealDelivery = () => {
                       </Button>
                       
                       {mealDeliveryList.length > 0 && (
-                        <div className="flex flex-col gap-4 items-center sm:flex-row">
-                          <SearchBar 
+                        <div className="flex flex-col gap-4 items-center sm:flex-row flex-wrap">
+                          <SearchBar
                             value={searchQuery}
                             onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
                             placeholder="Search name or email..."
+                          />
+                          <Input
+                            type="select"
+                            value={filterCriteria.category || 'All'}
+                            onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, category: e.target.value })); setCurrentPage(1); }}
+                            options={[
+                              { value: 'All', label: 'All Meal Types' },
+                              { value: 'veg', label: 'Veg' },
+                              { value: 'non-veg', label: 'Non-Veg' },
+                            ]}
+                            classes="border border-gray-300 bg-white text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                          />
+                          <Input
+                            type="select"
+                            value={filterCriteria.planType}
+                            onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, planType: e.target.value })); setCurrentPage(1); }}
+                            options={[
+                              { value: 'All', label: 'All Plans' },
+                              { value: 'Trial', label: 'Trial Pack' },
+                              { value: 'Weekly', label: 'Weekly Plan' },
+                              { value: 'Monthly', label: 'Monthly Plan' },
+                            ]}
+                            classes="border border-gray-300 bg-white text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                           />
                           <button
                             onClick={() => setShowFilterPopup(true)}
@@ -327,14 +363,20 @@ export const UserListOfMealDelivery = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                   Address
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Meal Type
+                                <th
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('category')}
+                                >
+                                  Meal Type <SortIcon columnKey="category" />
                                 </th>
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                   Carb Type
                                 </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Selected Plan
+                                <th
+                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleSort('plan')}
+                                >
+                                  Selected Plan <SortIcon columnKey="plan" />
                                 </th>
                                 <th 
                                   className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
