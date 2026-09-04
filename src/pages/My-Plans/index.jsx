@@ -57,8 +57,8 @@ const DietToggle = ({ date, mealSlot, value, locked, isSaving, onSelect }) => {
 };
 
 export const MyPlan = () => {
-  const { isSubscribed, currentPlan, nextPlan, hasQueuedPlan } = useSubscription();
-  const isBothMealType = currentPlan?.mealType === "both";
+  const { isSubscribed, currentPlans, nextPlan, hasQueuedPlan } = useSubscription();
+  const isBothMealType = currentPlans.some((p) => p.mealType === "both");
   const { days, applicable, isLoading: isScheduleLoading, error: scheduleError, savingKey, updatePreference } =
     useMealSchedule(isBothMealType);
 
@@ -68,53 +68,60 @@ export const MyPlan = () => {
       (plan?.nextDayLunchMeals || 0) +
       (plan?.nextDayDinnerMeals || 0));
 
-  const isActive = currentPlan && totalMealsLeft(currentPlan) >= 1;
-
   return (
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-start items-center p-5 w-full pt-10 gap-6">
 
-        {/* ── Current Plan ── */}
-        {(isSubscribed && currentPlan) ? (
+        {/* ── Current Plan(s) ── */}
+        {(isSubscribed && currentPlans.length > 0) ? (
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
-                Current Active Plan
+                {currentPlans.length > 1 ? "Current Active Plans" : "Current Active Plan"}
               </h2>
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
-                {isActive ? "● Active" : "● Inactive"}
+              <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+                ● Active
               </span>
             </div>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left py-2">Plan Name</th>
-                  <th className="text-left py-2">Start Date</th>
-                  <th className="text-left py-2">Total Meals</th>
-                  <th className="text-left py-2">Meals Left</th>
-                  <th className="text-left py-2">Lunch Left</th>
-                  <th className="text-left py-2">Dinner Left</th>
-                  <th className="text-left py-2">Meal Type</th>
-                  <th className="text-left py-2">Carb Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-left">
-                  <td className="py-2 font-medium">{currentPlan?.plan}</td>
-                  <td className="py-2">{formatDate(currentPlan?.subscriptionStartDate)}</td>
-                  <td className="py-2">{currentPlan?.totalMeals} Meals</td>
-                  <td className="py-2">{totalMealsLeft(currentPlan)} Meals</td>
-                  <td className="py-2">
-                    {(currentPlan?.lunchMeals || 0) + (currentPlan?.nextDayLunchMeals || 0)} Meals
-                  </td>
-                  <td className="py-2">
-                    {(currentPlan?.dinnerMeals || 0) + (currentPlan?.nextDayDinnerMeals || 0)} Meals
-                  </td>
-                  <td className="py-2">{(currentPlan?.mealType || "").toUpperCase()}</td>
-                  <td className="py-2 capitalize">{currentPlan?.carbType || "—"}</td>
-                </tr>
-              </tbody>
-            </table>
+            {currentPlans.length > 1 && (
+              <p className="text-sm text-gray-500 mb-4">
+                You have {currentPlans.length} active plans running at once, covering different meal types.
+              </p>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-2">Plan Name</th>
+                    <th className="text-left py-2">Start Date</th>
+                    <th className="text-left py-2">Total Meals</th>
+                    <th className="text-left py-2">Meals Left</th>
+                    <th className="text-left py-2">Lunch Left</th>
+                    <th className="text-left py-2">Dinner Left</th>
+                    <th className="text-left py-2">Meal Type</th>
+                    <th className="text-left py-2">Carb Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPlans.map((plan) => (
+                    <tr key={plan._id} className="text-left">
+                      <td className="py-2 font-medium">{plan?.plan}</td>
+                      <td className="py-2">{formatDate(plan?.subscriptionStartDate)}</td>
+                      <td className="py-2">{plan?.totalMeals} Meals</td>
+                      <td className="py-2">{totalMealsLeft(plan)} Meals</td>
+                      <td className="py-2">
+                        {(plan?.lunchMeals || 0) + (plan?.nextDayLunchMeals || 0)} Meals
+                      </td>
+                      <td className="py-2">
+                        {(plan?.dinnerMeals || 0) + (plan?.nextDayDinnerMeals || 0)} Meals
+                      </td>
+                      <td className="py-2">{(plan?.mealType || "").toUpperCase()}</td>
+                      <td className="py-2 capitalize">{plan?.carbType || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px]">

@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import data from "./data.json";
-import { useSubscription } from "./useSubscription";
+import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
-  const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan } = useSubscription();
+  const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan, currentPlans } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
   const [dateWarnings, setDateWarnings] = useState({});
 
@@ -236,6 +236,11 @@ const SubscriptionPlans = () => {
               const currentPlanDetails = planDetails[plan.name];
               const isActive = isSubscribedTo(plan.name);
               const isQueued = isQueuedTo(plan.name);
+              // Whether THIS specific meal-type selection would overlap an
+              // already-active plan's coverage — only an overlapping purchase
+              // needs to queue; a genuinely non-overlapping one (e.g. dinner
+              // bought while only lunch is active) activates immediately.
+              const wouldOverlap = purchaseOverlapsActiveSubs(currentPlanDetails.lunchDinner, currentPlans);
 
               return (
                 <div
@@ -360,15 +365,17 @@ const SubscriptionPlans = () => {
 
                     {/* ── Status area ── */}
                     {isActive ? (
-                      // This plan is the user's current active plan
+                      // This plan is already one of the user's active plans
                       <>
                         <p className="text-green-700 font-bold py-3 border-2 rounded-md border-green-500 bg-green-50">
                           ✅ Currently Active Plan
                         </p>
-                        {!hasQueuedPlan && (
+                        {(!hasQueuedPlan || !wouldOverlap) && (
                           <>
                             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mt-2 mb-2">
-                              ℹ️ This will be queued and activate when your current plan finishes.
+                              {wouldOverlap
+                                ? "ℹ️ This will be queued and activate when your current plan finishes."
+                                : "ℹ️ This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
                             </p>
                             <Button
                               onClick={() =>
@@ -385,7 +392,7 @@ const SubscriptionPlans = () => {
                               }
                               classes="w-full mt-2"
                             >
-                              Queue as Next Plan
+                              {wouldOverlap ? "Queue as Next Plan" : "Subscribe"}
                             </Button>
                           </>
                         )}
@@ -395,8 +402,9 @@ const SubscriptionPlans = () => {
                       <p className="text-amber-700 font-bold py-3 border-2 rounded-md border-amber-400 bg-amber-50">
                         🕐 Queued as Your Next Plan
                       </p>
-                    ) : hasQueuedPlan ? (
-                      // User already has a different plan queued — can't queue another
+                    ) : hasQueuedPlan && wouldOverlap ? (
+                      // User already has a different plan queued, and this selection
+                      // would also need to queue — can't queue a second one
                       <p className="text-gray-500 font-medium py-3 border-2 rounded-md border-gray-300 bg-gray-50">
                         🔒 Next plan slot is already taken
                       </p>
@@ -405,7 +413,9 @@ const SubscriptionPlans = () => {
                       <>
                         {isSubscribed && (
                           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mb-2">
-                            ℹ️ This will be queued and activate when your current plan finishes.
+                            {wouldOverlap
+                              ? "ℹ️ This will be queued and activate when your current plan finishes."
+                              : "ℹ️ This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
                           </p>
                         )}
                         <Button
@@ -423,7 +433,7 @@ const SubscriptionPlans = () => {
                           }
                           classes="w-full"
                         >
-                          {isSubscribed ? "Queue as Next Plan" : "Select"}
+                          {isSubscribed ? (wouldOverlap ? "Queue as Next Plan" : "Subscribe") : "Select"}
                         </Button>
                       </>
                     )}

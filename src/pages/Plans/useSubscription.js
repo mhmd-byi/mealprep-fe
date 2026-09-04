@@ -3,9 +3,29 @@ import axios from "axios";
 import { sendEmail } from "../../utils";
 import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../emailTemplates";
 
+// Mirrors the backend's purchaseOverlapsActiveSubs (subscriptionController.js) —
+// a purchase only needs to queue if it shares a meal-type track with an
+// already-active plan (e.g. buying dinner while only lunch is active does NOT
+// overlap and can activate immediately, running alongside the existing plan).
+const getMealCoverage = (sub) => ({
+  lunch: (sub.lunchMeals || 0) + (sub.nextDayLunchMeals || 0) > 0,
+  dinner: (sub.dinnerMeals || 0) + (sub.nextDayDinnerMeals || 0) > 0,
+});
+const getPurchaseCoverage = (lunchDinner) => ({
+  lunch: lunchDinner === "lunch" || lunchDinner === "lunchAndDinner",
+  dinner: lunchDinner === "dinner" || lunchDinner === "lunchAndDinner",
+});
+export const purchaseOverlapsActiveSubs = (lunchDinner, activeSubs) => {
+  const newCoverage = getPurchaseCoverage(lunchDinner);
+  const activeLunch = activeSubs.some((s) => getMealCoverage(s).lunch);
+  const activeDinner = activeSubs.some((s) => getMealCoverage(s).dinner);
+  return (newCoverage.lunch && activeLunch) || (newCoverage.dinner && activeDinner);
+};
+
 export const useSubscription = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [currentPlan, setCurrentPlan] = useState(null);
+  const [currentPlans, setCurrentPlans] = useState([]);
   const [nextPlan, setNextPlan] = useState(null);
   const [hasQueuedPlan, setHasQueuedPlan] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +70,9 @@ export const useSubscription = () => {
         if (response.data.isSubscribed) {
           // Prefer the explicit currentPlan key; fall back to legacy 'subscription' key
           setCurrentPlan(response.data.currentPlan || response.data.subscription);
+          setCurrentPlans(response.data.currentPlans || []);
+        } else {
+          setCurrentPlans([]);
         }
         if (response.data.nextPlan) {
           setNextPlan(response.data.nextPlan);
@@ -79,8 +102,12 @@ export const useSubscription = () => {
     allergy,
     setErrorMessage,
   ) => {
-    // Block if a queued plan already exists — only 1 plan can be queued at a time
-    if (hasQueuedPlan) {
+    // Only block on an existing queued plan if THIS purchase would also need to
+    // queue (i.e. it overlaps an active plan's meal-type coverage) — a genuinely
+    // non-overlapping purchase (e.g. dinner bought while only lunch is active)
+    // is allowed to go active immediately regardless of an unrelated queued plan.
+    const wouldOverlap = purchaseOverlapsActiveSubs(lunchDinner, currentPlans);
+    if (hasQueuedPlan && wouldOverlap) {
       setErrorMessage(
         `You already have a plan queued up. It will activate once your current plan finishes.`
       );
@@ -228,13 +255,14 @@ Please update the system accordingly.`);
     }
   };
 
-  // isSubscribedTo: returns true only if this plan is the currently ACTIVE plan (not queued)
+  // isSubscribedTo: returns true if this plan is any one of the currently ACTIVE
+  // plans (a user can now have more than one active at once)
   const isSubscribedTo = (planName) => {
-    return (
-      currentPlan &&
-      currentPlan.plan === planName &&
-      currentPlan.status !== 'queued' &&
-      (currentPlan?.totalAvailableMeals ?? currentPlan?.totalMeals ?? 0) > 0
+    return currentPlans.some(
+      (p) =>
+        p.plan === planName &&
+        p.status !== "queued" &&
+        (p?.totalAvailableMeals ?? p?.totalMeals ?? 0) > 0
     );
   };
 
@@ -249,6 +277,7 @@ Please update the system accordingly.`);
     isSubscribedTo,
     isQueuedTo,
     currentPlan,
+    currentPlans,
     nextPlan,
     hasQueuedPlan,
     isLoading,
