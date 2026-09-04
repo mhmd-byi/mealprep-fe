@@ -34,6 +34,15 @@ export const AllRegisteredUsers = () => {
     setCurrentPage(1); // reset to first page on sort change
   };
   
+  // end date only exists once a plan stops delivering — updatedAt is when that happened
+  const getSubscriptionEndLabel = (sub) => {
+    if (sub.status === 'completed' || sub.status === 'cancelled') {
+      return sub.updatedAt ? new Date(sub.updatedAt).toLocaleDateString() : '—';
+    }
+    if (sub.status === 'active') return 'Ongoing';
+    return 'Not started';
+  };
+
   const handleCancelPlan = async (subId, userName) => {
     if (window.confirm(`Are you sure you want to cancel the queued plan for ${userName}?`)) {
       try {
@@ -498,7 +507,8 @@ export const AllRegisteredUsers = () => {
                             {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
                           </span>
                         </div>
-                        <div><span className="text-gray-500">Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                        <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                        <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
                         <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
                         <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                         {sub.allergy && (

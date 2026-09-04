@@ -133,6 +133,15 @@ export const UserListOfMealDelivery = () => {
 
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
+  // end date only exists once a plan stops delivering — updatedAt is when that happened
+  const getSubscriptionEndLabel = (sub) => {
+    if (sub.status === 'completed' || sub.status === 'cancelled') {
+      return sub.updatedAt ? new Date(sub.updatedAt).toLocaleDateString() : '—';
+    }
+    if (sub.status === 'active') return 'Ongoing';
+    return 'Not started';
+  };
+
   // "Both" plans don't say what to actually pack — show the resolved pick for
   // this specific date instead, with a note that the plan itself is flexible.
   const formatDietLabel = (meal) => {
@@ -584,7 +593,8 @@ export const UserListOfMealDelivery = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
                           <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
-                          <div><span className="text-gray-500">Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                          <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                          <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
                           <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
                           <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                           {sub.allergy && (
