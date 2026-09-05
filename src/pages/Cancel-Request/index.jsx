@@ -103,8 +103,8 @@ const CancelRequest = () => {
                   </ul>
                   <br />
                   &nbsp;
-                  <strong>Note 1</strong>: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 11:00 AM For Lunch<br />
-                  <strong>Note 2</strong>: You Can Raise Cancel Meal Request From 12 Mid Night Till 4:30 PM For Dinner
+                  <strong>Note 1</strong>: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 10:00 AM For Lunch<br />
+                  <strong>Note 2</strong>: You Can Raise Cancel Meal Request From 12 Mid Night Till 4:00 PM For Dinner
                 </p>
                 {message && (
                   <div className="mt-5 mb-4 text-sm font-medium text-green-600">
