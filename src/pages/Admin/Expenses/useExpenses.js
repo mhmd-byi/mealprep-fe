@@ -10,7 +10,10 @@ export const useExpenses = () => {
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ startDate: "", endDate: "", category: "", search: "" });
+  const [filters, setFilters] = useState({ startDate: "", endDate: "", category: "", subcategory: "", search: "" });
+
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   const fetchExpenses = useCallback(async () => {
     try {
@@ -20,6 +23,7 @@ export const useExpenses = () => {
       if (filters.startDate) params.startDate = filters.startDate;
       if (filters.endDate) params.endDate = filters.endDate;
       if (filters.category) params.category = filters.category;
+      if (filters.subcategory) params.subcategory = filters.subcategory;
       if (filters.search) params.search = filters.search;
 
       const response = await axios.get(
@@ -48,6 +52,22 @@ export const useExpenses = () => {
     }
   }, []);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      setIsLoadingCategories(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}expense-categories`,
+        authHeaders()
+      );
+      setCategories(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error("Error fetching expense categories:", err);
+      setCategories([]);
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchExpenses();
   }, [fetchExpenses]);
@@ -56,8 +76,17 @@ export const useExpenses = () => {
     fetchSummary();
   }, [fetchSummary]);
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
   const refreshAll = () => {
     fetchExpenses();
+    fetchSummary();
+  };
+
+  const refreshCategories = () => {
+    fetchCategories();
     fetchSummary();
   };
 
@@ -87,6 +116,58 @@ export const useExpenses = () => {
     refreshAll();
   };
 
+  const addCategory = async (name, color) => {
+    await axios.post(
+      `${process.env.REACT_APP_API_URL}expense-categories`,
+      { name, color },
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
+  const editCategory = async (categoryId, payload) => {
+    await axios.put(
+      `${process.env.REACT_APP_API_URL}expense-categories/${categoryId}`,
+      payload,
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
+  const removeCategory = async (categoryId) => {
+    await axios.delete(
+      `${process.env.REACT_APP_API_URL}expense-categories/${categoryId}`,
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
+  const addSubcategory = async (categoryId, name) => {
+    await axios.post(
+      `${process.env.REACT_APP_API_URL}expense-categories/${categoryId}/subcategories`,
+      { name },
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
+  const editSubcategory = async (categoryId, subcategoryId, name) => {
+    await axios.put(
+      `${process.env.REACT_APP_API_URL}expense-categories/${categoryId}/subcategories/${subcategoryId}`,
+      { name },
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
+  const removeSubcategory = async (categoryId, subcategoryId) => {
+    await axios.delete(
+      `${process.env.REACT_APP_API_URL}expense-categories/${categoryId}/subcategories/${subcategoryId}`,
+      authHeaders()
+    );
+    refreshCategories();
+  };
+
   return {
     expenses,
     summary,
@@ -97,6 +178,14 @@ export const useExpenses = () => {
     addExpense,
     editExpense,
     removeExpense,
+    categories,
+    isLoadingCategories,
+    addCategory,
+    editCategory,
+    removeCategory,
+    addSubcategory,
+    editSubcategory,
+    removeSubcategory,
   };
 };
 

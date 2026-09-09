@@ -3,9 +3,10 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { useExpenses } from "./useExpenses";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS, CATEGORY_COLORS } from "./constants";
+import { CategoryManager } from "./CategoryManager";
+import { PAYMENT_METHODS } from "./constants";
 
-const emptyForm = { date: "", category: "", amount: "", description: "", paymentMethod: "" };
+const emptyForm = { date: "", category: "", subcategory: "", amount: "", description: "", paymentMethod: "" };
 
 const formatCurrency = (amount) =>
   `₹${Number(amount || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
@@ -25,14 +26,37 @@ const toInputDate = (dateValue) => {
 };
 
 export const Expenses = () => {
-  const { expenses, summary, isLoading, error, filters, setFilters, addExpense, editExpense, removeExpense } =
-    useExpenses();
+  const {
+    expenses,
+    summary,
+    isLoading,
+    error,
+    filters,
+    setFilters,
+    addExpense,
+    editExpense,
+    removeExpense,
+    categories,
+    addCategory,
+    editCategory,
+    removeCategory,
+    addSubcategory,
+    editSubcategory,
+    removeSubcategory,
+  } = useExpenses();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+
+  const colorByCategory = {};
+  categories.forEach((c) => { colorByCategory[c.name] = c.color; });
+  const getCategoryColor = (name) => colorByCategory[name] || "#898781";
+  const subcategoriesFor = (categoryName) =>
+    categories.find((c) => c.name === categoryName)?.subcategories || [];
 
   const openAddModal = () => {
     setEditingId(null);
@@ -46,6 +70,7 @@ export const Expenses = () => {
     setForm({
       date: toInputDate(expense.date),
       category: expense.category,
+      subcategory: expense.subcategory || "",
       amount: String(expense.amount),
       description: expense.description || "",
       paymentMethod: expense.paymentMethod,
@@ -60,7 +85,12 @@ export const Expenses = () => {
   };
 
   const handleFormChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+      // switching category invalidates whichever subcategory was picked
+      ...(field === "category" ? { subcategory: "" } : {}),
+    }));
   };
 
   const handleSave = async () => {
@@ -77,6 +107,7 @@ export const Expenses = () => {
     const payload = {
       date: form.date,
       category: form.category,
+      subcategory: form.subcategory,
       amount,
       description: form.description,
       paymentMethod: form.paymentMethod,
@@ -112,10 +143,11 @@ export const Expenses = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ["Date", "Category", "Description", "Amount", "Payment Method"];
+    const headers = ["Date", "Category", "Subcategory", "Description", "Amount", "Payment Method"];
     const csvData = expenses.map((e) => [
       formatDate(e.date),
       e.category,
+      e.subcategory || "",
       (e.description || "").replace(/"/g, '""'),
       e.amount,
       e.paymentMethod,
@@ -141,9 +173,18 @@ export const Expenses = () => {
             <div className="p-4 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
                 <h2 className="text-xl font-bold md:text-2xl">Expenses</h2>
-                <Button onClick={openAddModal} classes="w-full sm:w-auto">
-                  + Add Expense
-                </Button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoryManagerOpen(true)}
+                    className="px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                  >
+                    Manage Categories
+                  </button>
+                  <Button onClick={openAddModal} classes="w-full sm:w-auto">
+                    + Add Expense
+                  </Button>
+                </div>
               </div>
 
               {/* Summary cards */}
@@ -166,7 +207,7 @@ export const Expenses = () => {
                     {summary?.topCategory && (
                       <span
                         className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: CATEGORY_COLORS[summary.topCategory] }}
+                        style={{ backgroundColor: summary.breakdown?.[0]?.color || "#898781" }}
                       />
                     )}
                     <span className="truncate">{summary?.topCategory || "—"}</span>
@@ -197,7 +238,7 @@ export const Expenses = () => {
                             className="h-full rounded-full"
                             style={{
                               width: `${item.percentage}%`,
-                              backgroundColor: CATEGORY_COLORS[item.category],
+                              backgroundColor: item.color,
                             }}
                           />
                         </div>
@@ -214,7 +255,7 @@ export const Expenses = () => {
               )}
 
               {/* Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
                 <Input
                   type="date"
                   value={filters.startDate}
@@ -230,9 +271,19 @@ export const Expenses = () => {
                 <Input
                   type="select"
                   value={filters.category}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, category: e.target.value, subcategory: "" }))
+                  }
                   placeholder="All Categories"
-                  options={EXPENSE_CATEGORIES.map((c) => ({ value: c, label: c }))}
+                  options={categories.map((c) => ({ value: c.name, label: c.name }))}
+                />
+                <Input
+                  type="select"
+                  value={filters.subcategory}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, subcategory: e.target.value }))}
+                  placeholder="All Subcategories"
+                  options={subcategoriesFor(filters.category).map((s) => ({ value: s.name, label: s.name }))}
+                  disabled={!filters.category}
                 />
                 <Input
                   type="text"
@@ -262,6 +313,7 @@ export const Expenses = () => {
                       <tr>
                         <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
                         <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Category</th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Subcategory</th>
                         <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Description</th>
                         <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
                         <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Payment</th>
@@ -278,16 +330,19 @@ export const Expenses = () => {
                             <span
                               className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
                               style={{
-                                backgroundColor: `${CATEGORY_COLORS[expense.category]}1a`,
-                                color: CATEGORY_COLORS[expense.category],
+                                backgroundColor: `${getCategoryColor(expense.category)}1a`,
+                                color: getCategoryColor(expense.category),
                               }}
                             >
                               <span
                                 className="w-1.5 h-1.5 rounded-full"
-                                style={{ backgroundColor: CATEGORY_COLORS[expense.category] }}
+                                style={{ backgroundColor: getCategoryColor(expense.category) }}
                               />
                               {expense.category}
                             </span>
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            {expense.subcategory || "—"}
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-700 max-w-xs truncate">
                             {expense.description || "—"}
@@ -350,10 +405,22 @@ export const Expenses = () => {
                 value={form.category}
                 onChange={(e) => handleFormChange("category", e.target.value)}
                 placeholder="Select category"
-                options={EXPENSE_CATEGORIES.map((c) => ({ value: c, label: c }))}
+                options={categories.map((c) => ({ value: c.name, label: c.name }))}
                 required
               />
             </div>
+            {subcategoriesFor(form.category).length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+                <Input
+                  type="select"
+                  value={form.subcategory}
+                  onChange={(e) => handleFormChange("subcategory", e.target.value)}
+                  placeholder="Select subcategory (optional)"
+                  options={subcategoriesFor(form.category).map((s) => ({ value: s.name, label: s.name }))}
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
               <Input
@@ -399,6 +466,18 @@ export const Expenses = () => {
             className: "bg-theme-color-1 text-white hover:bg-black",
           },
         ]}
+      />
+
+      <CategoryManager
+        isOpen={isCategoryManagerOpen}
+        onClose={() => setIsCategoryManagerOpen(false)}
+        categories={categories}
+        addCategory={addCategory}
+        editCategory={editCategory}
+        removeCategory={removeCategory}
+        addSubcategory={addSubcategory}
+        editSubcategory={editSubcategory}
+        removeSubcategory={removeSubcategory}
       />
     </DashboardLayoutComponent>
   );
