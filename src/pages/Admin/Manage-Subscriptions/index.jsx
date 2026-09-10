@@ -11,6 +11,7 @@ import {
   CARB_TYPES,
   STATUSES,
   MEAL_COUNT_FIELDS,
+  PAYMENT_METHODS,
 } from "./constants";
 
 const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
@@ -59,6 +60,7 @@ const emptyCreateForm = {
   carbType: "",
   subscriptionStartDate: "",
   allergy: "",
+  paymentMethod: "",
   paymentId: "",
   reason: "",
 };
@@ -260,6 +262,7 @@ export const ManageSubscriptions = () => {
         carbType,
         subscriptionStartDate,
         allergy: createForm.allergy,
+        paymentMethod: createForm.paymentMethod,
         paymentId: createForm.paymentId,
         reason: createForm.reason,
       });
@@ -280,6 +283,8 @@ export const ManageSubscriptions = () => {
       mealType: sub.mealType,
       allergy: sub.allergy || "",
       status: sub.status,
+      paymentMethod: sub.paymentMethod || "",
+      paymentId: sub.paymentId || "",
     });
     setEditMealDeltas({ lunchMeals: 0, dinnerMeals: 0, nextDayLunchMeals: 0, nextDayDinnerMeals: 0 });
     setEditReason("");
@@ -299,8 +304,9 @@ export const ManageSubscriptions = () => {
 
     // Only send fields that actually changed
     const fieldUpdates = {};
+    const stringFallbackFields = ["allergy", "paymentMethod", "paymentId"];
     Object.keys(editFieldUpdates).forEach((key) => {
-      const original = key === "allergy" ? editingSub.allergy || "" : editingSub[key];
+      const original = stringFallbackFields.includes(key) ? editingSub[key] || "" : editingSub[key];
       if (editFieldUpdates[key] !== original) {
         fieldUpdates[key] = editFieldUpdates[key];
       }
@@ -441,6 +447,7 @@ export const ManageSubscriptions = () => {
                               <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Meals Left</th>
                               <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Diet</th>
                               <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Carb</th>
+                              <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Payment</th>
                               <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
                             </tr>
                           </thead>
@@ -461,6 +468,9 @@ export const ManageSubscriptions = () => {
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">L: {lunchCount}, D: {dinnerCount}</td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{capitalize(sub.mealType)}</td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{sub.carbType}</td>
+                                  <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                                    {sub.paymentMethod || (sub.paymentId ? "Online" : "—")}
+                                  </td>
                                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                                     <button
                                       type="button"
@@ -682,12 +692,22 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method (optional)</label>
+              <Input
+                type="select"
+                value={createForm.paymentMethod}
+                onChange={(e) => handleCreateChange("paymentMethod", e.target.value)}
+                placeholder="No charge / leave blank"
+                options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Payment Reference (optional)</label>
               <Input
                 type="text"
                 value={createForm.paymentId}
                 onChange={(e) => handleCreateChange("paymentId", e.target.value)}
-                placeholder="e.g. offline payment note, UTR, etc."
+                placeholder="e.g. UPI transaction ID, cheque number, etc."
               />
             </div>
             <div>
@@ -773,6 +793,25 @@ export const ManageSubscriptions = () => {
                   value={editFieldUpdates.allergy || ""}
                   onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, allergy: e.target.value }))}
                   placeholder="None"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <Input
+                  type="select"
+                  value={editFieldUpdates.paymentMethod || ""}
+                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                  placeholder="No charge / none recorded"
+                  options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Reference</label>
+                <Input
+                  type="text"
+                  value={editFieldUpdates.paymentId || ""}
+                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentId: e.target.value }))}
+                  placeholder="e.g. UPI transaction ID, cheque number, etc."
                 />
               </div>
 

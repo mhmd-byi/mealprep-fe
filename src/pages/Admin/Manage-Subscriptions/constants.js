@@ -22,6 +22,8 @@ export const CARB_TYPES = [
 
 export const STATUSES = ["active", "queued", "completed", "cancelled"];
 
+export const PAYMENT_METHODS = ["Cash", "UPI", "Card", "Bank Transfer"];
+
 export const MEAL_COUNT_FIELDS = [
   { key: "lunchMeals", label: "Lunch (Today)" },
   { key: "dinnerMeals", label: "Dinner (Today)" },
