@@ -77,8 +77,10 @@ const Signup = () => {
                       type={"tel"}
                       required={true}
                       placeholder={"Phone Number"}
+                      value={formData.mobile}
                       onChange={handleChange}
                       disabled={otpVerified}
+                      maxLength={10}
                     />
                   </div>
                   {!otpVerified && (

@@ -3,6 +3,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { useManageSubscriptions } from "./useManageSubscriptions";
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
   PLANS,
   LUNCH_DINNER_OPTIONS,
@@ -147,7 +148,8 @@ export const ManageSubscriptions = () => {
   };
 
   const handleNewUserChange = (field, value) => {
-    setNewUserForm((prev) => ({ ...prev, [field]: value }));
+    const nextValue = field === "mobile" ? sanitizeMobileInput(value) : value;
+    setNewUserForm((prev) => ({ ...prev, [field]: nextValue }));
     // A changed mobile number needs to be verified again
     if (field === "mobile") {
       setOtp("");
@@ -157,8 +159,8 @@ export const ManageSubscriptions = () => {
   };
 
   const handleSendOtp = async () => {
-    if (!newUserForm.mobile) {
-      setNewUserError("Enter a mobile number first.");
+    if (!isValidMobile(newUserForm.mobile)) {
+      setNewUserError("Enter a valid 10-digit mobile number first.");
       return;
     }
     try {
@@ -196,6 +198,14 @@ export const ManageSubscriptions = () => {
     const { firstName, lastName, email, mobile, postalAddress, password } = newUserForm;
     if (!firstName || !lastName || !email || !mobile || !postalAddress || !password) {
       setNewUserError("All fields are required.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setNewUserError("Please enter a valid email address.");
+      return;
+    }
+    if (!isValidMobile(mobile)) {
+      setNewUserError("Please enter a valid 10-digit mobile number.");
       return;
     }
     if (!otpVerified) {
@@ -521,9 +531,10 @@ export const ManageSubscriptions = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Mobile</label>
               <div className="flex gap-2">
                 <Input
-                  type="text"
+                  type="tel"
                   value={newUserForm.mobile}
                   onChange={(e) => handleNewUserChange("mobile", e.target.value)}
+                  maxLength={10}
                 />
                 {otpVerified ? (
                   <span className="flex items-center px-3 text-xs font-semibold text-green-700 bg-green-100 rounded-md whitespace-nowrap">

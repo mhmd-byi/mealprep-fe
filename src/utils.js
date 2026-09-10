@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+export const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+export const isValidMobile = (mobile) => /^[6-9]\d{9}$/.test(mobile);
+
+export const sanitizeMobileInput = (value) => (value || "").replace(/\D/g, "").slice(0, 10);
 
 export const sendEmail = async (toEmail, toName, subject, bodyText) => {
   const token = sessionStorage.getItem("token");

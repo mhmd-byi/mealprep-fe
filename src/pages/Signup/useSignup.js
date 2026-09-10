@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { sendEmail } from "../../utils";
+import { sendEmail, isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils";
 
 export const useSignup = () => {
   const navigate = useNavigate();
@@ -27,7 +27,12 @@ export const useSignup = () => {
   const currentDate = getCurrentDate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "mobile") {
+      setFormData((prev) => ({ ...prev, mobile: sanitizeMobileInput(value) }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleOtpChange = (e) => {
@@ -35,8 +40,8 @@ export const useSignup = () => {
   };
 
   const sendOtp = async () => {
-    if (!formData.mobile) {
-      setErrMsg("Please enter your mobile number first");
+    if (!isValidMobile(formData.mobile)) {
+      setErrMsg("Please enter a valid 10-digit mobile number");
       return;
     }
     setLoaderState(true);
@@ -102,6 +107,10 @@ export const useSignup = () => {
     e.preventDefault();
     if (!otpVerified) {
       setErrMsg("Please verify your mobile number with OTP first");
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      setErrMsg("Please enter a valid email address");
       return;
     }
     setLoaderState(true);

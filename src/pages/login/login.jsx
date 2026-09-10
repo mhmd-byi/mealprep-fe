@@ -136,6 +136,7 @@ const Login = () => {
                           value={formData.mobile}
                           onChange={handleChange}
                           disabled={otpVerified}
+                          maxLength={10}
                         />
                       </div>
                       {!otpVerified && (
