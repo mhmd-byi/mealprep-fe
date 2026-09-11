@@ -8,7 +8,17 @@ const Popup = ({ isOpen, onClose, title, content, buttons }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[100] backdrop-filter backdrop-blur-sm p-4 overflow-y-auto">
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-fit max-h-[90vh] flex flex-col my-auto">
-        <h2 className="text-xl font-bold mb-4 flex-none sticky top-0 bg-white pb-2 border-b">{title}</h2>
+        <div className="flex items-center justify-between mb-4 flex-none sticky top-0 bg-white pb-2 border-b">
+          <h2 className="text-xl font-bold">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="text-gray-400 hover:text-gray-700 text-2xl leading-none px-1 -mr-1"
+          >
+            ×
+          </button>
+        </div>
         <div className="mb-4 overflow-y-auto pr-2 flex-grow">{content}</div>
         <div className="flex justify-end flex-none border-t pt-4">
           {buttons.map((button, index) => (

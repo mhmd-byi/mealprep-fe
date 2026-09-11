@@ -223,31 +223,6 @@ export const CategoryManager = ({
       title="Manage Categories"
       content={
         <div className="space-y-4">
-          <p className="text-xs text-gray-500">
-            Click a color swatch or name to edit it (saves automatically). Deleting a category only removes it
-            from the picklist — expenses already logged under it are unaffected.
-          </p>
-
-          <div className="space-y-3">
-            {categories.length === 0 ? (
-              <p className="text-sm text-gray-500">No categories yet — add one below.</p>
-            ) : (
-              categories.map((category) => (
-                <CategoryRow
-                  key={category._id}
-                  category={category}
-                  onRename={editCategory}
-                  onDelete={handleDeleteCategory}
-                  onAddSub={addSubcategory}
-                  onRenameSub={editSubcategory}
-                  onDeleteSub={handleDeleteSubcategory}
-                />
-              ))
-            )}
-          </div>
-
-          <hr />
-
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">New Category</p>
             {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
@@ -287,6 +262,31 @@ export const CategoryManager = ({
                 {isSavingNew ? "Adding..." : "+ Add"}
               </button>
             </div>
+          </div>
+
+          <hr />
+
+          <p className="text-xs text-gray-500">
+            Click a color swatch or name to edit it (saves automatically). Deleting a category only removes it
+            from the picklist — expenses already logged under it are unaffected.
+          </p>
+
+          <div className="space-y-3">
+            {categories.length === 0 ? (
+              <p className="text-sm text-gray-500">No categories yet — add one above.</p>
+            ) : (
+              categories.map((category) => (
+                <CategoryRow
+                  key={category._id}
+                  category={category}
+                  onRename={editCategory}
+                  onDelete={handleDeleteCategory}
+                  onAddSub={addSubcategory}
+                  onRenameSub={editSubcategory}
+                  onDeleteSub={handleDeleteSubcategory}
+                />
+              ))
+            )}
           </div>
         </div>
       }

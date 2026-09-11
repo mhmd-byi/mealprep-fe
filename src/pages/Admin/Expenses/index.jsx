@@ -51,6 +51,26 @@ export const Expenses = () => {
   const [formError, setFormError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [monthFilter, setMonthFilter] = useState("");
+
+  const handleMonthFilterChange = (value) => {
+    setMonthFilter(value);
+    if (!value) return;
+    const [year, month] = value.split("-").map(Number);
+    const lastDay = new Date(year, month, 0).getDate();
+    setFilters((prev) => ({
+      ...prev,
+      startDate: `${value}-01`,
+      endDate: `${value}-${String(lastDay).padStart(2, "0")}`,
+    }));
+  };
+
+  // Editing the dates directly deselects whichever month was quick-picked,
+  // so the two controls never silently disagree.
+  const handleDateFilterChange = (field, value) => {
+    setMonthFilter("");
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
   const colorByCategory = {};
   categories.forEach((c) => { colorByCategory[c.name] = c.color; });
@@ -235,7 +255,7 @@ export const Expenses = () => {
                         </span>
                         <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-full"
+                            className="h-full rounded-full transition-all duration-500 ease-out"
                             style={{
                               width: `${item.percentage}%`,
                               backgroundColor: item.color,
@@ -255,17 +275,23 @@ export const Expenses = () => {
               )}
 
               {/* Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mb-6">
+                <Input
+                  type="month"
+                  value={monthFilter}
+                  onChange={(e) => handleMonthFilterChange(e.target.value)}
+                  placeholder="Select month"
+                />
                 <Input
                   type="date"
                   value={filters.startDate}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, startDate: e.target.value }))}
+                  onChange={(e) => handleDateFilterChange("startDate", e.target.value)}
                   placeholder="Start date"
                 />
                 <Input
                   type="date"
                   value={filters.endDate}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, endDate: e.target.value }))}
+                  onChange={(e) => handleDateFilterChange("endDate", e.target.value)}
                   placeholder="End date"
                 />
                 <Input
