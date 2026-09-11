@@ -143,5 +143,12 @@
     "path": "/dashboard/manage-subscriptions",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Monetary Dashboard",
+    "icon": "TrendingUp",
+    "path": "/dashboard/finance-dashboard",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
