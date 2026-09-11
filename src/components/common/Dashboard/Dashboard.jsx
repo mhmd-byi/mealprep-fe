@@ -11,16 +11,18 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover ">
-        <Header toggleSidebar={toggleSidebar} />
+      <div className="flex flex-col h-screen print:h-auto bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover print:bg-none">
+        <div className="print:hidden">
+          <Header toggleSidebar={toggleSidebar} />
+        </div>
         <div
-          className={`flex flex-1 overflow-hidden ${
+          className={`flex flex-1 overflow-hidden print:overflow-visible ${
             isSidebarOpen ? "bg-gray-900 bg-opacity-50" : ""
           }`}
         >
           {showSidebar && (
             <div
-              className={`fixed inset-y-0 left-0 transform z-40 ${
+              className={`fixed inset-y-0 left-0 transform z-40 print:hidden ${
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
               } transition-transform duration-300 ease-in-out md:relative md:translate-x-0`}
             >
@@ -28,7 +30,7 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
             </div>
           )}
           <main
-            className={`flex-1 overflow-auto ml-0 ${
+            className={`flex-1 overflow-auto print:overflow-visible ml-0 ${
               isSidebarOpen
                 ? "filter blur-sm lg:blur-0 pointer-events-none md:pointer-events-auto"
                 : ""
@@ -38,7 +40,7 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
             {children}
           </main>
         </div>
-        <div className="block lg:hidden">
+        <div className="block lg:hidden print:hidden">
           <Footer />
         </div>
       </div>

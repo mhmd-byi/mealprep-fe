@@ -6,6 +6,7 @@ import { LineChart } from "./LineChart";
 import { StackedBarChart } from "./StackedBarChart";
 import { PieChart } from "./PieChart";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
+import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 
 // Same categorical palette used across the app's other charts (Expenses
 // module) — assign fixed slots to the 3 known plans, fall back to the
@@ -35,7 +36,7 @@ const StatTile = ({ label, value, valueClassName = "text-gray-900" }) => (
 );
 
 const ChartCard = ({ title, subtitle, children }) => (
-  <div className="bg-gray-50 rounded-lg p-4">
+  <div className="bg-gray-50 print:bg-white print:border print:border-gray-200 rounded-lg p-4 print:break-inside-avoid">
     <p className="text-sm font-semibold text-gray-700">{title}</p>
     {subtitle && <p className="text-xs text-gray-400 mb-1">{subtitle}</p>}
     <div className={subtitle ? "mt-2" : "mt-1"}>{children}</div>
@@ -43,7 +44,7 @@ const ChartCard = ({ title, subtitle, children }) => (
 );
 
 const SectionHeading = ({ children }) => (
-  <h3 className="text-base font-bold text-gray-800 mt-8 mb-3 first:mt-0">{children}</h3>
+  <h3 className="text-base font-bold text-gray-800 mt-8 mb-3 first:mt-0 print:break-after-avoid">{children}</h3>
 );
 
 // Parses "YYYY-MM-DD" as local date parts, not via `new Date(isoString)` —
@@ -72,6 +73,12 @@ export const FinanceDashboard = () => {
     if (!customStartInput || !customEndInput) return;
     applyCustomRange(customStartInput, customEndInput);
     setIsCustomOpen(false);
+  };
+
+  const handleExportCSV = () => {
+    if (!data) return;
+    const csv = buildFinanceReportCSV(data);
+    downloadCSV(csv, `monetary-dashboard-${data.startDate}-to-${data.endDate}.csv`);
   };
 
   const series = data?.series || [];
@@ -117,7 +124,7 @@ export const FinanceDashboard = () => {
         <div className="mx-auto w-full max-w-7xl">
           <div className="overflow-hidden bg-white rounded-lg shadow-md">
             <div className="p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3 print:hidden">
                 <h2 className="text-xl font-bold md:text-2xl">Monetary Dashboard</h2>
                 <div className="flex flex-wrap gap-1.5">
                   {PRESET_OPTIONS.map((opt) => (
@@ -148,8 +155,11 @@ export const FinanceDashboard = () => {
                 </div>
               </div>
 
+              {/* Screen-only title, since the interactive header above is hidden when printing */}
+              <h2 className="hidden print:block text-xl font-bold mb-2">Monetary Dashboard</h2>
+
               {isCustomOpen && (
-                <div className="flex flex-wrap items-end gap-3 border-t pt-3 mb-4">
+                <div className="flex flex-wrap items-end gap-3 border-t pt-3 mb-4 print:hidden">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Start date</label>
                     <input
@@ -178,6 +188,25 @@ export const FinanceDashboard = () => {
                   </button>
                 </div>
               )}
+
+              <div className="flex gap-2 mb-3 print:hidden">
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  disabled={!data}
+                  className="px-3 py-1.5 text-sm font-semibold bg-white rounded-md border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white disabled:opacity-50"
+                >
+                  Export CSV
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  disabled={!data}
+                  className="px-3 py-1.5 text-sm font-semibold bg-white rounded-md border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white disabled:opacity-50"
+                >
+                  Export Report (Print / PDF)
+                </button>
+              </div>
 
               {data && (
                 <p className="text-xs text-gray-400 mb-4">

@@ -66,7 +66,7 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
-          className="text-xs font-medium text-theme-color-1 hover:underline whitespace-nowrap"
+          className="text-xs font-medium text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
         >
           {showTable ? "View as chart" : "View as table"}
         </button>
