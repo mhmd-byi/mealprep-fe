@@ -160,7 +160,7 @@ export const UserListWithCancelRequest = () => {
               </h2>
 
               {/* Form Container - Responsive Grid */}
-              <form onSubmit={handleFormSubmit} className="mb-6">
+              <form onSubmit={handleFormSubmit} className="mb-6 print:hidden">
                 <div className="grid grid-cols-1 gap-4 items-center md:grid-cols-3">
                   <div className="md:col-span-2">
                     <Input
@@ -181,15 +181,28 @@ export const UserListWithCancelRequest = () => {
                 </div>
               </form>
 
-              {/* Export Button */}
+              {/* Print-only context, since the date form above is hidden when printing */}
+              {formData.date && (
+                <p className="hidden print:block text-sm text-gray-500 mb-3">
+                  Date: {formatDate(formData.date)}
+                </p>
+              )}
+
+              {/* Export Buttons */}
               {cancelledMeals.length > 0 && (
-                <div className="flex justify-end mb-4">
+                <div className="flex gap-2 justify-end mb-4 print:hidden">
                   <Button
                     onClick={exportToCSV}
                     className="flex gap-2 items-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition duration-300 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     {/* <Download size={16} /> */}
                     Export CSV
+                  </Button>
+                  <Button
+                    onClick={() => window.print()}
+                    className="flex gap-2 items-center px-4 py-2 font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
+                  >
+                    Export (Print / PDF)
                   </Button>
                 </div>
               )}

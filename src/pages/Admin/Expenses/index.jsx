@@ -191,7 +191,7 @@ export const Expenses = () => {
         <div className="mx-auto w-full max-w-7xl">
           <div className="overflow-hidden bg-white rounded-lg shadow-md">
             <div className="p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3 print:hidden">
                 <h2 className="text-xl font-bold md:text-2xl">Expenses</h2>
                 <div className="flex gap-2">
                   <button
@@ -206,6 +206,9 @@ export const Expenses = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* Screen-only title, since the interactive header above is hidden when printing */}
+              <h2 className="hidden print:block text-xl font-bold mb-4">Expenses</h2>
 
               {/* Summary cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -275,7 +278,7 @@ export const Expenses = () => {
               )}
 
               {/* Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mb-6 print:hidden">
                 <Input
                   type="month"
                   value={monthFilter}
@@ -318,14 +321,33 @@ export const Expenses = () => {
                   placeholder="Search description..."
                 />
                 {expenses.length > 0 && (
-                  <Button
-                    onClick={exportToCSV}
-                    classes="bg-blue-500 hover:bg-blue-600"
-                  >
-                    Export CSV
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={exportToCSV}
+                      classes="bg-blue-500 hover:bg-blue-600 flex-1"
+                    >
+                      Export CSV
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                    >
+                      Print / PDF
+                    </button>
+                  </div>
                 )}
               </div>
+
+              {/* Print-only context, since the filter controls above are hidden when printing */}
+              {(filters.startDate || filters.endDate || filters.category || filters.search) && (
+                <p className="hidden print:block text-sm text-gray-500 mb-3">
+                  {filters.startDate && `From: ${formatDate(filters.startDate)} `}
+                  {filters.endDate && `To: ${formatDate(filters.endDate)} `}
+                  {filters.category && `Category: ${filters.category}${filters.subcategory ? ` / ${filters.subcategory}` : ""} `}
+                  {filters.search && `Search: "${filters.search}"`}
+                </p>
+              )}
 
               {error && <p className="mb-4 text-red-500">{error}</p>}
 

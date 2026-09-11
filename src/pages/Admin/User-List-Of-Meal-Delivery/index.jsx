@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Input } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
@@ -29,6 +29,21 @@ export const UserListOfMealDelivery = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  // Printing should include every filtered row, not just the current page —
+  // switch to the full sorted list right before print, then restore paging.
+  useEffect(() => {
+    if (!isPrinting) return;
+    const timer = setTimeout(() => window.print(), 50);
+    return () => clearTimeout(timer);
+  }, [isPrinting]);
+
+  useEffect(() => {
+    const handleAfterPrint = () => setIsPrinting(false);
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => window.removeEventListener("afterprint", handleAfterPrint);
+  }, []);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -111,11 +126,13 @@ export const UserListOfMealDelivery = () => {
     return 0;
   });
 
-  // Paginated slice
-  const paginatedMeals = sortedMeals.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  // Paginated slice (printing bypasses paging and shows every filtered row)
+  const paginatedMeals = isPrinting
+    ? sortedMeals
+    : sortedMeals.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+      );
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
@@ -257,7 +274,7 @@ export const UserListOfMealDelivery = () => {
             <div className="overflow-hidden bg-white rounded-lg shadow">
               <div className="flex flex-col">
                 <div className="flex flex-col p-5 w-full text-center">
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <form onSubmit={handleFormSubmit} className="space-y-6 print:hidden">
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       <div>
                         <Input
@@ -338,11 +355,27 @@ export const UserListOfMealDelivery = () => {
                           >
                             Export to CSV
                           </Button>
+                          <Button
+                            onClick={() => setIsPrinting(true)}
+                            className="px-4 py-2 font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
+                          >
+                            Export (Print / PDF)
+                          </Button>
                         </div>
                       )}
                     </div>
                   </form>
-                  
+
+                  {/* Screen-only title + filter context, since the toolbar above is hidden when printing */}
+                  <h2 className="hidden print:block text-xl font-bold mb-2 text-left">Meal Delivery List</h2>
+                  <p className="hidden print:block text-sm text-gray-500 mb-3 text-left">
+                    {formData.date && `Date: ${formData.date} `}
+                    {formData.mealType && `Meal Type: ${capitalize(formData.mealType)} `}
+                    {searchQuery && `Search: "${searchQuery}" `}
+                    {filterCriteria.category !== 'All' && `Category: ${filterCriteria.category} `}
+                    {filterCriteria.planType !== 'All' && `Plan: ${filterCriteria.planType}`}
+                  </p>
+
                   {error && (
                     <p className="mt-4 mb-2 text-red-500">{error}</p>
                   )}
@@ -510,13 +543,15 @@ export const UserListOfMealDelivery = () => {
                         </div>
 
                         {/* Pagination */}
-                        <Pagination
-                          totalItems={sortedMeals.length}
-                          currentPage={currentPage}
-                          rowsPerPage={rowsPerPage}
-                          onPageChange={setCurrentPage}
-                          onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
-                        />
+                        <div className="print:hidden">
+                          <Pagination
+                            totalItems={sortedMeals.length}
+                            currentPage={currentPage}
+                            rowsPerPage={rowsPerPage}
+                            onPageChange={setCurrentPage}
+                            onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <div className="flex flex-col justify-center items-center py-10">

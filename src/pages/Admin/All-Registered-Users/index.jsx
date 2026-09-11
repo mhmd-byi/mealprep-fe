@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useAllRegisteredUsers } from "./useAllRegisteredUsers";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
@@ -24,6 +24,21 @@ export const AllRegisteredUsers = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  // Printing should include every filtered row, not just the current page —
+  // switch to the full sorted list right before print, then restore paging.
+  useEffect(() => {
+    if (!isPrinting) return;
+    const timer = setTimeout(() => window.print(), 50);
+    return () => clearTimeout(timer);
+  }, [isPrinting]);
+
+  useEffect(() => {
+    const handleAfterPrint = () => setIsPrinting(false);
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => window.removeEventListener("afterprint", handleAfterPrint);
+  }, []);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -135,11 +150,13 @@ export const AllRegisteredUsers = () => {
     return 0;
   });
 
-  // Paginated slice shown in the table/cards
-  const paginatedUsers = sortedUsers.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  // Paginated slice shown in the table/cards (printing bypasses paging and shows every filtered row)
+  const paginatedUsers = isPrinting
+    ? sortedUsers
+    : sortedUsers.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+      );
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
@@ -158,20 +175,20 @@ export const AllRegisteredUsers = () => {
             <div className="flex flex-col mx-auto mt-8 mb-4">
               <div className="overflow-hidden bg-white rounded-lg shadow">
                 <div className="flex flex-col p-5">
-                  <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg">
+                  <div className="flex flex-row justify-between items-center p-4 mb-4 bg-white rounded-t-lg print:hidden">
                   <h2 className="text-2xl font-bold">
                     {planFilter ? `${planFilter} Plan Subscribers` : 'All Users'}
                   </h2>
                   <div className="flex flex-col gap-4 items-center sm:flex-row">
-                    <SearchBar 
+                    <SearchBar
                       value={searchQuery}
                       onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
                       placeholder="Search name or email..."
                     />
                     <div className="flex items-center px-3 py-2 space-x-2 bg-gray-50 rounded-md border border-gray-200 shadow-sm transition-colors hover:bg-gray-100">
-                      <input 
-                        type="checkbox" 
-                        checked={showZeroMeals} 
+                      <input
+                        type="checkbox"
+                        checked={showZeroMeals}
                         onChange={(e) => { setShowZeroMeals(e.target.checked); setCurrentPage(1); }}
                         className="w-4 h-4 rounded border-gray-300 cursor-pointer text-theme-color-1 focus:ring-theme-color-1"
                         id="showZeroMeals"
@@ -199,7 +216,28 @@ export const AllRegisteredUsers = () => {
                     >
                       Export to CSV
                     </button>
+                    <button
+                      onClick={() => setIsPrinting(true)}
+                      type="button"
+                      className="flex justify-center items-center px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
+                    >
+                      Export (Print / PDF)
+                    </button>
                   </div>
+                </div>
+
+                {/* Screen-only title + filter context, since the toolbar above is hidden when printing */}
+                <div className="hidden print:block px-4 mb-3 text-left">
+                  <h2 className="text-xl font-bold mb-1">
+                    {planFilter ? `${planFilter} Plan Subscribers` : 'All Users'}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {searchQuery && `Search: "${searchQuery}" `}
+                    {showZeroMeals && `Including users with 0 meals `}
+                    {filterCriteria.planType !== 'All' && `Plan: ${filterCriteria.planType} `}
+                    {filterCriteria.mealCount !== '' && `Meal Count ${filterCriteria.operator} ${filterCriteria.mealCount} `}
+                    {filterCriteria.endDateOperator && filterCriteria.endDate && `End Date ${filterCriteria.endDateOperator} ${filterCriteria.endDate}`}
+                  </p>
                 </div>
                 <div className="flex flex-col w-full text-center">
                   <div className="mt-4 w-full">
@@ -413,13 +451,15 @@ export const AllRegisteredUsers = () => {
                         </div>
 
                         {/* Mobile Pagination */}
-                        <Pagination
-                          totalItems={sortedUsers.length}
-                          currentPage={currentPage}
-                          rowsPerPage={rowsPerPage}
-                          onPageChange={setCurrentPage}
-                          onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
-                        />
+                        <div className="print:hidden">
+                          <Pagination
+                            totalItems={sortedUsers.length}
+                            currentPage={currentPage}
+                            rowsPerPage={rowsPerPage}
+                            onPageChange={setCurrentPage}
+                            onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <div className="flex flex-col justify-center items-center py-10">

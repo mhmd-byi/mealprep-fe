@@ -135,7 +135,7 @@ export const UserListWithCustomisationRequest = () => {
               </h2>
 
               {/* Form Container - Responsive Grid */}
-              <form onSubmit={handleFormSubmit} className="mb-6">
+              <form onSubmit={handleFormSubmit} className="mb-6 print:hidden">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                   <div className="md:col-span-2">
                     <Input
@@ -156,15 +156,28 @@ export const UserListWithCustomisationRequest = () => {
                 </div>
               </form>
 
-              {/* Export Button */}
+              {/* Print-only context, since the date form above is hidden when printing */}
+              {formData.date && (
+                <p className="hidden print:block text-sm text-gray-500 mb-3">
+                  Date: {formatDate(formData.date)}
+                </p>
+              )}
+
+              {/* Export Buttons */}
               {customisationRequests.length > 0 && (
-                <div className="mb-4 flex justify-end">
+                <div className="mb-4 flex gap-2 justify-end print:hidden">
                   <Button
                     onClick={exportToCSV}
                     className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     {/* <Download size={16} /> */}
                     Export CSV
+                  </Button>
+                  <Button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 bg-white font-semibold py-2 px-4 rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
+                  >
+                    Export (Print / PDF)
                   </Button>
                 </div>
               )}
