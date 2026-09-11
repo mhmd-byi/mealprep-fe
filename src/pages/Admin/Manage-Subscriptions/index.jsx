@@ -3,6 +3,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { useManageSubscriptions } from "./useManageSubscriptions";
+import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
   PLANS,
@@ -119,6 +120,15 @@ export const ManageSubscriptions = () => {
   const [editReason, setEditReason] = useState("");
   const [editError, setEditError] = useState(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  // Whether the plan being created would queue behind an existing active plan
+  // for the selected user — if so, whatever Subscription Start Date is picked
+  // gets overwritten with the real activation date once the current plan
+  // actually finishes, so asking the admin to guess one only invites the
+  // exact confusion this is meant to avoid.
+  const activeSubsForCreate = (selectedUser?.subscriptions || []).filter((s) => s.status === "active");
+  const createWouldOverlap =
+    !!createForm.lunchDinner && purchaseOverlapsActiveSubs(createForm.lunchDinner, activeSubsForCreate);
 
   const filteredUsers =
     searchQuery.trim().length > 0
@@ -674,14 +684,21 @@ export const ManageSubscriptions = () => {
                 options={CARB_TYPES}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Start Date</label>
-              <Input
-                type="date"
-                value={createForm.subscriptionStartDate}
-                onChange={(e) => handleCreateChange("subscriptionStartDate", e.target.value)}
-              />
-            </div>
+            {createWouldOverlap ? (
+              <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
+                📅 Start date: automatic — this plan overlaps an active plan for this user, so it will queue and
+                activate on its own once the current one finishes. Nothing to pick here.
+              </p>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Start Date</label>
+                <Input
+                  type="date"
+                  value={createForm.subscriptionStartDate}
+                  onChange={(e) => handleCreateChange("subscriptionStartDate", e.target.value)}
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Allergy (optional)</label>
               <Input

@@ -321,30 +321,42 @@ const SubscriptionPlans = () => {
                           <option value="keto-meal">Keto Meal</option>
                         </select>
                       </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center">
-                          <label className="mr-2">Meal Start Date:</label>
-                          <input
-                            type="date"
-                            className="border-2 border-grey-500 rounded-md p-1"
-                            onChange={(e) =>
-                              handleDetailChange(
-                                plan.name,
-                                "mealStartDate",
-                                e.target.value
-                              )
-                            }
-                            value={currentPlanDetails.mealStartDate}
-                            min={getMinimumDate(currentPlanDetails.lunchDinner)}
-                            onKeyDown={(e) => e.preventDefault()}
-                          />
+                      {wouldOverlap ? (
+                        // This purchase will queue behind the current plan and activate
+                        // automatically the moment it finishes — whatever start date is
+                        // stored now gets overwritten with the real activation date at
+                        // that point, so asking the customer to guess one here only
+                        // invites exactly the confusion this note is meant to prevent.
+                        <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-center">
+                          📅 Start date: automatic — this activates right after your
+                          current plan ends, so there's nothing to pick here.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col">
+                          <div className="flex items-center">
+                            <label className="mr-2">Meal Start Date:</label>
+                            <input
+                              type="date"
+                              className="border-2 border-grey-500 rounded-md p-1"
+                              onChange={(e) =>
+                                handleDetailChange(
+                                  plan.name,
+                                  "mealStartDate",
+                                  e.target.value
+                                )
+                              }
+                              value={currentPlanDetails.mealStartDate}
+                              min={getMinimumDate(currentPlanDetails.lunchDinner)}
+                              onKeyDown={(e) => e.preventDefault()}
+                            />
+                          </div>
+                          {dateWarnings[plan.name] && (
+                            <p className="mt-1 text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1">
+                              ⚠️ {dateWarnings[plan.name]}
+                            </p>
+                          )}
                         </div>
-                        {dateWarnings[plan.name] && (
-                          <p className="mt-1 text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-                            ⚠️ {dateWarnings[plan.name]}
-                          </p>
-                        )}
-                      </div>
+                      )}
                       <div className="flex items-center">
                         <label className="mr-2">Allergy:</label>
                         <input
