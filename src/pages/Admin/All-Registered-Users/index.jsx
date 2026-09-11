@@ -252,11 +252,15 @@ export const AllRegisteredUsers = () => {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                               {paginatedUsers.map((user, index) => {
-                                const latestSub = user.subscriptions && user.subscriptions.length > 0 
-                                  ? user.subscriptions[user.subscriptions.length - 1] 
+                                const latestSub = user.subscriptions && user.subscriptions.length > 0
+                                  ? user.subscriptions[user.subscriptions.length - 1]
                                   : null;
-                                const lunchCount = (latestSub?.lunchMeals || 0) + (latestSub?.nextDayLunchMeals || 0);
-                                const dinnerCount = (latestSub?.dinnerMeals || 0) + (latestSub?.nextDayDinnerMeals || 0);
+                                // Meal counts must be summed across every ACTIVE subscription (a user can
+                                // have more than one running at once, e.g. lunch-only + dinner-only bought on
+                                // different days) — user.mealCounts is that sum, already computed server-side.
+                                // latestSub alone only reflects whichever plan was purchased most recently.
+                                const lunchCount = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
+                                const dinnerCount = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
                                 const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
 
                                 return (
@@ -313,11 +317,12 @@ export const AllRegisteredUsers = () => {
                         {/* Mobile View */}
                         <div className="space-y-4 md:hidden">
                           {paginatedUsers.map((user, index) => {
-                            const latestSub = user.subscriptions && user.subscriptions.length > 0 
-                              ? user.subscriptions[user.subscriptions.length - 1] 
+                            const latestSub = user.subscriptions && user.subscriptions.length > 0
+                              ? user.subscriptions[user.subscriptions.length - 1]
                               : null;
-                            const lunchCount = (latestSub?.lunchMeals || 0) + (latestSub?.nextDayLunchMeals || 0);
-                            const dinnerCount = (latestSub?.dinnerMeals || 0) + (latestSub?.nextDayDinnerMeals || 0);
+                            // See desktop table above: sum across all active subscriptions, not just the latest.
+                            const lunchCount = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
+                            const dinnerCount = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
                             const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
 
                             return (
