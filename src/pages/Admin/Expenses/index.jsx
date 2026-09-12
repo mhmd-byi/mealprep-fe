@@ -25,6 +25,21 @@ const toInputDate = (dateValue) => {
   return new Date(dateValue).toISOString().split("T")[0];
 };
 
+const MONTH_OPTIONS = [
+  { value: "01", label: "January" },
+  { value: "02", label: "February" },
+  { value: "03", label: "March" },
+  { value: "04", label: "April" },
+  { value: "05", label: "May" },
+  { value: "06", label: "June" },
+  { value: "07", label: "July" },
+  { value: "08", label: "August" },
+  { value: "09", label: "September" },
+  { value: "10", label: "October" },
+  { value: "11", label: "November" },
+  { value: "12", label: "December" },
+];
+
 export const Expenses = () => {
   const {
     expenses,
@@ -53,11 +68,24 @@ export const Expenses = () => {
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [monthFilter, setMonthFilter] = useState("");
 
-  const handleMonthFilterChange = (value) => {
+  // monthFilter stays "YYYY-MM" internally; these are just the two parts for
+  // the Month/Year selects below (a native <input type="month"> would be
+  // simpler, but Safari has never supported that input type).
+  const [monthFilterYearPart, monthFilterMonthPart] = monthFilter ? monthFilter.split("-") : ["", ""];
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 6 }, (_, i) => {
+    const y = String(currentYear - i);
+    return { value: y, label: y };
+  });
+
+  const applyMonthYearFilter = (month, year) => {
+    if (!month || !year) {
+      setMonthFilter("");
+      return;
+    }
+    const value = `${year}-${month}`;
     setMonthFilter(value);
-    if (!value) return;
-    const [year, month] = value.split("-").map(Number);
-    const lastDay = new Date(year, month, 0).getDate();
+    const lastDay = new Date(Number(year), Number(month), 0).getDate();
     setFilters((prev) => ({
       ...prev,
       startDate: `${value}-01`,
@@ -287,13 +315,25 @@ export const Expenses = () => {
               )}
 
               {/* Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mb-6 print:hidden">
-                <Input
-                  type="month"
-                  value={monthFilter}
-                  onChange={(e) => handleMonthFilterChange(e.target.value)}
-                  placeholder="Select month"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-3 print:hidden">
+                {/* Two plain selects instead of <input type="month"> — Safari has never
+                    supported that input type and silently falls back to a text box. */}
+                <div className="flex gap-2">
+                  <Input
+                    type="select"
+                    value={monthFilterMonthPart}
+                    onChange={(e) => applyMonthYearFilter(e.target.value, monthFilterYearPart || String(currentYear))}
+                    placeholder="Month"
+                    options={MONTH_OPTIONS}
+                  />
+                  <Input
+                    type="select"
+                    value={monthFilterYearPart}
+                    onChange={(e) => applyMonthYearFilter(monthFilterMonthPart, e.target.value)}
+                    placeholder="Year"
+                    options={yearOptions}
+                  />
+                </div>
                 <Input
                   type="date"
                   value={filters.startDate}
@@ -329,24 +369,25 @@ export const Expenses = () => {
                   onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
                   placeholder="Search description..."
                 />
-                {expenses.length > 0 && (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={exportToCSV}
-                      classes="bg-blue-500 hover:bg-blue-600 flex-1"
-                    >
-                      Export CSV
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => window.print()}
-                      className="px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
-                    >
-                      Print / PDF
-                    </button>
-                  </div>
-                )}
               </div>
+
+              {expenses.length > 0 && (
+                <div className="flex gap-2 justify-end mb-6 print:hidden">
+                  <Button
+                    onClick={exportToCSV}
+                    classes="bg-blue-500 hover:bg-blue-600"
+                  >
+                    Export CSV
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                  >
+                    Print / PDF
+                  </button>
+                </div>
+              )}
 
               {/* Print-only context, since the filter controls above are hidden when printing */}
               {(filters.startDate || filters.endDate || filters.category || filters.search) && (
