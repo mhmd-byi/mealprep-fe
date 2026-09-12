@@ -6,6 +6,7 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
+import { VegNonVegIcon } from "../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { useMealCalendar } from "./useMealCalendar";
 
 const generateCalendarDays = (year, month) => {
@@ -42,27 +43,6 @@ const generateCalendarDays = (year, month) => {
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
-const VegNonVegIcon = ({ isVeg }) => (
-  <svg
-    width="15"
-    height="16"
-    className="inline-block ml-2"
-    viewBox="0 0 15 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect
-      x="0.5"
-      y="1"
-      width="14"
-      height="14"
-      stroke={isVeg ? "#007F0D" : "#FE0D0D"}
-    />
-    <circle cx="7.5" cy="8" r="3.75" fill={isVeg ? "#007F0D" : "#FE0D0D"} />
-    <title>{isVeg ? "Vegetarian" : "Non-Vegetarian"}</title>
-  </svg>
-);
 
 export const MealCalendar = () => {
   const {
@@ -197,10 +177,8 @@ export const MealCalendar = () => {
                               <span className="flex items-center">
                                 {item.name}
                                 <VegNonVegIcon
-                                  isVeg={
-                                    item.type &&
-                                    item.type.toLowerCase() === "veg"
-                                  }
+                                  value={item.type && item.type.toLowerCase() === "veg" ? "veg" : "non-veg"}
+                                  className="ml-2"
                                 />
                               </span>
                               {!isPastDate(selectedDate) && (

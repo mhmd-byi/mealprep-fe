@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button } from "../../../components";
+import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 
 export const DietaryStockReport = () => {
   const [report, setReport] = useState([]);
@@ -77,10 +78,18 @@ export const DietaryStockReport = () => {
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
-                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Lunch — Veg</th>
-                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Lunch — Non-Veg</th>
-                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Dinner — Veg</th>
-                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Dinner — Non-Veg</th>
+                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                            <span className="flex items-center gap-1.5">Lunch — Veg <VegNonVegIcon value="veg" /></span>
+                          </th>
+                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                            <span className="flex items-center gap-1.5">Lunch — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                          </th>
+                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                            <span className="flex items-center gap-1.5">Dinner — Veg <VegNonVegIcon value="veg" /></span>
+                          </th>
+                          <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                            <span className="flex items-center gap-1.5">Dinner — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">

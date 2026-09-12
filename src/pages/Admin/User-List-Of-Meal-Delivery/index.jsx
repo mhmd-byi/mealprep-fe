@@ -6,6 +6,7 @@ import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
+import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 export const UserListOfMealDelivery = () => {
@@ -452,8 +453,9 @@ export const UserListOfMealDelivery = () => {
                                       <div className="break-words">{meal.address}</div>
                                     </td>
                                     <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">
+                                      <div className="flex items-center break-words">
                                         {formatDietLabel(meal)}
+                                        <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
                                       </div>
                                     </td>
                                     <td className="px-4 py-4 text-sm text-gray-900 border-b">
@@ -512,8 +514,9 @@ export const UserListOfMealDelivery = () => {
                                   </div>
                                   <div className="flex justify-between pb-2 border-b">
                                     <span className="font-medium text-gray-500">Meal Type:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    <span className="flex items-center text-gray-900 text-right break-words max-w-[60%]">
                                       {formatDietLabel(meal)}
+                                      <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
                                     </span>
                                   </div>
                                   <div className="flex justify-between pb-2 border-b">
@@ -630,7 +633,7 @@ export const UserListOfMealDelivery = () => {
                           <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
                           <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
                           <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                          <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
+                          <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
                           <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>

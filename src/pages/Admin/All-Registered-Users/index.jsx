@@ -5,6 +5,7 @@ import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
+import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
@@ -268,7 +269,10 @@ export const AllRegisteredUsers = () => {
                                 <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                   Current Plan
                                 </th>
-                                <th 
+                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[90px]">
+                                  Diet
+                                </th>
+                                <th
                                   className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
                                   onClick={() => handleSort('mealCount')}
                                 >
@@ -326,6 +330,9 @@ export const AllRegisteredUsers = () => {
                                       <div className="break-words">
                                         {latestSub?.plan || 'No active plan'}
                                       </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
+                                      {latestSub && <VegNonVegIcon value={latestSub.mealType} />}
                                     </td>
                                     <td className="px-4 py-4 text-sm text-gray-900 border-b">
                                       <div className="break-words">
@@ -412,6 +419,16 @@ export const AllRegisteredUsers = () => {
                                       {latestSub?.plan || 'No active plan'}
                                     </span>
                                   </div>
+                                  {latestSub && (
+                                    <div className="flex justify-between pb-2 border-b">
+                                      <span className="font-medium text-gray-500">
+                                        Diet:
+                                      </span>
+                                      <span className="flex items-center justify-end text-right">
+                                        <VegNonVegIcon value={latestSub.mealType} />
+                                      </span>
+                                    </div>
+                                  )}
                                   <div className="flex justify-between pb-2 border-b">
                                     <span className="font-medium text-gray-500">
                                       Meal Counts Left:
@@ -554,7 +571,7 @@ export const AllRegisteredUsers = () => {
                         </div>
                         <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
                         <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                        <div><span className="text-gray-500">Meals:</span> {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}</div>
+                        <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
                         <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                         {sub.allergy && (
                           <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
