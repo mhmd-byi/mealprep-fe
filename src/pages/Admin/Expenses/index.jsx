@@ -72,6 +72,13 @@ export const Expenses = () => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Summary cards describe whichever period is filtered — the real current
+  // month/week by default, the picked month when the month dropdown is used,
+  // or the picked range when custom start/end dates are used instead.
+  const hasDateFilter = !!(filters.startDate && filters.endDate);
+  const periodLabel = monthFilter ? "Selected Month" : hasDateFilter ? "Selected Period" : "This Month";
+  const weekLabel = monthFilter ? "Last Week of Month" : hasDateFilter ? "Last 7 Days of Period" : "This Week";
+
   const colorByCategory = {};
   categories.forEach((c) => { colorByCategory[c.name] = c.color; });
   const getCategoryColor = (name) => colorByCategory[name] || "#898781";
@@ -210,16 +217,18 @@ export const Expenses = () => {
               {/* Screen-only title, since the interactive header above is hidden when printing */}
               <h2 className="hidden print:block text-xl font-bold mb-4">Expenses</h2>
 
-              {/* Summary cards */}
+              {/* Summary cards — labels flip to describe whichever period is filtered,
+                  since the numbers below them now come from that period, not always
+                  the real current month/week (see useExpenses.fetchSummary). */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">This Month</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{periodLabel}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
                     {formatCurrency(summary?.monthTotal)}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">This Week</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{weekLabel}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
                     {formatCurrency(summary?.weekTotal)}
                   </p>
@@ -248,7 +257,7 @@ export const Expenses = () => {
               {summary?.breakdown?.length > 0 && (
                 <div className="bg-gray-50 rounded-lg p-4 mb-6">
                   <p className="text-sm font-semibold text-gray-700 mb-3">
-                    This Month by Category
+                    {periodLabel} by Category
                   </p>
                   <div className="space-y-2">
                     {summary.breakdown.map((item) => (

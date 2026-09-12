@@ -40,17 +40,23 @@ export const useExpenses = () => {
     }
   }, [filters]);
 
+  // Scoped to the same date range the table below is filtered to, so the
+  // summary cards and category breakdown always describe what's on screen —
+  // not the real current month regardless of what the admin has selected.
   const fetchSummary = useCallback(async () => {
     try {
+      const params = {};
+      if (filters.startDate) params.startDate = filters.startDate;
+      if (filters.endDate) params.endDate = filters.endDate;
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}expense/summary`,
-        authHeaders()
+        { ...authHeaders(), params }
       );
       setSummary(response.data);
     } catch (err) {
       console.error("Error fetching expense summary:", err);
     }
-  }, []);
+  }, [filters.startDate, filters.endDate]);
 
   const fetchCategories = useCallback(async () => {
     try {
