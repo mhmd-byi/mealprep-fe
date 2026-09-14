@@ -439,7 +439,7 @@ export const Expenses = () => {
                               {expense.category}
                             </span>
                           </td>
-                          <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">
+                          <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-normal break-words">
                             {expense.subcategory || "—"}
                           </td>
                           <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-normal break-words">
