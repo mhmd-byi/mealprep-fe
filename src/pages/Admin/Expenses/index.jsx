@@ -406,16 +406,16 @@ export const Expenses = () => {
                 {isLoading ? (
                   <p className="text-gray-500 py-4">Loading expenses...</p>
                 ) : expenses.length > 0 ? (
-                  <table className="w-full divide-y divide-gray-200">
+                  <table className="w-full table-fixed divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Category</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Subcategory</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Description</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Payment</th>
-                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+                        <th className="px-4 py-3 w-[10%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
+                        <th className="px-4 py-3 w-[15%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Category</th>
+                        <th className="px-4 py-3 w-[15%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Subcategory</th>
+                        <th className="px-4 py-3 w-[30%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Description</th>
+                        <th className="px-4 py-3 w-[10%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
+                        <th className="px-4 py-3 w-[10%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Payment</th>
+                        <th className="px-4 py-3 w-[10%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -424,7 +424,7 @@ export const Expenses = () => {
                           <td className="px-4 py-4 text-sm text-gray-900 whitespace-nowrap">
                             {formatDate(expense.date)}
                           </td>
-                          <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
                             <span
                               className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
                               style={{
@@ -439,10 +439,10 @@ export const Expenses = () => {
                               {expense.category}
                             </span>
                           </td>
-                          <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                          <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">
                             {expense.subcategory || "—"}
                           </td>
-                          <td className="px-4 py-4 text-sm text-gray-700 max-w-xs truncate">
+                          <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-normal break-words">
                             {expense.description || "—"}
                           </td>
                           <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
