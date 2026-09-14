@@ -223,7 +223,7 @@ export const Expenses = () => {
   return (
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-start items-start p-4 w-full sm:p-6 md:p-8">
-        <div className="mx-auto w-full max-w-7xl">
+        <div className="w-full">
           <div className="overflow-hidden bg-white rounded-lg shadow-md">
             <div className="p-4 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3 print:hidden">
