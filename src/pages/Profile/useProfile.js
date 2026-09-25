@@ -2,7 +2,7 @@ import { useState } from "react";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 const useProfile = (setUserDetails) => {
   const [formData, setFormData] = useState({

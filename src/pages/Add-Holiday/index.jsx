@@ -2,7 +2,7 @@ import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import { useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { sendEmail } from "../../utils";
 
 const AddHoliday = () => {

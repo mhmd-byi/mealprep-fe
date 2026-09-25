@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import { Delete } from "@mui/icons-material";
 

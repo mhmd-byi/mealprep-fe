@@ -6,7 +6,7 @@ import useAddMeal from "./useAddMeal";
 import IconButton from "@mui/material/IconButton";
 import { Add, Delete, CloudUpload } from "@mui/icons-material";
 import { ImageMenu } from "../../../components/common/ImageMenu";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 const AddMeal = () => {
   const {
