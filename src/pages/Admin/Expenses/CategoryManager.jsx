@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import Popup from "../../../components/common/Popup/Popup";
 
 // The 8 validated categorical hues already used by the original fixed category
@@ -23,9 +24,10 @@ const SubcategoryRow = ({ categoryId, subcategory, onRename, onDelete }) => {
     try {
       setIsSaving(true);
       await onRename(categoryId, subcategory._id, trimmed);
+      toast.success("Subcategory updated.");
     } catch (err) {
       console.error("Error renaming subcategory:", err);
-      window.alert(err.response?.data?.message || "Failed to rename subcategory.");
+      toast.error(err.response?.data?.message || "Failed to rename subcategory.");
       setName(subcategory.name);
     } finally {
       setIsSaving(false);
@@ -63,9 +65,10 @@ const NewSubcategoryInput = ({ categoryId, onAdd }) => {
       setIsSaving(true);
       await onAdd(categoryId, name.trim());
       setName("");
+      toast.success("Subcategory added.");
     } catch (err) {
       console.error("Error adding subcategory:", err);
-      window.alert(err.response?.data?.message || "Failed to add subcategory.");
+      toast.error(err.response?.data?.message || "Failed to add subcategory.");
     } finally {
       setIsSaving(false);
     }
@@ -108,9 +111,10 @@ const CategoryRow = ({ category, onRename, onDelete, onAddSub, onRenameSub, onDe
     try {
       setIsSaving(true);
       await onRename(category._id, { name: nextName.trim(), color: nextColor });
+      toast.success("Category updated.");
     } catch (err) {
       console.error("Error updating category:", err);
-      window.alert(err.response?.data?.message || "Failed to update category.");
+      toast.error(err.response?.data?.message || "Failed to update category.");
       setName(category.name);
       setColor(category.color);
     } finally {
@@ -173,22 +177,21 @@ export const CategoryManager = ({
 }) => {
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState(SWATCHES[SWATCHES.length - 1]);
-  const [error, setError] = useState(null);
   const [isSavingNew, setIsSavingNew] = useState(false);
 
   const handleAddCategory = async () => {
     if (!newName.trim()) {
-      setError("Category name is required.");
+      toast.error("Category name is required.");
       return;
     }
     try {
       setIsSavingNew(true);
-      setError(null);
       await addCategory(newName.trim(), newColor);
       setNewName("");
+      toast.success("Category added.");
     } catch (err) {
       console.error("Error adding category:", err);
-      setError(err.response?.data?.message || "Failed to add category.");
+      toast.error(err.response?.data?.message || "Failed to add category.");
     } finally {
       setIsSavingNew(false);
     }
@@ -225,7 +228,6 @@ export const CategoryManager = ({
         <div className="space-y-4">
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">New Category</p>
-            {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
             <div className="flex items-center gap-2 mb-2">
               {SWATCHES.map((swatch) => (
                 <button

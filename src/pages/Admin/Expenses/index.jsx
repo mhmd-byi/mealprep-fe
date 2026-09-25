@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Toaster } from "sonner";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
@@ -593,6 +594,8 @@ export const Expenses = () => {
         editSubcategory={editSubcategory}
         removeSubcategory={removeSubcategory}
       />
+
+      <Toaster position="top-right" richColors closeButton />
     </DashboardLayoutComponent>
   );
 };
