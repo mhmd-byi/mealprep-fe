@@ -3,12 +3,24 @@ import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
+import { listenForUsersChanged, notifyUsersChanged } from "../../../utils/crossTabSync";
 
 export const useAllRegisteredUsers = () => {
   const [searchParams] = useSearchParams();
-  const planFilter = searchParams.get("plan"); 
+  const planFilter = searchParams.get("plan");
   const token = sessionStorage.getItem("token");
   const queryClient = useQueryClient();
+
+  // Picks up a subscription edit made in a *different* browser tab/window
+  // (e.g. Manage Subscriptions) — invalidating this tab's own cache alone
+  // only helps once you navigate here; this makes an already-open tab
+  // refetch immediately, without needing a reload.
+  useEffect(() => {
+    const unsubscribe = listenForUsersChanged(() => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   // 1. Stage 1: Fetch Active Users only (Fast Load)
   const activeUsersQuery = useQuery({
@@ -52,6 +64,7 @@ export const useAllRegisteredUsers = () => {
       });
       // Invalidate all user queries to refresh the list
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      notifyUsersChanged();
       return true;
     } catch (e) {
       console.error('Error cancelling queued plan:', e);

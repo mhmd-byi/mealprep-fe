@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { notifyUsersChanged } from "../../../utils/crossTabSync";
 
 const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
@@ -105,6 +106,7 @@ export const useManageSubscriptions = () => {
     await fetchAllUsers();
     await selectUser(newUserId);
     queryClient.invalidateQueries({ queryKey: ['users'] });
+    notifyUsersChanged();
     return newUserId;
   };
 
@@ -117,6 +119,7 @@ export const useManageSubscriptions = () => {
     await refreshSelectedUser();
     await fetchAllUsers();
     queryClient.invalidateQueries({ queryKey: ['users'] });
+    notifyUsersChanged();
   };
 
   const updateSubscription = async (subscriptionId, payload) => {
@@ -128,6 +131,7 @@ export const useManageSubscriptions = () => {
     await refreshSelectedUser();
     await fetchAllUsers();
     queryClient.invalidateQueries({ queryKey: ['users'] });
+    notifyUsersChanged();
   };
 
   return {
