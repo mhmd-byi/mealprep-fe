@@ -36,7 +36,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
       <div className="flex items-center justify-between mb-2">
         <div className="flex flex-wrap items-center gap-4">
           {seriesKeys.map((s) => (
-            <span key={s.key} className="flex items-center gap-1.5 text-xs text-gray-600">
+            <span key={s.key} className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
               <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }} />
               {s.label}
             </span>
@@ -45,7 +45,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
-          className="text-xs font-medium text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
+          className="text-sm font-bold text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
         >
           {showTable ? "View as chart" : "View as table"}
         </button>
@@ -53,28 +53,28 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
 
       {showTable ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm divide-y divide-gray-200">
+          <table className="w-full text-base divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                <th className="px-3 py-2 text-left text-sm font-bold text-gray-700 uppercase">Month</th>
                 {seriesKeys.map((s) => (
-                  <th key={s.key} className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th key={s.key} className="px-3 py-2 text-right text-sm font-bold text-gray-700 uppercase">
                     {s.label}
                   </th>
                 ))}
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-3 py-2 text-right text-sm font-bold text-gray-700 uppercase">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {data.map((row, i) => (
                 <tr key={row.month || row.label}>
-                  <td className="px-3 py-2 text-gray-900">{row.label}</td>
+                  <td className="px-3 py-2 font-semibold text-gray-900">{row.label}</td>
                   {seriesKeys.map((s) => (
-                    <td key={s.key} className="px-3 py-2 text-right text-gray-700">
+                    <td key={s.key} className="px-3 py-2 text-right font-semibold text-gray-700">
                       {valueFormatter(row[s.key] || 0)}
                     </td>
                   ))}
-                  <td className="px-3 py-2 text-right font-medium text-gray-900">{valueFormatter(totals[i])}</td>
+                  <td className="px-3 py-2 text-right font-bold text-gray-900">{valueFormatter(totals[i])}</td>
                 </tr>
               ))}
             </tbody>
@@ -87,7 +87,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
               {yTicks.map((tick) => (
                 <g key={tick}>
                   <line x1={0} x2={INNER_W} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
-                  <text x={-8} y={yFor(tick)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#898781">
+                  <text x={-8} y={yFor(tick)} textAnchor="end" dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#52514e">
                     {valueFormatter(tick)}
                   </text>
                 </g>
@@ -158,8 +158,9 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
                       x={i * groupWidth + groupWidth / 2}
                       y={INNER_H + 18}
                       textAnchor={rotateLabels ? "end" : "middle"}
-                      fontSize={11}
-                      fill="#52514e"
+                      fontSize={13}
+                      fontWeight={700}
+                      fill="#3a3934"
                       transform={rotateLabels ? `rotate(-35 ${i * groupWidth + groupWidth / 2} ${INNER_H + 18})` : undefined}
                     >
                       {row.label}
@@ -172,21 +173,21 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
 
           {hoverIndex !== null && (
             <div
-              className="absolute top-2 bg-white border rounded-lg shadow-lg px-3 py-2 text-xs pointer-events-none"
+              className="absolute top-2 bg-white border rounded-lg shadow-lg px-3 py-2 text-sm pointer-events-none"
               style={{
                 left: `${((hoverIndex + 0.5) / data.length) * 100}%`,
                 transform: "translateX(-50%)",
               }}
             >
-              <p className="font-semibold text-gray-900 mb-1">{data[hoverIndex].label}</p>
+              <p className="font-bold text-gray-900 mb-1">{data[hoverIndex].label}</p>
               {seriesKeys.map((s) => (
                 <p key={s.key} className="flex items-center gap-1.5 text-gray-700">
                   <span className="inline-block w-2 h-0.5 rounded" style={{ backgroundColor: s.color }} />
-                  <span className="font-medium">{valueFormatter(data[hoverIndex][s.key] || 0)}</span>
-                  <span className="text-gray-500">{s.label}</span>
+                  <span className="font-bold">{valueFormatter(data[hoverIndex][s.key] || 0)}</span>
+                  <span className="font-semibold text-gray-500">{s.label}</span>
                 </p>
               ))}
-              <p className="mt-1 pt-1 border-t text-gray-900 font-semibold">Total: {valueFormatter(totals[hoverIndex])}</p>
+              <p className="mt-1 pt-1 border-t text-gray-900 font-bold">Total: {valueFormatter(totals[hoverIndex])}</p>
             </div>
           )}
         </div>

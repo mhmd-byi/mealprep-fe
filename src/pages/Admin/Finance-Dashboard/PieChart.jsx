@@ -62,29 +62,29 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-500">{title}</span>
+        <span className="text-sm font-bold text-gray-700">{title}</span>
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
-          className="text-xs font-medium text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
+          className="text-sm font-bold text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
         >
           {showTable ? "View as chart" : "View as table"}
         </button>
       </div>
 
       {showTable ? (
-        <table className="w-full text-sm divide-y divide-gray-200">
+        <table className="w-full text-base divide-y divide-gray-200">
           <tbody className="divide-y divide-gray-100">
             {arcs.map((s) => (
               <tr key={s.label}>
                 <td className="px-3 py-2">
-                  <span className="inline-flex items-center gap-1.5 text-gray-900">
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
                     <span className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: s.color }} />
                     {s.label}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-right text-gray-700">{valueFormatter(s.value)}</td>
-                <td className="px-3 py-2 text-right text-gray-500 w-16">{s.pct}%</td>
+                <td className="px-3 py-2 text-right font-semibold text-gray-700">{valueFormatter(s.value)}</td>
+                <td className="px-3 py-2 text-right font-semibold text-gray-500 w-16">{s.pct}%</td>
               </tr>
             ))}
           </tbody>
@@ -110,16 +110,16 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {hoverKey ? (
                 <>
-                  <span className="text-xs text-gray-500">{hoverKey}</span>
-                  <span className="text-lg font-bold text-gray-900">
+                  <span className="text-sm font-semibold text-gray-600">{hoverKey}</span>
+                  <span className="text-xl font-bold text-gray-900">
                     {valueFormatter(arcs.find((a) => a.label === hoverKey)?.value || 0)}
                   </span>
-                  <span className="text-xs text-gray-400">{arcs.find((a) => a.label === hoverKey)?.pct}%</span>
+                  <span className="text-sm font-semibold text-gray-500">{arcs.find((a) => a.label === hoverKey)?.pct}%</span>
                 </>
               ) : (
                 <>
-                  <span className="text-xs text-gray-500">Total</span>
-                  <span className="text-lg font-bold text-gray-900">{valueFormatter(total)}</span>
+                  <span className="text-sm font-semibold text-gray-600">Total</span>
+                  <span className="text-xl font-bold text-gray-900">{valueFormatter(total)}</span>
                 </>
               )}
             </div>
@@ -130,14 +130,14 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
                 key={s.label}
                 onMouseEnter={() => setHoverKey(s.label)}
                 onMouseLeave={() => setHoverKey(null)}
-                className={`flex items-center gap-2 text-xs rounded px-1.5 py-1 cursor-pointer ${
+                className={`flex items-center gap-2 text-sm rounded px-1.5 py-1 cursor-pointer ${
                   hoverKey === s.label ? "bg-gray-100" : ""
                 }`}
               >
                 <span className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: s.color }} />
-                <span className="text-gray-700 flex-1 truncate">{s.label}</span>
-                <span className="font-medium text-gray-900">{valueFormatter(s.value)}</span>
-                <span className="text-gray-400 w-10 text-right">{s.pct}%</span>
+                <span className="font-semibold text-gray-700 flex-1 truncate">{s.label}</span>
+                <span className="font-bold text-gray-900">{valueFormatter(s.value)}</span>
+                <span className="font-semibold text-gray-500 w-10 text-right">{s.pct}%</span>
               </div>
             ))}
           </div>

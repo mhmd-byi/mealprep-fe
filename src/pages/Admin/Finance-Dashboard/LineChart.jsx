@@ -37,7 +37,7 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
         <div className="flex flex-wrap items-center gap-4">
           {seriesKeys.length > 1 &&
             seriesKeys.map((s) => (
-              <span key={s.key} className="flex items-center gap-1.5 text-xs text-gray-600">
+              <span key={s.key} className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
                 <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: s.color }} />
                 {s.label}
               </span>
@@ -46,7 +46,7 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
-          className="text-xs font-medium text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
+          className="text-sm font-bold text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
         >
           {showTable ? "View as chart" : "View as table"}
         </button>
@@ -54,12 +54,12 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
 
       {showTable ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm divide-y divide-gray-200">
+          <table className="w-full text-base divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                <th className="px-3 py-2 text-left text-sm font-bold text-gray-700 uppercase">Month</th>
                 {seriesKeys.map((s) => (
-                  <th key={s.key} className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th key={s.key} className="px-3 py-2 text-right text-sm font-bold text-gray-700 uppercase">
                     {s.label}
                   </th>
                 ))}
@@ -68,9 +68,9 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
             <tbody className="divide-y divide-gray-100">
               {data.map((row) => (
                 <tr key={row.month || row.label}>
-                  <td className="px-3 py-2 text-gray-900">{row.label}</td>
+                  <td className="px-3 py-2 font-semibold text-gray-900">{row.label}</td>
                   {seriesKeys.map((s) => (
-                    <td key={s.key} className="px-3 py-2 text-right text-gray-700">
+                    <td key={s.key} className="px-3 py-2 text-right font-semibold text-gray-700">
                       {valueFormatter(row[s.key] || 0)}
                     </td>
                   ))}
@@ -86,7 +86,7 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
               {yTicks.map((tick) => (
                 <g key={tick}>
                   <line x1={0} x2={INNER_W} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
-                  <text x={-8} y={yFor(tick)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#898781">
+                  <text x={-8} y={yFor(tick)} textAnchor="end" dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#52514e">
                     {valueFormatter(tick)}
                   </text>
                 </g>
@@ -145,7 +145,7 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
                         strokeWidth={2}
                       />
                     ))}
-                    <text x={last[0] + 6} y={last[1]} dominantBaseline="middle" fontSize={11} fill="#52514e">
+                    <text x={last[0] + 6} y={last[1]} dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#3a3934">
                       {valueFormatter(data[data.length - 1][s.key] || 0)}
                     </text>
                   </g>
@@ -158,8 +158,9 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
                   x={xFor(i)}
                   y={INNER_H + 18}
                   textAnchor={rotateLabels ? "end" : "middle"}
-                  fontSize={11}
-                  fill="#52514e"
+                  fontSize={13}
+                  fontWeight={700}
+                  fill="#3a3934"
                   transform={rotateLabels ? `rotate(-35 ${xFor(i)} ${INNER_H + 18})` : undefined}
                 >
                   {row.label}
@@ -170,18 +171,18 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
 
           {hoverIndex !== null && (
             <div
-              className="absolute top-2 bg-white border rounded-lg shadow-lg px-3 py-2 text-xs pointer-events-none"
+              className="absolute top-2 bg-white border rounded-lg shadow-lg px-3 py-2 text-sm pointer-events-none"
               style={{
                 left: `${((hoverIndex + 0.5) / data.length) * 100}%`,
                 transform: "translateX(-50%)",
               }}
             >
-              <p className="font-semibold text-gray-900 mb-1">{data[hoverIndex].label}</p>
+              <p className="font-bold text-gray-900 mb-1">{data[hoverIndex].label}</p>
               {seriesKeys.map((s) => (
                 <p key={s.key} className="flex items-center gap-1.5 text-gray-700">
                   <span className="inline-block w-2 h-0.5 rounded" style={{ backgroundColor: s.color }} />
-                  <span className="font-medium">{valueFormatter(data[hoverIndex][s.key] || 0)}</span>
-                  <span className="text-gray-500">{s.label}</span>
+                  <span className="font-bold">{valueFormatter(data[hoverIndex][s.key] || 0)}</span>
+                  <span className="font-semibold text-gray-500">{s.label}</span>
                 </p>
               ))}
             </div>

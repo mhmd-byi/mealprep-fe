@@ -30,14 +30,14 @@ const getPaymentMethodColor = (method) => PAYMENT_METHOD_COLORS[method] || "#898
 
 const StatTile = ({ label, value, valueClassName = "text-gray-900" }) => (
   <div className="bg-gray-50 rounded-lg p-4">
-    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</p>
-    <p className={`text-2xl font-bold mt-1 ${valueClassName}`}>{value}</p>
+    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">{label}</p>
+    <p className={`text-3xl font-bold mt-1 ${valueClassName}`}>{value}</p>
   </div>
 );
 
 const ChartCard = ({ title, subtitle, children }) => (
   <div className="bg-gray-50 print:bg-white print:border print:border-gray-200 rounded-lg p-4 print:break-inside-avoid">
-    <p className="text-sm font-semibold text-gray-700">{title}</p>
+    <p className="text-base font-bold text-gray-800">{title}</p>
     {subtitle && <p className="text-xs text-gray-400 mb-1">{subtitle}</p>}
     <div className={subtitle ? "mt-2" : "mt-1"}>{children}</div>
   </div>
