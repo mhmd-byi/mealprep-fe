@@ -315,7 +315,7 @@ export const Expenses = () => {
               )}
 
               {/* Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-3 print:hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mb-3 print:hidden">
                 {/* Two plain selects instead of <input type="month"> — Safari has never
                     supported that input type and silently falls back to a text box. */}
                 <div className="flex gap-2">
@@ -364,6 +364,13 @@ export const Expenses = () => {
                   disabled={!filters.category}
                 />
                 <Input
+                  type="select"
+                  value={filters.paymentMethod}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                  placeholder="All Payment Methods"
+                  options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+                />
+                <Input
                   type="text"
                   value={filters.search}
                   onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
@@ -390,11 +397,12 @@ export const Expenses = () => {
               )}
 
               {/* Print-only context, since the filter controls above are hidden when printing */}
-              {(filters.startDate || filters.endDate || filters.category || filters.search) && (
+              {(filters.startDate || filters.endDate || filters.category || filters.paymentMethod || filters.search) && (
                 <p className="hidden print:block text-sm text-gray-500 mb-3">
                   {filters.startDate && `From: ${formatDate(filters.startDate)} `}
                   {filters.endDate && `To: ${formatDate(filters.endDate)} `}
                   {filters.category && `Category: ${filters.category}${filters.subcategory ? ` / ${filters.subcategory}` : ""} `}
+                  {filters.paymentMethod && `Payment: ${filters.paymentMethod} `}
                   {filters.search && `Search: "${filters.search}"`}
                 </p>
               )}

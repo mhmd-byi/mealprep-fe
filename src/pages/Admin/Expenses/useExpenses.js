@@ -10,7 +10,7 @@ export const useExpenses = () => {
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ startDate: "", endDate: "", category: "", subcategory: "", search: "" });
+  const [filters, setFilters] = useState({ startDate: "", endDate: "", category: "", subcategory: "", paymentMethod: "", search: "" });
 
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -24,6 +24,7 @@ export const useExpenses = () => {
       if (filters.endDate) params.endDate = filters.endDate;
       if (filters.category) params.category = filters.category;
       if (filters.subcategory) params.subcategory = filters.subcategory;
+      if (filters.paymentMethod) params.paymentMethod = filters.paymentMethod;
       if (filters.search) params.search = filters.search;
 
       const response = await axios.get(
