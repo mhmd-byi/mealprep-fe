@@ -74,6 +74,15 @@ export const useFinanceDashboard = () => {
     fetchDashboard();
   }, [fetchDashboard]);
 
+  // A transaction can come in at any time while this dashboard is sitting
+  // open (e.g. embedded on the admin home page, left open all day), so it
+  // re-fetches itself periodically instead of only ever showing the data
+  // from when it first loaded.
+  useEffect(() => {
+    const interval = setInterval(fetchDashboard, 3 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchDashboard]);
+
   return {
     preset,
     customRange,
@@ -83,6 +92,7 @@ export const useFinanceDashboard = () => {
     data,
     isLoading,
     error,
+    refresh: fetchDashboard,
   };
 };
 

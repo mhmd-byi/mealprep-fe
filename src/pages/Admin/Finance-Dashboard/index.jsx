@@ -67,7 +67,7 @@ const GRANULARITY_LABEL = { day: "daily", week: "weekly", month: "monthly" };
 // another page (the admin home dashboard) without nesting a second
 // Header/Sidebar.
 export const FinanceDashboardContent = () => {
-  const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error } = useFinanceDashboard();
+  const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error, refresh } = useFinanceDashboard();
 
   const [isCustomOpen, setIsCustomOpen] = useState(false);
   const [customStartInput, setCustomStartInput] = useState("");
@@ -193,6 +193,14 @@ export const FinanceDashboardContent = () => {
               )}
 
               <div className="flex gap-2 mb-3 print:hidden">
+                <button
+                  type="button"
+                  onClick={refresh}
+                  disabled={isLoading}
+                  className="px-3 py-1.5 text-sm font-semibold bg-white rounded-md border-2 shadow-sm text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white disabled:opacity-50"
+                >
+                  {isLoading ? "Refreshing..." : "Refresh"}
+                </button>
                 <button
                   type="button"
                   onClick={handleExportCSV}
