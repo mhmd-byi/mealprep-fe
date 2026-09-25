@@ -66,7 +66,10 @@ export const Expenses = () => {
   const [formError, setFormError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
-  const [monthFilter, setMonthFilter] = useState("");
+  const [monthFilter, setMonthFilter] = useState(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  });
 
   // monthFilter stays "YYYY-MM" internally; these are just the two parts for
   // the Month/Year selects below (a native <input type="month"> would be
@@ -104,8 +107,13 @@ export const Expenses = () => {
   // month/week by default, the picked month when the month dropdown is used,
   // or the picked range when custom start/end dates are used instead.
   const hasDateFilter = !!(filters.startDate && filters.endDate);
-  const periodLabel = monthFilter ? "Selected Month" : hasDateFilter ? "Selected Period" : "This Month";
-  const weekLabel = monthFilter ? "Last Week of Month" : hasDateFilter ? "Last 7 Days of Period" : "This Week";
+  const isCurrentMonthSelected = monthFilter === `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+  const periodLabel = !monthFilter
+    ? (hasDateFilter ? "Selected Period" : "This Month")
+    : (isCurrentMonthSelected ? "This Month" : "Selected Month");
+  const weekLabel = !monthFilter
+    ? (hasDateFilter ? "Last 7 Days of Period" : "This Week")
+    : (isCurrentMonthSelected ? "This Week" : "Last Week of Month");
 
   const colorByCategory = {};
   categories.forEach((c) => { colorByCategory[c.name] = c.color; });

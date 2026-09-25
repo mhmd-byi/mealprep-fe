@@ -5,12 +5,30 @@ const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
 });
 
+const pad2 = (n) => String(n).padStart(2, "0");
+
+const currentMonthToDateRange = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = pad2(today.getMonth() + 1);
+  return {
+    startDate: `${year}-${month}-01`,
+    endDate: `${year}-${month}-${pad2(today.getDate())}`,
+  };
+};
+
 export const useExpenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ startDate: "", endDate: "", category: "", subcategory: "", paymentMethod: "", search: "" });
+  const [filters, setFilters] = useState(() => ({
+    ...currentMonthToDateRange(),
+    category: "",
+    subcategory: "",
+    paymentMethod: "",
+    search: "",
+  }));
 
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
