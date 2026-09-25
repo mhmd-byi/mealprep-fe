@@ -14,7 +14,7 @@ export const UserListOfMealDelivery = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    date: '',
+    date: new Date().toISOString().split("T")[0],
     mealType: '',
   });
   const [searchQuery, setSearchQuery] = useState("");

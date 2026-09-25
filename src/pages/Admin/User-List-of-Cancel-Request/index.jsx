@@ -9,7 +9,7 @@ export const UserListWithCancelRequest = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    date: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
   const getCurrentDate = () => {
