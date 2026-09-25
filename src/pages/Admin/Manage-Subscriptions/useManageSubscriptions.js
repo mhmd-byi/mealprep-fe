@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
 });
 
 export const useManageSubscriptions = () => {
+  const queryClient = useQueryClient();
   const [allUsers, setAllUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
@@ -102,6 +104,7 @@ export const useManageSubscriptions = () => {
     const newUserId = response.data.user._id;
     await fetchAllUsers();
     await selectUser(newUserId);
+    queryClient.invalidateQueries({ queryKey: ['users'] });
     return newUserId;
   };
 
@@ -113,6 +116,7 @@ export const useManageSubscriptions = () => {
     );
     await refreshSelectedUser();
     await fetchAllUsers();
+    queryClient.invalidateQueries({ queryKey: ['users'] });
   };
 
   const updateSubscription = async (subscriptionId, payload) => {
@@ -123,6 +127,7 @@ export const useManageSubscriptions = () => {
     );
     await refreshSelectedUser();
     await fetchAllUsers();
+    queryClient.invalidateQueries({ queryKey: ['users'] });
   };
 
   return {
