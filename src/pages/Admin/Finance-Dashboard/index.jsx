@@ -62,7 +62,11 @@ const formatDateLabel = (isoDate) => {
 
 const GRANULARITY_LABEL = { day: "daily", week: "weekly", month: "monthly" };
 
-export const FinanceDashboard = () => {
+// The dashboard's actual content, with no page layout/shell of its own — so
+// it can be rendered standalone (below, at its own route) or embedded inside
+// another page (the admin home dashboard) without nesting a second
+// Header/Sidebar.
+export const FinanceDashboardContent = () => {
   const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error } = useFinanceDashboard();
 
   const [isCustomOpen, setIsCustomOpen] = useState(false);
@@ -119,7 +123,6 @@ export const FinanceDashboard = () => {
   const trendSeriesKeys = expenseCategoryTrend?.categories.map((c) => ({ key: c.name, label: c.name, color: c.color })) || [];
 
   return (
-    <DashboardLayoutComponent>
       <div className="flex flex-col justify-start items-start p-4 w-full sm:p-6 md:p-8">
         <div className="w-full">
           <div className="overflow-hidden bg-white rounded-lg shadow-md">
@@ -337,8 +340,13 @@ export const FinanceDashboard = () => {
           </div>
         </div>
       </div>
-    </DashboardLayoutComponent>
   );
 };
+
+export const FinanceDashboard = () => (
+  <DashboardLayoutComponent>
+    <FinanceDashboardContent />
+  </DashboardLayoutComponent>
+);
 
 export default FinanceDashboard;
