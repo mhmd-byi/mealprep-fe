@@ -61,8 +61,7 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-bold text-gray-700">{title}</span>
+      <div className="flex items-center justify-end mb-2">
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
@@ -92,7 +91,7 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
       ) : (
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="relative flex-shrink-0">
-            <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width={SIZE} height={SIZE}>
+            <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width={SIZE} height={SIZE} role="img" aria-label={title}>
               {arcs.map((s) => (
                 <path
                   key={s.label}
@@ -110,7 +109,6 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {hoverKey ? (
                 <>
-                  <span className="text-sm font-semibold text-gray-600">{hoverKey}</span>
                   <span className="text-xl font-bold text-gray-900">
                     {valueFormatter(arcs.find((a) => a.label === hoverKey)?.value || 0)}
                   </span>
