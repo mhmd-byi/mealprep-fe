@@ -896,15 +896,15 @@ const AuditLogTable = ({ logs, isLoading, scopeLabel }) => {
         <tbody className="bg-white divide-y divide-gray-200">
           {logs.map((log) => (
             <tr key={log._id} className="align-top">
-              <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDateTime(log.createdAt)}</td>
-              <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{log.adminName}</td>
-              <td className="px-4 py-4 text-sm whitespace-nowrap">
+              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{formatDateTime(log.createdAt)}</td>
+              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{log.adminName}</td>
+              <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
                 <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                   {capitalize(log.action)}
                 </span>
               </td>
-              <td className="px-4 py-4 text-sm text-gray-700 max-w-xs">{log.reason}</td>
-              <td className="px-4 py-4 text-xs text-gray-500 max-w-sm">
+              <td className="px-4 py-4 text-sm text-left text-gray-700 max-w-xs">{log.reason}</td>
+              <td className="px-4 py-4 text-xs text-left text-gray-500 max-w-sm">
                 <FieldDiff before={log.before} after={log.after} />
               </td>
             </tr>
