@@ -26,6 +26,11 @@ const formatDate = (dateValue) => {
   });
 };
 
+const toInputDate = (dateValue) => {
+  if (!dateValue) return "";
+  return new Date(dateValue).toISOString().split("T")[0];
+};
+
 const formatDateTime = (dateValue) => {
   if (!dateValue) return "—";
   return new Date(dateValue).toLocaleString(undefined, {
@@ -295,6 +300,7 @@ export const ManageSubscriptions = () => {
       status: sub.status,
       paymentMethod: sub.paymentMethod || "",
       paymentId: sub.paymentId || "",
+      subscriptionStartDate: toInputDate(sub.subscriptionStartDate),
     });
     setEditMealDeltas({ lunchMeals: 0, dinnerMeals: 0, nextDayLunchMeals: 0, nextDayDinnerMeals: 0 });
     setEditReason("");
@@ -316,7 +322,9 @@ export const ManageSubscriptions = () => {
     const fieldUpdates = {};
     const stringFallbackFields = ["allergy", "paymentMethod", "paymentId"];
     Object.keys(editFieldUpdates).forEach((key) => {
-      const original = stringFallbackFields.includes(key) ? editingSub[key] || "" : editingSub[key];
+      const original = key === "subscriptionStartDate"
+        ? toInputDate(editingSub.subscriptionStartDate)
+        : stringFallbackFields.includes(key) ? editingSub[key] || "" : editingSub[key];
       if (editFieldUpdates[key] !== original) {
         fieldUpdates[key] = editFieldUpdates[key];
       }
@@ -782,6 +790,28 @@ export const ManageSubscriptions = () => {
                     <p className="text-xs text-amber-600 mt-1">
                       This will zero out remaining meals; any queued plan for this user activates on the next
                       scheduled run.
+                    </p>
+                  )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                {editingSub.status === "queued" ? (
+                  <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
+                    📅 Start date: automatic — this plan is queued, so it'll be set to whatever date it actually
+                    activates on. Editing it here wouldn't stick.
+                  </p>
+                ) : (
+                  <Input
+                    type="date"
+                    value={editFieldUpdates.subscriptionStartDate || ""}
+                    onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, subscriptionStartDate: e.target.value }))}
+                  />
+                )}
+                {editFieldUpdates.subscriptionStartDate !== toInputDate(editingSub.subscriptionStartDate) &&
+                  editingSub.status === "active" && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      "Meal Start Date" will update immediately. "Est. End Date" is based on today's remaining
+                      meal counts, not this date, so it won't shift just from this change alone.
                     </p>
                   )}
               </div>
