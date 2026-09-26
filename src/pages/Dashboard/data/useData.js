@@ -1,9 +1,24 @@
+import { useEffect } from "react";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionUtils";
+import { listenForUsersChanged } from "../../../utils/crossTabSync";
 
 export const useData = () => {
   const token = sessionStorage.getItem("token");
+  const queryClient = useQueryClient();
+
+  // Same cross-tab pickup as All Registered Users — without this, "Ending
+  // Soon" (and its Est. End Date) only refreshes once its own 5-minute
+  // staleTime expires or the page is reloaded, which is exactly why edits
+  // made in Manage Subscriptions (a different tab) could take a very long
+  // time to show up here even though they show up instantly elsewhere.
+  useEffect(() => {
+    const unsubscribe = listenForUsersChanged(() => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   const getCurrentDate = () => {
     const today = new Date();
