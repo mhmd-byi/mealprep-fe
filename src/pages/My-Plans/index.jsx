@@ -1,6 +1,7 @@
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import useSubscription from "../Plans/useSubscription";
 import { useMealSchedule } from "./useMealSchedule";
+import { formatNutritionLine } from "../../nutritionInfo";
 
 const formatDayLabel = (dateStr) => {
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -116,7 +117,14 @@ export const MyPlan = () => {
                         {(plan?.dinnerMeals || 0) + (plan?.nextDayDinnerMeals || 0)} Meals
                       </td>
                       <td className="py-2">{(plan?.mealType || "").toUpperCase()}</td>
-                      <td className="py-2 capitalize">{plan?.carbType || "—"}</td>
+                      <td className="py-2 capitalize">
+                        {plan?.carbType || "—"}
+                        {formatNutritionLine(plan?.carbType) && (
+                          <p className="text-xs text-gray-500 normal-case">
+                            {formatNutritionLine(plan?.carbType)}
+                          </p>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -236,7 +244,14 @@ export const MyPlan = () => {
                   <td className="py-2 font-medium">{nextPlan?.plan}</td>
                   <td className="py-2">{nextPlan?.totalMeals} Meals</td>
                   <td className="py-2">{(nextPlan?.mealType || "").toUpperCase()}</td>
-                  <td className="py-2 capitalize">{nextPlan?.carbType || "—"}</td>
+                  <td className="py-2 capitalize">
+                    {nextPlan?.carbType || "—"}
+                    {formatNutritionLine(nextPlan?.carbType) && (
+                      <p className="text-xs text-gray-500 normal-case">
+                        {formatNutritionLine(nextPlan?.carbType)}
+                      </p>
+                    )}
+                  </td>
                   <td className="py-2">{nextPlan?.allergy || "None"}</td>
                 </tr>
               </tbody>

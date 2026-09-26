@@ -4,6 +4,7 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import data from "./data.json";
 import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
+import { formatNutritionLine } from "../../nutritionInfo";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
@@ -321,6 +322,11 @@ const SubscriptionPlans = () => {
                           <option value="keto-meal">Keto Meal</option>
                         </select>
                       </div>
+                      {formatNutritionLine(currentPlanDetails.carbType) && (
+                        <p className="text-xs text-gray-500 -mt-2">
+                          {formatNutritionLine(currentPlanDetails.carbType)} (per meal)
+                        </p>
+                      )}
                       {wouldOverlap ? (
                         // This purchase will queue behind the current plan and activate
                         // automatically the moment it finishes — whatever start date is
