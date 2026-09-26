@@ -54,7 +54,7 @@ const useProfile = (setUserDetails) => {
 
   const uploadFileToS3 = async (fileToUpload) => {
     if (!fileToUpload) {
-      alert("Please choose a file first!");
+      toast.error("Please choose a file first!");
       return null;
     }
 
@@ -106,9 +106,11 @@ const useProfile = (setUserDetails) => {
         setOldImageUrl(newImageUrl);
         setShowPopup(false);
         setIsLoading(false);
+        toast.success("Profile photo updated successfully.");
       } catch (error) {
         console.error("Error updating image URL:", error);
         setIsLoading(false);
+        toast.error(error.response?.data?.message || "Failed to update profile photo.");
       }
     } else {
       setIsLoading(false);
@@ -134,8 +136,10 @@ const useProfile = (setUserDetails) => {
           data: updatedFormData,
         });
         setFormData(response.data);
+        toast.success("Profile updated successfully.");
       } catch (error) {
         console.error("Error submitting profile:", error);
+        toast.error(error.response?.data?.message || "Failed to update profile.");
       }
     } else {
       toast.error("Passwords do not match");
