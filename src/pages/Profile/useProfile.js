@@ -42,6 +42,7 @@ const useProfile = (setUserDetails) => {
         userId,
         date: new Date().toISOString().split("T")[0],
         description,
+        category: "profile",
       });
     } catch (err) {
       console.error("Error logging profile activity:", err);

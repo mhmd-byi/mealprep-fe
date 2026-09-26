@@ -45,6 +45,7 @@ export const useSubscription = () => {
           userId: userId,
           date: currentDate,
           description: `Subscribed to ${mealPlan}`,
+          category: "subscription",
         },
       });
     } catch (e) {

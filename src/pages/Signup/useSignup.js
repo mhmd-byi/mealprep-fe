@@ -96,6 +96,7 @@ export const useSignup = () => {
           userId: userId,
           date: currentDate,
           description: "Account created",
+          category: "account",
         },
       });
     } catch (e) {

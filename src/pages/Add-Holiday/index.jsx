@@ -125,6 +125,7 @@ const AddHoliday = () => {
             userId: user._id,
             date: todaysDate.toISOString().split("T")[0],
             description: `Added a new holiday for ${rangeLabel}: ${formData.description}`,
+            category: "holiday",
           },
           {
             headers: {
