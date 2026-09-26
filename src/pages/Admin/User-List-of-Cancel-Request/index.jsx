@@ -11,6 +11,7 @@ export const UserListWithCancelRequest = () => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
   });
+  const [mealTypeFilter, setMealTypeFilter] = useState("All");
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -68,6 +69,12 @@ export const UserListWithCancelRequest = () => {
     }
   };
 
+  // A "both" cancellation covers lunch AND dinner, so it stays visible under
+  // either specific filter — only excluded when it genuinely doesn't apply.
+  const filteredMeals = mealTypeFilter === "All"
+    ? cancelledMeals
+    : cancelledMeals.filter((meal) => meal.mealType === mealTypeFilter || meal.mealType === "both");
+
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -108,7 +115,7 @@ export const UserListWithCancelRequest = () => {
     ];
 
     // Convert data to CSV format
-    const csvData = cancelledMeals.map((meal) => [
+    const csvData = filteredMeals.map((meal) => [
       generateCustomUserId(meal.name.split(" ")[0], meal.name.split(" ")[1], meal.mobile),
       meal.name,
       formatDate(meal.startDate),
@@ -185,12 +192,25 @@ export const UserListWithCancelRequest = () => {
               {formData.date && (
                 <p className="hidden print:block text-sm text-gray-500 mb-3">
                   Date: {formatDate(formData.date)}
+                  {mealTypeFilter !== "All" && ` | Meal Type: ${mealTypeFilter}`}
                 </p>
               )}
 
-              {/* Export Buttons */}
+              {/* Meal Type Filter + Export Buttons */}
               {cancelledMeals.length > 0 && (
-                <div className="flex gap-2 justify-end mb-4 print:hidden">
+                <div className="flex flex-wrap gap-2 justify-between items-center mb-4 print:hidden">
+                  <Input
+                    type="select"
+                    value={mealTypeFilter}
+                    onChange={(e) => setMealTypeFilter(e.target.value)}
+                    options={[
+                      { value: "All", label: "All Meal Types" },
+                      { value: "lunch", label: "Lunch" },
+                      { value: "dinner", label: "Dinner" },
+                    ]}
+                    className="w-full sm:w-48 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  />
+                  <div className="flex gap-2">
                   <Button
                     onClick={exportToCSV}
                     className="flex gap-2 items-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition duration-300 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -204,6 +224,7 @@ export const UserListWithCancelRequest = () => {
                   >
                     Export (Print / PDF)
                   </Button>
+                  </div>
                 </div>
               )}
 
@@ -215,9 +236,8 @@ export const UserListWithCancelRequest = () => {
               )}
 
               {/* Responsive Table Container */}
-              {console.log('these are cancelled meals', cancelledMeals)}
               <div className="overflow-x-auto">
-                {cancelledMeals.length > 0 ? (
+                {filteredMeals.length > 0 ? (
                   <table className="w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -240,7 +260,7 @@ export const UserListWithCancelRequest = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {cancelledMeals.map((meal, index) => (
+                      {filteredMeals.map((meal, index) => (
                         <tr
                           key={index}
                           className="flex flex-col border-b hover:bg-gray-100 md:border-none md:table-row"
