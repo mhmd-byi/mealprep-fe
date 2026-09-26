@@ -10,7 +10,7 @@ import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
 export const AllRegisteredUsers = () => {
-  const { allRegisteredUsers, isLoading, isBackgroundLoading, planFilter, downloadCSV, cancelQueuedPlan } = useAllRegisteredUsers();
+  const { allRegisteredUsers, isLoading, isBackgroundLoading, planFilter, downloadCSV, cancelQueuedPlan, holidayDateKeys } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -107,7 +107,7 @@ export const AllRegisteredUsers = () => {
     // Est. End Date filter
     let endDateMatch = true;
     if (filterCriteria.endDateOperator && filterCriteria.endDate) {
-      const { date } = calculateSubEndDate(user);
+      const { date } = calculateSubEndDate(user, holidayDateKeys);
       if (date) {
         // Normalise both sides to midnight for fair comparison
         const userEndDate = new Date(date);
@@ -350,7 +350,7 @@ export const AllRegisteredUsers = () => {
                                       </div>
                                     </td>
                                     <td className="px-4 py-4 text-sm font-bold border-b text-theme-color-1">
-                                      {calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status}
+                                      {calculateSubEndDate(user, holidayDateKeys).formattedDate || calculateSubEndDate(user, holidayDateKeys).status}
                                     </td>
                                   </tr>
                                 );
@@ -458,7 +458,7 @@ export const AllRegisteredUsers = () => {
                                       Est. End Date:
                                     </span>
                                     <span className="text-theme-color-1 font-bold text-right break-words max-w-[60%]">
-                                      {calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status}
+                                      {calculateSubEndDate(user, holidayDateKeys).formattedDate || calculateSubEndDate(user, holidayDateKeys).status}
                                     </span>
                                   </div>
                                 </div>

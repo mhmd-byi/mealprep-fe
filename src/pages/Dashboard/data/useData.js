@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { calculateSubEndDate } from "../../../subscriptionUtils";
+import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionUtils";
 
 export const useData = () => {
   const token = sessionStorage.getItem("token");
@@ -15,12 +15,18 @@ export const useData = () => {
   const usersQuery = useQuery({
     queryKey: ['users', 'active-for-ending-soon'],
     queryFn: async () => {
-      const response = await axios({
-        method: "GET",
-        url: `${process.env.REACT_APP_API_URL}user/all?activeOnly=true`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const [response, holidaysResponse] = await Promise.all([
+        axios({
+          method: "GET",
+          url: `${process.env.REACT_APP_API_URL}user/all?activeOnly=true`,
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${process.env.REACT_APP_API_URL}holiday/get-holidays`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
       const users = response.data;
+      const holidayDateKeys = holidayDateKeysFrom(holidaysResponse.data.holidays || []);
 
       // Calculate subscriptions ending in next 3 days
       const today = new Date();
@@ -30,7 +36,7 @@ export const useData = () => {
 
       const endingSoon = [];
       users.forEach(user => {
-        const { date, formattedDate } = calculateSubEndDate(user);
+        const { date, formattedDate } = calculateSubEndDate(user, holidayDateKeys);
         if (date && date >= today && date <= threeDaysLater) {
           endingSoon.push({
             ...user,

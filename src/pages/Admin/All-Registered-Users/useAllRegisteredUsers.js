@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { calculateSubEndDate } from "../../../subscriptionUtils";
+import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionUtils";
 import { listenForUsersChanged, notifyUsersChanged } from "../../../utils/crossTabSync";
 
 export const useAllRegisteredUsers = () => {
@@ -55,6 +55,21 @@ export const useAllRegisteredUsers = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Needed so "Est. End Date" can skip holidays the same way it skips
+  // Sundays — holidays rarely change, so a long staleTime is fine.
+  const holidaysQuery = useQuery({
+    queryKey: ['holidays'],
+    queryFn: async () => {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}holiday/get-holidays`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.holidays || [];
+    },
+    enabled: !!token,
+    staleTime: 30 * 60 * 1000,
+  });
+  const holidayDateKeys = holidayDateKeysFrom(holidaysQuery.data);
+
   const cancelQueuedPlan = async (subscriptionId) => {
     try {
       await axios({
@@ -82,9 +97,9 @@ export const useAllRegisteredUsers = () => {
       (user.subscriptions[user.subscriptions.length - 1]?.plan || 'No active plan'), 
       `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}`, 
       (user.subscriptions[user.subscriptions.length - 1]?.allergy || 'None'), 
-      (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A'), 
-      (calculateSubEndDate(user).formattedDate || calculateSubEndDate(user).status),
-      (user.createdAt || user.created_date || 'N/A') 
+      (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A'),
+      (calculateSubEndDate(user, holidayDateKeys).formattedDate || calculateSubEndDate(user, holidayDateKeys).status),
+      (user.createdAt || user.created_date || 'N/A')
     ]);
   
     return [
@@ -113,6 +128,7 @@ export const useAllRegisteredUsers = () => {
     isBackgroundLoading: allUsersQuery.isLoading,
     planFilter,
     downloadCSV,
-    cancelQueuedPlan
+    cancelQueuedPlan,
+    holidayDateKeys
   };
 };
