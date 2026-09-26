@@ -36,6 +36,18 @@ const useProfile = (setUserDetails) => {
 
   const s3 = new AWS.S3();
 
+  const logProfileActivity = async (description) => {
+    try {
+      await axios.post(`${process.env.REACT_APP_API_URL}activity/add-activity`, {
+        userId,
+        date: new Date().toISOString().split("T")[0],
+        description,
+      });
+    } catch (err) {
+      console.error("Error logging profile activity:", err);
+    }
+  };
+
   const deleteFileFromS3 = async (url) => {
     if (!url) return;
 
@@ -107,6 +119,7 @@ const useProfile = (setUserDetails) => {
         setShowPopup(false);
         setIsLoading(false);
         toast.success("Profile photo updated successfully.");
+        logProfileActivity("Updated profile photo");
       } catch (error) {
         console.error("Error updating image URL:", error);
         setIsLoading(false);
@@ -120,6 +133,14 @@ const useProfile = (setUserDetails) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+  };
+
+  const CHANGED_FIELD_LABELS = {
+    firstName: "First Name",
+    lastName: "Last Name",
+    mobile: "Mobile Number",
+    password: "Password",
+    postalAddress: "Postal Address",
   };
 
   const handleSubmit = async (event) => {
@@ -137,6 +158,12 @@ const useProfile = (setUserDetails) => {
         });
         setFormData(response.data);
         toast.success("Profile updated successfully.");
+
+        const changedFields = Object.keys(CHANGED_FIELD_LABELS).filter((key) => formData[key]);
+        if (changedFields.length > 0) {
+          const labels = changedFields.map((key) => CHANGED_FIELD_LABELS[key]);
+          logProfileActivity(`Updated profile: ${labels.join(", ")}`);
+        }
       } catch (error) {
         console.error("Error submitting profile:", error);
         toast.error(error.response?.data?.message || "Failed to update profile.");
