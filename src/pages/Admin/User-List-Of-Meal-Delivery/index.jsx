@@ -578,6 +578,7 @@ export const UserListOfMealDelivery = () => {
       criteria={filterCriteria}
       setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
       title="Filter Meal Delivery"
+      showEndDateFilter={false}
     />
 
     <Popup

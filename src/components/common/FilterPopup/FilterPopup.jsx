@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Popup from '../Popup/Popup';
 
-const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter Results" }) => {
+const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter Results", showEndDateFilter = true }) => {
   const [endDateError, setEndDateError] = useState('');
 
   const handleApply = () => {
     // Validate: if an end date operator is set but no date is picked
-    if (criteria.endDateOperator && !criteria.endDate) {
+    if (showEndDateFilter && criteria.endDateOperator && !criteria.endDate) {
       setEndDateError('Please pick a date for the End Date filter.');
       return;
     }
@@ -66,42 +66,46 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
             </div>
           </div>
 
-          {/* Divider */}
-          <hr className="border-gray-200" />
+          {showEndDateFilter && (
+            <>
+              {/* Divider */}
+              <hr className="border-gray-200" />
 
-          {/* Est. End Date Filter */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-700 font-bold">Est. End Date</label>
-            <div className="flex gap-2">
-              <select
-                className="w-2/5 p-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1"
-                value={criteria.endDateOperator}
-                onChange={(e) => {
-                  setCriteria({ ...criteria, endDateOperator: e.target.value });
-                  setEndDateError('');
-                }}
-              >
-                <option value="">-- Select --</option>
-                <option value="<">Less than (&lt;)</option>
-                <option value=">">Greater than (&gt;)</option>
-                <option value="=">Equal to (=)</option>
-              </select>
-              <input
-                type="date"
-                className={`w-3/5 p-2 border rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1 ${
-                  endDateError ? 'border-red-400' : 'border-gray-300'
-                }`}
-                value={criteria.endDate}
-                onChange={(e) => {
-                  setCriteria({ ...criteria, endDate: e.target.value });
-                  setEndDateError('');
-                }}
-              />
-            </div>
-            {endDateError && (
-              <p className="text-xs text-red-500 mt-1">{endDateError}</p>
-            )}
-          </div>
+              {/* Est. End Date Filter */}
+              <div className="space-y-2">
+                <label className="text-sm text-gray-700 font-bold">Est. End Date</label>
+                <div className="flex gap-2">
+                  <select
+                    className="w-2/5 p-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1"
+                    value={criteria.endDateOperator}
+                    onChange={(e) => {
+                      setCriteria({ ...criteria, endDateOperator: e.target.value });
+                      setEndDateError('');
+                    }}
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="<">Less than (&lt;)</option>
+                    <option value=">">Greater than (&gt;)</option>
+                    <option value="=">Equal to (=)</option>
+                  </select>
+                  <input
+                    type="date"
+                    className={`w-3/5 p-2 border rounded-md bg-gray-50 focus:ring-theme-color-1 focus:border-theme-color-1 ${
+                      endDateError ? 'border-red-400' : 'border-gray-300'
+                    }`}
+                    value={criteria.endDate}
+                    onChange={(e) => {
+                      setCriteria({ ...criteria, endDate: e.target.value });
+                      setEndDateError('');
+                    }}
+                  />
+                </div>
+                {endDateError && (
+                  <p className="text-xs text-red-500 mt-1">{endDateError}</p>
+                )}
+              </div>
+            </>
+          )}
 
         </div>
       }
