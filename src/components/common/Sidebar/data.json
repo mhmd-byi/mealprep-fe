@@ -1,33 +1,33 @@
 [
   {
     "name": "Dashboard",
-    "icon": "Home",
+    "icon": "LayoutDashboard",
     "path": "/dashboard",
     "requiresSubscription": false
   },
   {
     "name": "Profile",
-    "icon": "AccountCircle",
+    "icon": "UserCircle",
     "path": "/dashboard/profile",
     "requiresSubscription": false
   },
   {
     "name": "Food Menu",
-    "icon": "RestaurantMenu",
+    "icon": "UtensilsCrossed",
     "path": "/dashboard/food-menu",
     "requiresSubscription": false,
     "userOnly": true
   },
   {
     "name": "Meal Cancel Request",
-    "icon": "Cancel",
+    "icon": "XCircle",
     "path": "/dashboard/cancel-request",
     "requiresSubscription": true,
     "userOnly": true
   },
   {
     "name": "Customize your Meal",
-    "icon": "DashboardCustomize",
+    "icon": "Settings2",
     "path": "/dashboard/customize-your-meal",
     "requiresSubscription": true,
     "userOnly": true
@@ -41,105 +41,105 @@
   },
   {
     "name": "Plans",
-    "icon": "NotificationsActive",
+    "icon": "ClipboardList",
     "path": "/dashboard/plans",
     "requiresSubscription": false,
     "userOnly": true
   },
   {
     "name": "FAQs",
-    "icon": "Help",
+    "icon": "HelpCircle",
     "path": "/dashboard/help",
     "requiresSubscription": false,
     "userOnly": true
   },
   {
     "name": "Meal Trackings",
-    "icon": "FoodBank",
+    "icon": "Activity",
     "path": "/dashboard/meal-tracking",
     "requiresSubscription": false,
     "userOnly": true
   },
   {
     "name": "Chat on WhatsApp",
-    "icon": "WhatsApp",
+    "icon": "MessageCircle",
     "path": "https://wa.me/+919826157131",
     "requiresSubscription": false,
     "userOnly": true
   },
   {
     "name": "Add Menu",
-    "icon": "FoodBank",
+    "icon": "PlusSquare",
     "path": "/dashboard/add-menu",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "User Cancel Requests",
-    "icon": "GroupRemove",
+    "icon": "UserX",
     "path": "/dashboard/user-cancel-request-list",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Customisation Requests",
-    "icon": "GroupRemove",
+    "icon": "SlidersHorizontal",
     "path": "/dashboard/get-list-of-customisation-request",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Meal Delivery List",
-    "icon": "FoodBank",
+    "icon": "Truck",
     "path": "/dashboard/meal-delivery-list",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "All Registered Users",
-    "icon": "FoodBank",
+    "icon": "Users",
     "path": "/dashboard/all-registered-users",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Add Holiday",
-    "icon": "FoodBank",
+    "icon": "CalendarPlus",
     "path": "/dashboard/add-holiday",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "All Holiday",
-    "icon": "FoodBank",
+    "icon": "CalendarDays",
     "path": "/dashboard/all-holiday",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "User Meal Trackings",
-    "icon": "Assessment",
+    "icon": "ClipboardCheck",
     "path": "/dashboard/user-meal-tracking",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Dietary Stock Report",
-    "icon": "Inventory2",
+    "icon": "Boxes",
     "path": "/dashboard/dietary-stock-report",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Expenses",
-    "icon": "Receipt",
+    "icon": "Wallet",
     "path": "/dashboard/expenses",
     "requiresSubscription": false,
     "adminOnly": true
   },
   {
     "name": "Manage Subscriptions",
-    "icon": "ManageAccounts",
+    "icon": "Settings",
     "path": "/dashboard/manage-subscriptions",
     "requiresSubscription": false,
     "adminOnly": true

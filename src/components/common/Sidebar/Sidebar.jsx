@@ -4,6 +4,7 @@ import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
 import { useDashboard } from "../Dashboard/useDashboard";
 import { Logout, Close } from "@mui/icons-material";
+import * as LucideIcons from "lucide-react";
 import { useHeader } from "../Header/useHeader";
 import useSubscription from "../../../pages/Plans/useSubscription";
 import userProfileImg from "../../../assets/images/user/user-placeholder.png";
@@ -84,7 +85,7 @@ const Sidebar = ({ closeSidebar }) => {
                 }`}
                 onClick={() => handleNavigate(item.path)}
               >
-                {React.createElement(require(`@mui/icons-material`)[item.icon], {
+                {React.createElement(LucideIcons[item.icon], {
                   className: "h-6 w-6",
                 })}
                 <span>{item.name}</span>
