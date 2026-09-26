@@ -2,10 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { notifyUsersChanged } from "../../../utils/crossTabSync";
+import { sendEmail } from "../../../utils";
+import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../../emailTemplates";
 
 const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
 });
+
+// Same admin address every other subscription/reminder notification in this
+// app already goes to (Plans/useSubscription.js, reminderJobs.js).
+const ADMIN_NOTIFICATION_EMAIL = "ermoinzafarsheikh@hotmail.com";
 
 export const useManageSubscriptions = () => {
   const queryClient = useQueryClient();
@@ -111,7 +117,7 @@ export const useManageSubscriptions = () => {
   };
 
   const createSubscription = async (payload) => {
-    await axios.post(
+    const response = await axios.post(
       `${process.env.REACT_APP_API_URL}admin/subscriptions`,
       payload,
       authHeaders()
@@ -120,6 +126,32 @@ export const useManageSubscriptions = () => {
     await fetchAllUsers();
     queryClient.invalidateQueries({ queryKey: ['users'] });
     notifyUsersChanged();
+
+    const createdSub = response.data;
+    const userName = `${selectedUser?.firstName || ""} ${selectedUser?.lastName || ""}`.trim() || "Customer";
+    const userEmail = selectedUser?.email || "";
+    const isQueued = createdSub.status === "queued";
+    const adminNoticeBody = `A new subscription has been added manually by an admin!\n\n` +
+      `--- CUSTOMER DETAILS ---\n` +
+      `Name: ${userName}\nEmail: ${userEmail}\nUser ID: ${payload.userId}\n\n` +
+      `--- SUBSCRIPTION DETAILS ---\n` +
+      `Plan: ${payload.plan}\nMeals Total: ${payload.totalMeals}\nMeal Type: ${payload.mealType}\n` +
+      `Carb Type: ${payload.carbType}\nPreference: ${payload.lunchDinner}\nStart Date: ${payload.subscriptionStartDate}\n` +
+      `Allergy Info: ${payload.allergy || "None"}\nPayment Method: ${payload.paymentMethod || "Not recorded"}\n` +
+      `Reason: ${payload.reason}\n\n` +
+      `${isQueued ? "This plan is QUEUED and will activate when the user's current plan runs out." : "This plan is ACTIVE."}`;
+
+    // Fire-and-forget — an email hiccup shouldn't fail the subscription that
+    // already saved successfully, same as the customer purchase flow.
+    if (isQueued) {
+      const queuedTpl = getQueuedEmailTemplate(payload.plan, userName);
+      sendEmail(payload.userId, "", queuedTpl.subject, queuedTpl.text).catch((e) => console.error("Error sending customer email:", e));
+      sendEmail(ADMIN_NOTIFICATION_EMAIL, "Admin", `Queued Subscription: ${userName}`, adminNoticeBody).catch((e) => console.error("Error sending admin email:", e));
+    } else {
+      const activeTpl = getActiveEmailTemplate(payload.plan, userName);
+      sendEmail(payload.userId, "", activeTpl.subject, activeTpl.text).catch((e) => console.error("Error sending customer email:", e));
+      sendEmail(ADMIN_NOTIFICATION_EMAIL, "Admin", `New Subscription: ${userName}`, adminNoticeBody).catch((e) => console.error("Error sending admin email:", e));
+    }
   };
 
   const updateSubscription = async (subscriptionId, payload) => {
