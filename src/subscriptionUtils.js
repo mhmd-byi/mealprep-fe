@@ -5,6 +5,21 @@ const dateKeyLocal = (date) => {
   return `${y}-${m}-${d}`;
 };
 
+const LUNCH_CUTOFF_MINUTES = 10.5 * 60;
+const DINNER_CUTOFF_MINUTES = 16 * 60;
+
+const getCurrentISTMinutes = () => {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).formatToParts(new Date());
+  const hour = Number(parts.find((p) => p.type === 'hour').value);
+  const minute = Number(parts.find((p) => p.type === 'minute').value);
+  return hour * 60 + minute;
+};
+
 // Holiday dates from the backend are stored as UTC-midnight representing an
 // IST calendar day — read with UTC getters so the key matches regardless of
 // the viewing browser's own timezone (mirrors dateKeyLocal, which instead
@@ -57,6 +72,24 @@ export const calculateSubEndDate = (user, holidayDateKeys = new Set()) => {
 
   let currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
+
+  const lunchCutoffPassed = getCurrentISTMinutes() > LUNCH_CUTOFF_MINUTES;
+  const dinnerCutoffPassed = getCurrentISTMinutes() > DINNER_CUTOFF_MINUTES;
+  const isTodaySunday = currentDate.getDay() === 0;
+  const isTodayHoliday = holidayDateKeys.has(dateKeyLocal(currentDate));
+
+  if (!isTodaySunday && !isTodayHoliday) {
+    if (lunchLeft > 0 && !lunchCutoffPassed && !isCancelled(currentDate, 'lunch')) lunchLeft -= 1;
+    if (dinnerLeft > 0 && !dinnerCutoffPassed && !isCancelled(currentDate, 'dinner')) dinnerLeft -= 1;
+  }
+
+  if (lunchLeft <= 0 && dinnerLeft <= 0) {
+    return {
+      date: currentDate,
+      formattedDate: formatDate(currentDate),
+      status: 'Active'
+    };
+  }
 
   let daysCount = 0;
   while ((lunchLeft > 0 || dinnerLeft > 0) && daysCount < 365) {
