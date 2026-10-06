@@ -157,9 +157,9 @@ const AddHoliday = () => {
   return (
     <DashboardLayoutComponent>
       <div className="block flex-col justify-center items-center p-5 w-full h-full lg:flex">
-        <div className="px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className="bg-white shadow-xl rounded-lg overflow-hidden min-w[350px] max-w-xl ">
+        <div className="px-4 py-12 w-full sm:px-6 lg:px-8">
+          <div className="mx-auto w-full">
+            <div className="overflow-hidden w-full bg-white rounded-lg shadow-xl">
               <div className="p-6 sm:p-10">
                 <h2 className="mb-4 text-xl font-semibold text-gray-800 sm:text-2xl sm:mb-6">
                   Add Holiday
