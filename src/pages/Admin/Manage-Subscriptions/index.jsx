@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { CalendarDays, Utensils, SlidersHorizontal, CreditCard, Minus, Plus } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
@@ -128,6 +129,7 @@ export const ManageSubscriptions = () => {
   const [editMealDeltas, setEditMealDeltas] = useState({});
   const [editReason, setEditReason] = useState("");
   const [editError, setEditError] = useState(null);
+  const [editSection, setEditSection] = useState("plan");
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   const [isCloseAccountOpen, setIsCloseAccountOpen] = useState(false);
@@ -355,7 +357,11 @@ export const ManageSubscriptions = () => {
     setEditMealDeltas({ lunchMeals: 0, dinnerMeals: 0, nextDayLunchMeals: 0, nextDayDinnerMeals: 0 });
     setEditReason("");
     setEditError(null);
+    setEditSection("plan");
   };
+
+  const adjustMealDelta = (key, change) =>
+    setEditMealDeltas((prev) => ({ ...prev, [key]: String((Number(prev[key]) || 0) + change) }));
 
   const closeEditModal = () => {
     setEditingSub(null);
@@ -403,6 +409,27 @@ export const ManageSubscriptions = () => {
       setIsSavingEdit(false);
     }
   };
+
+  const editSummaryRows = editingSub
+    ? [
+        ["Plan", editingSub.plan],
+        ["Status", capitalize(editingSub.status)],
+        ["Start", formatDate(editingSub.subscriptionStartDate)],
+        ["End", getSubscriptionEndLabel(editingSub)],
+        ["Lunch left", (editingSub.lunchMeals || 0) + (editingSub.nextDayLunchMeals || 0)],
+        ["Dinner left", (editingSub.dinnerMeals || 0) + (editingSub.nextDayDinnerMeals || 0)],
+        ["Diet", capitalize(editingSub.mealType)],
+        ["Carb type", editingSub.carbType],
+        ["Payment", editingSub.paymentMethod || (editingSub.paymentId ? "Online" : "—")],
+      ]
+    : [];
+
+  const EDIT_SECTIONS = [
+    { key: "plan", label: "Plan Details", hint: "Plan, status & start date", icon: CalendarDays },
+    { key: "meals", label: "Meal Counts", hint: "Adjust meals left", icon: Utensils },
+    { key: "preferences", label: "Preferences", hint: "Diet, carbs & allergy", icon: SlidersHorizontal },
+    { key: "payment", label: "Payment Details", hint: "Method & reference", icon: CreditCard },
+  ];
 
   const openCloseAccountModal = () => {
     setCloseAccountReason("");
@@ -922,126 +949,226 @@ export const ManageSubscriptions = () => {
         isOpen={!!editingSub}
         onClose={closeEditModal}
         title="Edit Subscription"
+        maxWidthClass="max-w-5xl"
         content={
           editingSub && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {editError && <p className="text-sm text-red-600">{editError}</p>}
 
-              <div>
-                <FieldLabel label="Plan" help="Changes the plan name shown on this subscription. It does not change the meal counts." />
-                <Input
-                  type="select"
-                  value={editFieldUpdates.plan || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, plan: e.target.value }))}
-                  options={PLANS.map((p) => ({ value: p, label: p }))}
-                />
-              </div>
-              <div>
-                <FieldLabel label="Status" help="Active: meals are delivered from the remaining counts. Queued: waits for the current plan to finish. Completed or Cancelled: ends the plan. If it was active, its remaining meals are set to zero and any queued plan for this customer starts at the next scheduled check (10:45 AM or 4:45 PM, Monday to Saturday). Changing it back does not restore those meals. Use Adjust Meal Counts for that." />
-                <Input
-                  type="select"
-                  value={editFieldUpdates.status || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, status: e.target.value }))}
-                  options={STATUSES.map((s) => ({ value: s, label: capitalize(s) }))}
-                />
-                {editFieldUpdates.status !== editingSub.status &&
-                  editingSub.status === "active" &&
-                  ["cancelled", "completed"].includes(editFieldUpdates.status) && (
-                    <p className="text-xs text-amber-600 mt-1">
-                      This will zero out remaining meals; any queued plan for this user activates on the next
-                      scheduled run.
-                    </p>
-                  )}
-              </div>
-              <div>
-                <FieldLabel label="Start Date" help="The day the plan starts. The change applies straight away. Est. End Date is worked out from the remaining meal counts, so it does not move just because this date changed. This is locked on a queued plan because its start date is set automatically." />
-                {editingSub.status === "queued" ? (
-                  <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
-                    📅 Start date: automatic — this plan is queued, so it'll be set to whatever date it actually
-                    activates on. Editing it here wouldn't stick.
+              <div className="flex flex-wrap gap-4 justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div>
+                  <p className="text-lg font-bold text-gray-900">
+                    {selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : ""}
                   </p>
-                ) : (
-                  <Input
-                    type="date"
-                    value={editFieldUpdates.subscriptionStartDate || ""}
-                    onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, subscriptionStartDate: e.target.value }))}
-                  />
-                )}
-                {editFieldUpdates.subscriptionStartDate !== toInputDate(editingSub.subscriptionStartDate) &&
-                  editingSub.status === "active" && (
-                    <p className="text-xs text-amber-600 mt-1">
-                      "Meal Start Date" will update immediately. "Est. End Date" is based on today's remaining
-                      meal counts, not this date, so it won't shift just from this change alone.
-                    </p>
+                  <p className="text-sm text-gray-500">{selectedUser?.email} · {selectedUser?.mobile}</p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-gray-500">Member since</p>
+                  <p className="font-semibold text-gray-900">{formatDate(selectedUser?.createdAt)}</p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-gray-500">Plan</p>
+                  <p className="font-semibold text-gray-900">{editingSub.plan}</p>
+                </div>
+                <span className={`px-3 py-1 text-sm font-semibold rounded-full ${STATUS_COLORS[editingSub.status] || "bg-gray-100 text-gray-700"}`}>
+                  {capitalize(editingSub.status)}
+                </span>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-4">
+                <nav className="space-y-2">
+                  {EDIT_SECTIONS.map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => setEditSection(item.key)}
+                      className={`w-full flex gap-3 items-center p-3 text-left rounded-xl border ${
+                        editSection === item.key ? "bg-green-50 border-theme-color-1" : "bg-white border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 flex-shrink-0 text-theme-color-1" />
+                      <span>
+                        <span className="block text-sm font-semibold text-gray-900">{item.label}</span>
+                        <span className="block text-xs text-gray-500">{item.hint}</span>
+                      </span>
+                    </button>
+                  ))}
+                </nav>
+
+                <div className="space-y-4 md:col-span-2">
+                  {editSection === "plan" && (
+                    <>
+                      <div>
+                        <FieldLabel label="Plan" help="Changes the plan name shown on this subscription. It does not change the meal counts." />
+                        <Input
+                          type="select"
+                          value={editFieldUpdates.plan || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, plan: e.target.value }))}
+                          options={PLANS.map((p) => ({ value: p, label: p }))}
+                        />
+                      </div>
+                      <div>
+                        <FieldLabel label="Status" help="Active: meals are delivered from the remaining counts. Queued: waits for the current plan to finish. Completed or Cancelled: ends the plan. If it was active, its remaining meals are set to zero and any queued plan for this customer starts at the next scheduled check (10:45 AM or 4:45 PM, Monday to Saturday). Changing it back does not restore those meals. Use Adjust Meal Counts for that." />
+                        <Input
+                          type="select"
+                          value={editFieldUpdates.status || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, status: e.target.value }))}
+                          options={STATUSES.map((s) => ({ value: s, label: capitalize(s) }))}
+                        />
+                        {editFieldUpdates.status !== editingSub.status &&
+                          editingSub.status === "active" &&
+                          ["cancelled", "completed"].includes(editFieldUpdates.status) && (
+                            <p className="text-xs text-amber-600 mt-1">
+                              This will zero out remaining meals; any queued plan for this user activates on the next
+                              scheduled run.
+                            </p>
+                          )}
+                      </div>
+                      <div>
+                        <FieldLabel label="Start Date" help="The day the plan starts. The change applies straight away. Est. End Date is worked out from the remaining meal counts, so it does not move just because this date changed. This is locked on a queued plan because its start date is set automatically." />
+                        {editingSub.status === "queued" ? (
+                          <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
+                            📅 Start date: automatic — this plan is queued, so it'll be set to whatever date it actually
+                            activates on. Editing it here wouldn't stick.
+                          </p>
+                        ) : (
+                          <Input
+                            type="date"
+                            value={editFieldUpdates.subscriptionStartDate || ""}
+                            onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, subscriptionStartDate: e.target.value }))}
+                          />
+                        )}
+                        {editFieldUpdates.subscriptionStartDate !== toInputDate(editingSub.subscriptionStartDate) &&
+                          editingSub.status === "active" && (
+                            <p className="text-xs text-amber-600 mt-1">
+                              "Meal Start Date" will update immediately. "Est. End Date" is based on today's remaining
+                              meal counts, not this date, so it won't shift just from this change alone.
+                            </p>
+                          )}
+                      </div>
+                    </>
                   )}
-              </div>
-              <div>
-                <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
-                <Input
-                  type="select"
-                  value={editFieldUpdates.mealType || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, mealType: e.target.value }))}
-                  options={MEAL_TYPES}
-                />
-              </div>
-              <div>
-                <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
-                <Input
-                  type="select"
-                  value={editFieldUpdates.carbType || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, carbType: e.target.value }))}
-                  options={CARB_TYPES}
-                />
-              </div>
-              <div>
-                <FieldLabel label="Allergy" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
-                <Input
-                  type="text"
-                  value={editFieldUpdates.allergy || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, allergy: e.target.value }))}
-                  placeholder="None"
-                />
-              </div>
-              <div>
-                <FieldLabel label="Payment Method" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
-                <Input
-                  type="select"
-                  value={editFieldUpdates.paymentMethod || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentMethod: e.target.value }))}
-                  placeholder="No charge / none recorded"
-                  options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
-                />
-              </div>
-              <div>
-                <FieldLabel label="Payment Reference" help="The transaction ID, cheque number or other payment reference, kept for your records." />
-                <Input
-                  type="text"
-                  value={editFieldUpdates.paymentId || ""}
-                  onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentId: e.target.value }))}
-                  placeholder="e.g. UPI transaction ID, cheque number, etc."
-                />
-              </div>
 
-              <hr />
+                  {editSection === "meals" && (
+                    <>
+                      <div className="flex gap-2 items-start p-3 text-sm text-green-800 bg-green-50 rounded-lg border border-green-100">
+                        <span>
+                          Use + or − to adjust meals. Changes apply straight away. Adding lunch after 10:30 AM or
+                          dinner after 4:00 PM puts those meals into the Next Day count instead of today's.
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {MEAL_COUNT_FIELDS.map(({ key, label }) => {
+                          const change = Number(editMealDeltas[key]) || 0;
+                          return (
+                            <div key={key} className="p-4 bg-white rounded-xl border border-gray-200">
+                              <p className="text-sm font-semibold text-gray-900">{label}</p>
+                              <p className="text-xs text-gray-500">Currently {editingSub[key] || 0}</p>
+                              <div className="flex gap-3 justify-between items-center mt-3">
+                                <button
+                                  type="button"
+                                  onClick={() => adjustMealDelta(key, -1)}
+                                  className="flex justify-center items-center w-9 h-9 rounded-full border border-gray-300 hover:bg-gray-100"
+                                >
+                                  <Minus className="w-4 h-4" />
+                                </button>
+                                <span className={`text-lg font-bold ${change > 0 ? "text-green-700" : change < 0 ? "text-red-600" : "text-gray-900"}`}>
+                                  {change > 0 ? `+${change}` : change}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => adjustMealDelta(key, 1)}
+                                  className="flex justify-center items-center w-9 h-9 rounded-full border border-gray-300 hover:bg-gray-100"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Total change: {Object.values(editMealDeltas).reduce((sum, value) => sum + (Number(value) || 0), 0)} meal(s)
+                      </p>
+                    </>
+                  )}
 
-              <div>
-                <FieldLabel label="Adjust Meal Counts (+ to add, - to subtract)" help="Type a positive number to add meals or a negative number to remove them. Changes apply straight away and no count goes below zero. Adding lunch after 10:30 AM or dinner after 4:00 PM puts those meals into the Next Day count instead of today's." />
-                <div className="grid grid-cols-2 gap-3">
-                  {MEAL_COUNT_FIELDS.map(({ key, label }) => (
-                    <div key={key}>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        {label} (current: {editingSub[key] || 0})
-                      </label>
-                      <Input
-                        type="number"
-                        value={editMealDeltas[key]}
-                        onChange={(e) =>
-                          setEditMealDeltas((prev) => ({ ...prev, [key]: e.target.value }))
-                        }
-                      />
+                  {editSection === "preferences" && (
+                    <>
+                      <div>
+                        <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
+                        <div className="flex flex-wrap gap-2">
+                          {MEAL_TYPES.map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => setEditFieldUpdates((prev) => ({ ...prev, mealType: opt.value }))}
+                              className={`px-4 py-2 text-sm font-semibold rounded-full border ${
+                                editFieldUpdates.mealType === opt.value
+                                  ? "bg-theme-color-1 text-white border-theme-color-1"
+                                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
+                        <Input
+                          type="select"
+                          value={editFieldUpdates.carbType || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, carbType: e.target.value }))}
+                          options={CARB_TYPES}
+                        />
+                      </div>
+                      <div>
+                        <FieldLabel label="Allergy" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
+                        <Input
+                          type="text"
+                          value={editFieldUpdates.allergy || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, allergy: e.target.value }))}
+                          placeholder="None"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {editSection === "payment" && (
+                    <>
+                      <div>
+                        <FieldLabel label="Payment Method" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
+                        <Input
+                          type="select"
+                          value={editFieldUpdates.paymentMethod || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                          placeholder="No charge / none recorded"
+                          options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+                        />
+                      </div>
+                      <div>
+                        <FieldLabel label="Payment Reference" help="The transaction ID, cheque number or other payment reference, kept for your records." />
+                        <Input
+                          type="text"
+                          value={editFieldUpdates.paymentId || ""}
+                          onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, paymentId: e.target.value }))}
+                          placeholder="e.g. UPI transaction ID, cheque number, etc."
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <aside className="p-4 space-y-3 h-fit bg-green-50 rounded-xl border border-green-100">
+                  <p className="text-sm font-bold text-gray-900">Current Plan Summary</p>
+                  {editSummaryRows.map(([label, value]) => (
+                    <div key={label} className="flex gap-2 justify-between text-sm">
+                      <span className="text-gray-500">{label}</span>
+                      <span className="font-medium text-right text-gray-900 break-words">{value}</span>
                     </div>
                   ))}
-                </div>
+                </aside>
               </div>
 
               <div>
