@@ -3,6 +3,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { useManageSubscriptions } from "./useManageSubscriptions";
+import { FieldLabel } from "./FieldLabel";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
@@ -644,7 +645,7 @@ export const ManageSubscriptions = () => {
           <div className="space-y-4">
             {createError && <p className="text-sm text-red-600">{createError}</p>}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+              <FieldLabel label="Plan" help="The plan the customer is buying: Trial Meal Pack, Weekly Plan or Monthly Plan." />
               <Input
                 type="select"
                 value={createForm.plan}
@@ -654,7 +655,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Meals</label>
+              <FieldLabel label="Total Meals" help="How many meals are in this plan in total. If the plan covers both lunch and dinner, the meals are split equally between the two." />
               <Input
                 type="number"
                 value={createForm.totalMeals}
@@ -663,7 +664,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Lunch / Dinner</label>
+              <FieldLabel label="Lunch / Dinner" help="Which meals the plan covers. Only Lunch or Only Dinner gives one meal a day. Both gives lunch and dinner. If the customer already has an active plan for the same meal, this plan waits in the queue and starts on its own when that one runs out." />
               <Input
                 type="select"
                 value={createForm.lunchDinner}
@@ -673,7 +674,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Meal Type (Diet)</label>
+              <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
               <Input
                 type="select"
                 value={createForm.mealType}
@@ -683,7 +684,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Carb Type</label>
+              <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
               <Input
                 type="select"
                 value={createForm.carbType}
@@ -699,7 +700,7 @@ export const ManageSubscriptions = () => {
               </p>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Start Date</label>
+                <FieldLabel label="Subscription Start Date" help="The first day the plan starts. If you pick today and the lunch (10:30 AM) or dinner (4:00 PM) cutoff has already passed, that meal moves to the next day. This field is hidden when the plan will queue, because its start date is set automatically when it begins." />
                 <Input
                   type="date"
                   value={createForm.subscriptionStartDate}
@@ -708,7 +709,7 @@ export const ManageSubscriptions = () => {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Allergy (optional)</label>
+              <FieldLabel label="Allergy (optional)" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
               <Input
                 type="text"
                 value={createForm.allergy}
@@ -717,7 +718,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method (optional)</label>
+              <FieldLabel label="Payment Method (optional)" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
               <Input
                 type="select"
                 value={createForm.paymentMethod}
@@ -727,7 +728,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Reference (optional)</label>
+              <FieldLabel label="Payment Reference (optional)" help="The transaction ID, cheque number or other payment reference, kept for your records." />
               <Input
                 type="text"
                 value={createForm.paymentId}
@@ -736,7 +737,7 @@ export const ManageSubscriptions = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason (required)</label>
+              <FieldLabel label="Reason (required)" help="Why this subscription is being added by hand. It is saved in the Audit Log with your name." />
               <textarea
                 value={createForm.reason}
                 onChange={(e) => handleCreateChange("reason", e.target.value)}
@@ -768,7 +769,7 @@ export const ManageSubscriptions = () => {
               {editError && <p className="text-sm text-red-600">{editError}</p>}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+                <FieldLabel label="Plan" help="Changes the plan name shown on this subscription. It does not change the meal counts." />
                 <Input
                   type="select"
                   value={editFieldUpdates.plan || ""}
@@ -777,7 +778,7 @@ export const ManageSubscriptions = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <FieldLabel label="Status" help="Active: meals are delivered from the remaining counts. Queued: waits for the current plan to finish. Completed or Cancelled: ends the plan. If it was active, its remaining meals are set to zero and any queued plan for this customer starts at the next scheduled check (10:45 AM or 4:45 PM, Monday to Saturday). Changing it back does not restore those meals. Use Adjust Meal Counts for that." />
                 <Input
                   type="select"
                   value={editFieldUpdates.status || ""}
@@ -794,7 +795,7 @@ export const ManageSubscriptions = () => {
                   )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <FieldLabel label="Start Date" help="The day the plan starts. The change applies straight away. Est. End Date is worked out from the remaining meal counts, so it does not move just because this date changed. This is locked on a queued plan because its start date is set automatically." />
                 {editingSub.status === "queued" ? (
                   <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
                     📅 Start date: automatic — this plan is queued, so it'll be set to whatever date it actually
@@ -816,7 +817,7 @@ export const ManageSubscriptions = () => {
                   )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Meal Type (Diet)</label>
+                <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
                 <Input
                   type="select"
                   value={editFieldUpdates.mealType || ""}
@@ -825,7 +826,7 @@ export const ManageSubscriptions = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Carb Type</label>
+                <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
                 <Input
                   type="select"
                   value={editFieldUpdates.carbType || ""}
@@ -834,7 +835,7 @@ export const ManageSubscriptions = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Allergy</label>
+                <FieldLabel label="Allergy" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
                 <Input
                   type="text"
                   value={editFieldUpdates.allergy || ""}
@@ -843,7 +844,7 @@ export const ManageSubscriptions = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <FieldLabel label="Payment Method" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
                 <Input
                   type="select"
                   value={editFieldUpdates.paymentMethod || ""}
@@ -853,7 +854,7 @@ export const ManageSubscriptions = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Reference</label>
+                <FieldLabel label="Payment Reference" help="The transaction ID, cheque number or other payment reference, kept for your records." />
                 <Input
                   type="text"
                   value={editFieldUpdates.paymentId || ""}
@@ -865,7 +866,7 @@ export const ManageSubscriptions = () => {
               <hr />
 
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Adjust Meal Counts (+ to add, - to subtract)</p>
+                <FieldLabel label="Adjust Meal Counts (+ to add, - to subtract)" help="Type a positive number to add meals or a negative number to remove them. Changes apply straight away and no count goes below zero. Adding lunch after 10:30 AM or dinner after 4:00 PM puts those meals into the Next Day count instead of today's." />
                 <div className="grid grid-cols-2 gap-3">
                   {MEAL_COUNT_FIELDS.map(({ key, label }) => (
                     <div key={key}>
@@ -885,7 +886,7 @@ export const ManageSubscriptions = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reason (required)</label>
+                <FieldLabel label="Reason (required)" help="Why this change is being made. It is saved in the Audit Log with your name, along with the values before and after the change." />
                 <textarea
                   value={editReason}
                   onChange={(e) => setEditReason(e.target.value)}
