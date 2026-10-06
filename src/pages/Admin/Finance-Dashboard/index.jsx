@@ -338,7 +338,7 @@ export const FinanceDashboardContent = () => {
                         />
                       </ChartCard>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <ChartCard title="Revenue by Plan">
                         <PieChart data={planRevenueData} title="Revenue by plan" valueFormatter={formatINR} />
                       </ChartCard>
