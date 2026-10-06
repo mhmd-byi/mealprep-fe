@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import "./App.css";
 import { Helmet } from "react-helmet";
+import { Toaster } from "sonner";
 
 function App() {
   const getComponent = (component) => {
@@ -13,6 +14,7 @@ function App() {
       <Helmet>
         <title> Mealprep | Prepare Your Desire Meals </title>
       </Helmet>
+      <Toaster position="top-center" richColors closeButton />
       <BrowserRouter>
         <Routes>
           {routes.map((route, index) => (

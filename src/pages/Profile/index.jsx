@@ -8,7 +8,6 @@ import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Edit } from "@mui/icons-material";
 import { Helmet } from "react-helmet";
 import { Loader } from "../../components";
-import { Toaster } from "sonner";
 
 const Profile = () => {
   const { userDetails, getInitials, setUserDetails } = useDashboard();
@@ -178,7 +177,6 @@ const Profile = () => {
           </div>
         </div>
       </DashboardLayoutComponent>
-      <Toaster />
     </div>
   );
 };
