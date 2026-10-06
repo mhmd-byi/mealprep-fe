@@ -19,6 +19,14 @@ import {
   UserPlus,
   RotateCcw,
   SlidersHorizontal,
+  CreditCard,
+  Clock,
+  Package,
+  Droplets,
+  Sun,
+  History,
+  CalendarDays,
+  Utensils,
 } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
@@ -69,6 +77,45 @@ const selectClass =
 
 const outlineButtonClass =
   "flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-white rounded-lg border shadow-sm transition-colors text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white";
+
+const DetailRow = ({ label, children }) => (
+  <div>
+    <p className="text-xs text-gray-500">{label}</p>
+    <div className="font-semibold text-gray-900 break-words">{children}</div>
+  </div>
+);
+
+const SubscriptionField = ({ icon: Icon, label, children }) => (
+  <div className="flex gap-3 items-center">
+    <Icon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+    <span className="w-24 text-sm text-gray-500 flex-shrink-0">{label}</span>
+    <div className="text-sm font-semibold text-gray-900">{children}</div>
+  </div>
+);
+
+const DayBalanceCard = ({ icon: Icon, tone, label, lunch, dinner }) => (
+  <div className="flex gap-4 items-center p-4 bg-white rounded-xl border border-gray-200">
+    <div className={`flex flex-shrink-0 justify-center items-center w-11 h-11 rounded-full ${tone}`}>
+      <Icon className="w-5 h-5" />
+    </div>
+    <p className="w-20 font-bold text-gray-900">{label}</p>
+    <div className="flex flex-1 divide-x divide-gray-200 text-center">
+      <div className="flex-1 px-4">
+        <p className="text-xs text-gray-500">Lunch</p>
+        <p className="text-xl font-bold text-theme-color-1">{lunch}</p>
+      </div>
+      <div className="flex-1 px-4">
+        <p className="text-xs text-gray-500">Dinner</p>
+        <p className="text-xl font-bold text-orange-600">{dinner}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const MEAL_TYPE_LABELS = { veg: "Veg", "non-veg": "Non-Veg", both: "Both (Flexible)" };
+
+const capitalizeWords = (value) =>
+  value ? value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("-") : "—";
 
 export const AllRegisteredUsers = () => {
   const navigate = useNavigate();
@@ -265,6 +312,19 @@ export const AllRegisteredUsers = () => {
   };
 
   const pageTitle = planFilter ? `${planFilter} Plan Subscribers` : "All Registered Users";
+
+  const detailLatestSub = selectedUser ? getLatestSub(selectedUser) : null;
+  const detailStatus = selectedUser ? getStatus(selectedUser) : "No Plan";
+  const detailLunchLeft = (selectedUser?.mealCounts?.lunchMeals || 0) + (selectedUser?.mealCounts?.nextDayLunchMeals || 0);
+  const detailDinnerLeft = (selectedUser?.mealCounts?.dinnerMeals || 0) + (selectedUser?.mealCounts?.nextDayDinnerMeals || 0);
+  const detailToday = { lunch: selectedUser?.mealCounts?.lunchMeals || 0, dinner: selectedUser?.mealCounts?.dinnerMeals || 0 };
+  const detailUpcoming = { lunch: selectedUser?.mealCounts?.nextDayLunchMeals || 0, dinner: selectedUser?.mealCounts?.nextDayDinnerMeals || 0 };
+  const detailRegistered = selectedUser
+    ? (selectedUser.createdAt || selectedUser.created_date)?.split("T")[0].split("-").reverse().join("-") || "N/A"
+    : "";
+  const detailInitials = selectedUser
+    ? `${selectedUser.firstName?.[0] || ""}${selectedUser.lastName?.[0] || ""}`.toUpperCase()
+    : "";
 
   return (
     <>
@@ -647,45 +707,119 @@ export const AllRegisteredUsers = () => {
         isOpen={!!selectedUser}
         onClose={() => setSelectedUser(null)}
         title="User Details"
+        maxWidthClass="max-w-3xl"
         content={
           selectedUser && (
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 pb-4 border-b">
-                <div>
-                  <p className="text-gray-500">Name</p>
-                  <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
+            <div className="space-y-6 text-sm">
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="flex flex-wrap gap-4 justify-between items-start">
+                  <div className="flex gap-4 items-center">
+                    <div className="flex flex-shrink-0 justify-center items-center w-14 h-14 text-lg font-bold text-green-800 bg-green-100 rounded-full">
+                      {detailInitials}
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-gray-900">{selectedUser.firstName} {selectedUser.lastName}</p>
+                      <p className="text-gray-500">Customer</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${STATUS_STYLES[detailStatus]}`}>
+                      {detailStatus === "Active" ? "Active User" : "Inactive User"}
+                    </span>
+                    <p className="mt-1 text-xs text-gray-500">Registered on {detailRegistered}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-500">Email</p>
-                  <p className="font-semibold">{selectedUser.email}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Mobile</p>
-                  <p className="font-semibold">{selectedUser.mobile}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Registered Date</p>
-                  <p className="font-semibold">{(selectedUser.createdAt || selectedUser.created_date)?.split("T")[0].split("-").reverse().join("-") || "N/A"}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-gray-500">Address</p>
-                  <p className="font-semibold">{selectedUser.postalAddress}</p>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center p-3 mb-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-gray-500">Meal Counts Left</p>
-                  <p className="text-lg font-bold text-theme-color-1">
-                    Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)},
-                    Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
-                  </p>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-3 mt-4 sm:grid-cols-2">
+                  <DetailRow label="Email">{selectedUser.email}</DetailRow>
+                  <DetailRow label="Mobile">{selectedUser.mobile}</DetailRow>
+                  <div className="sm:col-span-2">
+                    <DetailRow label="Address">{selectedUser.postalAddress}</DetailRow>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <h3 className="mb-2 text-lg font-bold">Subscription History</h3>
-                <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
+              <section>
+                <p className="text-base font-bold text-gray-900">Meal Balance</p>
+                <p className="mb-3 text-xs text-gray-500">Remaining meal counts across active plans.</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="p-4 bg-green-50 rounded-xl border border-green-100">
+                    <p className="text-xs font-semibold text-theme-color-1">Lunch</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {detailLunchLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
+                    </p>
+                  </div>
+                  <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                    <p className="text-xs font-semibold text-orange-700">Dinner</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {detailDinnerLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <section>
+                <div className="flex gap-3 items-center">
+                  <CreditCard className="w-5 h-5 text-gray-700" />
+                  <div>
+                    <p className="text-base font-bold text-gray-900">Subscription</p>
+                    <p className="text-xs text-gray-500">Current plan and preferences.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 p-5 mt-3 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
+                  <div className="space-y-4">
+                    <SubscriptionField icon={Package} label="Plan">{detailLatestSub?.plan || "No active plan"}</SubscriptionField>
+                    <SubscriptionField icon={Clock} label="Status">
+                      {detailLatestSub ? (
+                        <span
+                          className={`flex gap-1.5 items-center w-fit px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                            detailLatestSub.status === "active" ? "bg-green-50 text-green-700" :
+                            detailLatestSub.status === "queued" ? "bg-amber-50 text-amber-700" :
+                            detailLatestSub.status === "cancelled" ? "bg-red-50 text-red-700" :
+                            "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                          {detailLatestSub.status.charAt(0).toUpperCase() + detailLatestSub.status.slice(1)}
+                        </span>
+                      ) : "—"}
+                    </SubscriptionField>
+                    <SubscriptionField icon={CalendarDays} label="Start Date">
+                      {detailLatestSub?.subscriptionStartDate
+                        ? new Date(detailLatestSub.subscriptionStartDate).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })
+                        : "N/A"}
+                    </SubscriptionField>
+                  </div>
+                  <div className="space-y-4">
+                    <SubscriptionField icon={CalendarDays} label="End Date">
+                      {detailLatestSub ? getSubscriptionEndLabel(detailLatestSub) : "—"}
+                    </SubscriptionField>
+                    <SubscriptionField icon={Utensils} label="Meal Type">
+                      {MEAL_TYPE_LABELS[detailLatestSub?.mealType] || "—"}
+                    </SubscriptionField>
+                    <SubscriptionField icon={Droplets} label="Carb Preference">
+                      {capitalizeWords(detailLatestSub?.carbType)}
+                    </SubscriptionField>
+                  </div>
+                </div>
+              </section>
+
+              <section>
+                <div className="flex gap-3 items-center">
+                  <CalendarDays className="w-5 h-5 text-gray-700" />
+                  <div>
+                    <p className="text-base font-bold text-gray-900">Meal Balance by Day</p>
+                    <p className="text-xs text-gray-500">Today's usage and upcoming meal allocation.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 mt-3 sm:grid-cols-2">
+                  <DayBalanceCard icon={Sun} tone="bg-orange-50 text-orange-500" label="Today" lunch={detailToday.lunch} dinner={detailToday.dinner} />
+                  <DayBalanceCard icon={CalendarDays} tone="bg-green-50 text-theme-color-1" label="Upcoming" lunch={detailUpcoming.lunch} dinner={detailUpcoming.dinner} />
+                </div>
+              </section>
+
+              <section>
+                <p className="mb-3 text-base font-bold text-gray-900">Subscription History</p>
+                <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-2">
                   {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
                     [...selectedUser.subscriptions].reverse().map((sub, i) => (
                       <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
@@ -728,8 +862,30 @@ export const AllRegisteredUsers = () => {
                     <p className="py-4 text-center text-gray-500">No subscription history found.</p>
                   )}
                 </div>
-              </div>
+              </section>
             </div>
+          )
+        }
+        footerLeft={
+          selectedUser && (
+            <>
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard/manage-subscriptions")}
+                className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit User
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard/user-meal-tracking", { state: { user: selectedUser } })}
+                className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50"
+              >
+                <History className="w-4 h-4" />
+                View Meal History
+              </button>
+            </>
           )
         }
         buttons={[

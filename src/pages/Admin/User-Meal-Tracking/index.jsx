@@ -3,8 +3,10 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import { useUserMealTracking } from "./useUserMealTracking";
 import { ACTIVITY_CATEGORY_LABELS, ACTIVITY_CATEGORY_COLORS, ACTIVITY_CATEGORIES } from "../../../activityCategories";
+import { useLocation } from "react-router-dom";
 
 export const UserMealTracking = () => {
+  const location = useLocation();
   const [searchName, setSearchName] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -78,6 +80,10 @@ export const UserMealTracking = () => {
     setShowSuggestions(false);
     searchUserMealTracking(user._id);
   };
+
+  useEffect(() => {
+    if (location.state?.user) handleSuggestionClick(location.state.user);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();

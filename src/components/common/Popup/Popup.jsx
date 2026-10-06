@@ -1,6 +1,6 @@
 import React from "react";
 
-const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-w-2xl" }) => {
+const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-w-2xl", footerLeft = null }) => {
   if (!isOpen) {
     return null;
   }
@@ -20,16 +20,19 @@ const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-
           </button>
         </div>
         <div className="mb-4 overflow-y-auto pr-2 flex-grow">{content}</div>
-        <div className="flex justify-end flex-none border-t pt-4">
-          {buttons.map((button, index) => (
-            <button
-              key={index}
-              onClick={button.onClick}
-              className={`${button.className} rounded-md px-4 py-2 mr-2`}
-            >
-              {button.label}
-            </button>
-          ))}
+        <div className="flex justify-between items-center flex-none border-t pt-4">
+          <div className="flex flex-wrap gap-2">{footerLeft}</div>
+          <div className="flex ml-auto">
+            {buttons.map((button, index) => (
+              <button
+                key={index}
+                onClick={button.onClick}
+                className={`${button.className} rounded-md px-4 py-2 mr-2`}
+              >
+                {button.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
