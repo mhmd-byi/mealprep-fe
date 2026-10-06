@@ -66,12 +66,11 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
             </div>
           </div>
 
+          {/*
           {showEndDateFilter && (
             <>
-              {/* Divider */}
               <hr className="border-gray-200" />
 
-              {/* Est. End Date Filter */}
               <div className="space-y-2">
                 <label className="text-sm text-gray-700 font-bold">Est. End Date</label>
                 <div className="flex gap-2">
@@ -106,6 +105,7 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
               </div>
             </>
           )}
+          */}
 
         </div>
       }
