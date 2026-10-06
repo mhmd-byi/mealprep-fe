@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import axios from "axios";
 import { ACTIVITY_CATEGORY_LABELS, ACTIVITY_CATEGORY_COLORS, ACTIVITY_CATEGORIES } from "../../activityCategories";
 
+const ACTIVITY_DESTINATIONS = {
+  subscription: "/dashboard/my-billing",
+  account: "/dashboard/profile",
+  cancellation: "/dashboard/cancel-request",
+  customisation: "/dashboard/customize-your-meal",
+};
+
 export const MealTracking = () => {
 
+  const navigate = useNavigate();
   const userId = sessionStorage.getItem("userId");
   const [isLoading, setIsLoading] = useState(true);
   const [activityRecords, setActivityRecords] = useState([]);
@@ -35,6 +44,8 @@ export const MealTracking = () => {
   }
 
   const categoryOf = (record) => record.category || "other";
+
+  const destinationOf = (record) => ACTIVITY_DESTINATIONS[categoryOf(record)];
 
   const filteredRecords = categoryFilter === "All"
     ? activityRecords
@@ -98,7 +109,8 @@ export const MealTracking = () => {
                       {filteredRecords.map((record, index) => (
                         <tr
                           key={index}
-                          className="hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row"
+                          onClick={() => destinationOf(record) && navigate(destinationOf(record))}
+                          className={`hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row ${destinationOf(record) ? "cursor-pointer" : ""}`}
                         >
                           {/* Mobile View - Card-like Layout */}
                           <td className="md:hidden p-4">
