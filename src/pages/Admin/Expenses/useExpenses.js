@@ -112,6 +112,7 @@ export const useExpenses = () => {
 
   const refreshCategories = () => {
     fetchCategories();
+    fetchExpenses();
     fetchSummary();
   };
 
