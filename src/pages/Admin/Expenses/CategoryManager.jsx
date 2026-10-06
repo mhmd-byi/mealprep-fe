@@ -42,6 +42,7 @@ const SubcategoryRow = ({ categoryId, subcategory, onRename, onDelete }) => {
         disabled={isSaving}
         onChange={(e) => setName(e.target.value)}
         onBlur={handleBlur}
+        onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
         className="text-xs w-24 bg-transparent focus:outline-none"
       />
       <button
@@ -139,6 +140,7 @@ const CategoryRow = ({ category, onRename, onDelete, onAddSub, onRenameSub, onDe
           disabled={isSaving}
           onChange={(e) => setName(e.target.value)}
           onBlur={() => saveIfChanged(name, color)}
+          onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
           className="flex-1 font-medium bg-transparent focus:outline-none focus:bg-white rounded px-1"
         />
         <button
