@@ -255,6 +255,16 @@ export const FinanceDashboardContent = () => {
                 <p className="text-gray-500 py-8 text-center">Loading dashboard...</p>
               ) : (
                 <>
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Today&apos;s Sales</p>
+                      <p className="text-3xl font-bold mt-1 text-gray-900">{formatINR(data?.todaySales?.revenue)}</p>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {formatCount(data?.todaySales?.subscriptionCount)} subscription(s) bought today
+                    </p>
+                  </div>
+
                   {/* Stat tiles */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <StatTile label="Revenue" value={formatINR(totals?.revenue)} />
