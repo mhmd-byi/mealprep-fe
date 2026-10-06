@@ -166,6 +166,19 @@ export const useManageSubscriptions = () => {
     notifyUsersChanged();
   };
 
+  const closeAccount = async (userId, reason) => {
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_URL}admin/users/${userId}/close-account`,
+      { reason },
+      authHeaders()
+    );
+    await refreshSelectedUser();
+    await fetchAllUsers();
+    queryClient.invalidateQueries({ queryKey: ['users'] });
+    notifyUsersChanged();
+    return response.data;
+  };
+
   return {
     allUsers,
     isLoadingUsers,
@@ -181,6 +194,7 @@ export const useManageSubscriptions = () => {
     createUser,
     createSubscription,
     updateSubscription,
+    closeAccount,
   };
 };
 

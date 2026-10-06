@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
@@ -100,6 +101,7 @@ export const ManageSubscriptions = () => {
     createUser,
     createSubscription,
     updateSubscription,
+    closeAccount,
   } = useManageSubscriptions();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,6 +128,11 @@ export const ManageSubscriptions = () => {
   const [editReason, setEditReason] = useState("");
   const [editError, setEditError] = useState(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  const [isCloseAccountOpen, setIsCloseAccountOpen] = useState(false);
+  const [closeAccountReason, setCloseAccountReason] = useState("");
+  const [closeAccountError, setCloseAccountError] = useState(null);
+  const [isClosingAccount, setIsClosingAccount] = useState(false);
 
   // Whether the plan being created would queue behind an existing active plan
   // for the selected user — if so, whatever Subscription Start Date is picked
@@ -355,6 +362,33 @@ export const ManageSubscriptions = () => {
     }
   };
 
+  const openCloseAccountModal = () => {
+    setCloseAccountReason("");
+    setCloseAccountError(null);
+    setIsCloseAccountOpen(true);
+  };
+
+  const handleCloseAccount = async () => {
+    if (!closeAccountReason.trim()) {
+      setCloseAccountError("A reason is required to close this account.");
+      return;
+    }
+    try {
+      setIsClosingAccount(true);
+      setCloseAccountError(null);
+      const result = await closeAccount(selectedUser._id, closeAccountReason.trim());
+      toast.success(
+        `Account closed: ${result.subscriptionsClosed} plan(s) cancelled, ${result.cancellationRequestsDeleted} cancellation request(s) removed.`
+      );
+      setIsCloseAccountOpen(false);
+    } catch (err) {
+      console.error("Error closing account:", err);
+      setCloseAccountError(err.response?.data?.message || "Failed to close account.");
+    } finally {
+      setIsClosingAccount(false);
+    }
+  };
+
   return (
     <DashboardLayoutComponent>
       <div className="flex flex-col justify-start items-start p-4 w-full sm:p-6 md:p-8">
@@ -449,6 +483,13 @@ export const ManageSubscriptions = () => {
                         className="px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 border-gray-300 text-gray-700 hover:bg-gray-100"
                       >
                         Change User
+                      </button>
+                      <button
+                        type="button"
+                        onClick={openCloseAccountModal}
+                        className="px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                      >
+                        Close Account
                       </button>
                     </div>
                   </div>
@@ -901,6 +942,41 @@ export const ManageSubscriptions = () => {
         buttons={[
           { label: "Cancel", onClick: closeEditModal, className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
           { label: isSavingEdit ? "Saving..." : "Save Changes", onClick: handleEditSave, className: "bg-theme-color-1 text-white hover:bg-black" },
+        ]}
+      />
+
+      <Popup
+        isOpen={isCloseAccountOpen}
+        onClose={() => setIsCloseAccountOpen(false)}
+        title="Close Account"
+        content={
+          selectedUser && (
+            <div className="space-y-4">
+              {closeAccountError && <p className="text-sm text-red-600">{closeAccountError}</p>}
+              <p className="text-sm text-gray-700">
+                This will cancel every active and queued plan for {selectedUser.firstName} {selectedUser.lastName},
+                set their remaining meals to zero, and delete all their cancellation requests.
+              </p>
+              <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
+                It does not issue a refund, so refund separately if needed. Their customer record and payment
+                history are kept, and they can still log in and buy a new plan.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reason (required)</label>
+                <textarea
+                  value={closeAccountReason}
+                  onChange={(e) => setCloseAccountReason(e.target.value)}
+                  rows={2}
+                  placeholder="Why is this account being closed?"
+                  className="block w-full rounded-lg border-0 px-5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+          )
+        }
+        buttons={[
+          { label: "Cancel", onClick: () => setIsCloseAccountOpen(false), className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
+          { label: isClosingAccount ? "Closing..." : "Close Account", onClick: handleCloseAccount, className: "bg-red-600 text-white hover:bg-red-700" },
         ]}
       />
     </DashboardLayoutComponent>
