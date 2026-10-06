@@ -47,6 +47,13 @@ export const buildFinanceReportCSV = (data) => {
   });
   lines.push("");
 
+  lines.push(row(["Meals by Category"]));
+  lines.push(row(["Carb Type", "Meals Sold", "Subscription Count"]));
+  (data.carbBreakdown || []).forEach((c) => {
+    lines.push(row([c.carbType, c.meals, c.count]));
+  });
+  lines.push("");
+
   lines.push(row(["Payment Method Split"]));
   lines.push(row(["Method", "Count"]));
   (data.paymentMethodBreakdown || []).forEach((p) => {

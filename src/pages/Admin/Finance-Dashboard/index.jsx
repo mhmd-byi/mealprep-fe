@@ -28,6 +28,22 @@ const PAYMENT_METHOD_COLORS = {
 };
 const getPaymentMethodColor = (method) => PAYMENT_METHOD_COLORS[method] || "#898781";
 
+const CARB_TYPE_LABELS = {
+  "low-carb-high-protein": "Low Carb High Protein (LCHP)",
+  "high-carb-high-protein": "High Carb High Protein (HCHP)",
+  "keto-meal": "Keto Meal",
+  "balanced-meal": "Balanced Meal",
+  "zero-carb": "Zero Carb Meal",
+};
+const CARB_TYPE_COLORS = {
+  "balanced-meal": "#2a78d6",
+  "low-carb-high-protein": "#1baf7a",
+  "high-carb-high-protein": "#eb6834",
+  "keto-meal": "#4a3aa7",
+  "zero-carb": "#e87ba4",
+};
+const getCarbTypeColor = (carbType) => CARB_TYPE_COLORS[carbType] || "#898781";
+
 const StatTile = ({ label, value, valueClassName = "text-gray-900" }) => (
   <div className="bg-gray-50 rounded-lg p-4">
     <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">{label}</p>
@@ -89,6 +105,7 @@ export const FinanceDashboardContent = () => {
   const totals = data?.totals;
   const planBreakdown = data?.planBreakdown || [];
   const paymentMethodBreakdown = data?.paymentMethodBreakdown || [];
+  const carbBreakdown = data?.carbBreakdown || [];
   const expenseCategoryBreakdown = data?.expenseCategoryBreakdown || [];
   const expenseCategoryTrend = data?.expenseCategoryTrend;
 
@@ -113,6 +130,11 @@ export const FinanceDashboardContent = () => {
     label: p.method,
     value: p.count,
     color: getPaymentMethodColor(p.method),
+  }));
+  const carbMealsData = carbBreakdown.map((c) => ({
+    label: CARB_TYPE_LABELS[c.carbType] || c.carbType,
+    value: c.meals,
+    color: getCarbTypeColor(c.carbType),
   }));
   const expenseCategoryData = expenseCategoryBreakdown.map((c) => ({
     label: c.category,
@@ -305,7 +327,7 @@ export const FinanceDashboardContent = () => {
                         />
                       </ChartCard>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                       <ChartCard title="Revenue by Plan">
                         <PieChart data={planRevenueData} title="Revenue by plan" valueFormatter={formatINR} />
                       </ChartCard>
@@ -314,6 +336,9 @@ export const FinanceDashboardContent = () => {
                       </ChartCard>
                       <ChartCard title="Payment Method Split">
                         <PieChart data={paymentMethodData} title="Payment method split" valueFormatter={formatCount} />
+                      </ChartCard>
+                      <ChartCard title="Meals by Category" subtitle="Meals sold by carb type, from subscriptions bought in this range">
+                        <PieChart data={carbMealsData} title="Meals by category" valueFormatter={formatCount} />
                       </ChartCard>
                     </div>
                   </div>
