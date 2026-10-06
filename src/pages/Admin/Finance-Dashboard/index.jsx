@@ -5,6 +5,7 @@ import { GroupedBarChart } from "./GroupedBarChart";
 import { LineChart } from "./LineChart";
 import { StackedBarChart } from "./StackedBarChart";
 import { PieChart } from "./PieChart";
+import { RazorpayTransactions } from "./RazorpayTransactions";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 
@@ -83,7 +84,7 @@ const GRANULARITY_LABEL = { day: "daily", week: "weekly", month: "monthly" };
 // another page (the admin home dashboard) without nesting a second
 // Header/Sidebar.
 export const FinanceDashboardContent = () => {
-  const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error, refresh } = useFinanceDashboard();
+  const { preset, customRange, activeRange, selectPreset, applyCustomRange, data, isLoading, error, refresh } = useFinanceDashboard();
 
   const [isCustomOpen, setIsCustomOpen] = useState(false);
   const [customStartInput, setCustomStartInput] = useState("");
@@ -360,6 +361,12 @@ export const FinanceDashboardContent = () => {
                       </ChartCard>
                     </div>
                   </div>
+
+                  {/* ── Recent transactions ── */}
+                  <SectionHeading>Recent Transactions</SectionHeading>
+                  <ChartCard title="Razorpay Payments" subtitle="Latest payments in the selected range, straight from Razorpay">
+                    <RazorpayTransactions startDate={activeRange.startDate} endDate={activeRange.endDate} />
+                  </ChartCard>
 
                   <p className="text-xs text-gray-400 mt-6">
                     Revenue is derived from each subscription's plan and meal count at today's prices — not a
