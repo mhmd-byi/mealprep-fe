@@ -127,8 +127,15 @@ export const AllRegisteredUsers = () => {
     return searchMatch && mealCountMatch && presenceMatch && planMatch && endDateMatch;
   });
 
+  const latestSubscriptionTime = (user) => {
+    const times = (user.subscriptions || [])
+      .map((sub) => new Date(sub.createdAt).getTime())
+      .filter((time) => !Number.isNaN(time));
+    return times.length ? Math.max(...times) : 0;
+  };
+
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (!sortConfig.key) return 0;
+    if (!sortConfig.key) return latestSubscriptionTime(b) - latestSubscriptionTime(a);
 
     let aValue, bValue;
     if (sortConfig.key === 'name') {
