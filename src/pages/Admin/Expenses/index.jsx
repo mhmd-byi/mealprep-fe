@@ -119,6 +119,21 @@ export const Expenses = () => {
   const colorByCategory = {};
   categories.forEach((c) => { colorByCategory[c.name] = c.color; });
   const getCategoryColor = (name) => colorByCategory[name] || "#898781";
+  const renderCategoryBadge = (name) => (
+    <span
+      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
+      style={{
+        backgroundColor: `${getCategoryColor(name)}1a`,
+        color: getCategoryColor(name),
+      }}
+    >
+      <span
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ backgroundColor: getCategoryColor(name) }}
+      />
+      {name}
+    </span>
+  );
   const subcategoriesFor = (categoryName) =>
     categories.find((c) => c.name === categoryName)?.subcategories || [];
 
@@ -423,7 +438,8 @@ export const Expenses = () => {
                 {isLoading ? (
                   <p className="text-gray-500 py-4">Loading expenses...</p>
                 ) : expenses.length > 0 ? (
-                  <table className="w-full table-fixed divide-y divide-gray-200">
+                  <>
+                  <table className="hidden md:table print:table w-full table-fixed divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-4 py-3 w-[10%] text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
@@ -442,19 +458,7 @@ export const Expenses = () => {
                             {formatDate(expense.date)}
                           </td>
                           <td className="px-4 py-4 text-sm text-left whitespace-nowrap print:whitespace-normal print:break-words">
-                            <span
-                              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
-                              style={{
-                                backgroundColor: `${getCategoryColor(expense.category)}1a`,
-                                color: getCategoryColor(expense.category),
-                              }}
-                            >
-                              <span
-                                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: getCategoryColor(expense.category) }}
-                              />
-                              {expense.category}
-                            </span>
+                            {renderCategoryBadge(expense.category)}
                           </td>
                           <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-normal break-words">
                             {expense.subcategory || "—"}
@@ -488,6 +492,51 @@ export const Expenses = () => {
                       ))}
                     </tbody>
                   </table>
+                  <div className="md:hidden print:hidden space-y-4">
+                    {expenses.map((expense) => (
+                      <div key={expense._id} className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white">
+                        <div className="flex justify-between items-center pb-2 border-b">
+                          <span className="text-sm text-gray-900">{formatDate(expense.date)}</span>
+                          <span className="text-base font-bold text-gray-900">{formatCurrency(expense.amount)}</span>
+                        </div>
+                        <div className="space-y-2 pt-2">
+                          <div className="flex justify-between items-center gap-3">
+                            <span className="font-medium text-gray-500 flex-shrink-0">Category:</span>
+                            {renderCategoryBadge(expense.category)}
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <span className="font-medium text-gray-500 flex-shrink-0">Subcategory:</span>
+                            <span className="text-gray-900 text-right break-words max-w-[60%]">{expense.subcategory || "—"}</span>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <span className="font-medium text-gray-500 flex-shrink-0">Description:</span>
+                            <span className="text-gray-900 text-right break-words max-w-[60%]">{expense.description || "—"}</span>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <span className="font-medium text-gray-500 flex-shrink-0">Payment:</span>
+                            <span className="text-gray-900 text-right break-words max-w-[60%]">{expense.paymentMethod}</span>
+                          </div>
+                        </div>
+                        <div className="flex gap-4 pt-3 mt-3 border-t text-sm font-medium">
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(expense)}
+                            className="text-theme-color-1 hover:underline"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(expense)}
+                            className="text-red-600 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  </>
                 ) : (
                   <p className="py-4 text-center text-gray-500">No expenses found</p>
                 )}
