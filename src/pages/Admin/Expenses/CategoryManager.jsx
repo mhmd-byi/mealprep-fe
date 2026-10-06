@@ -38,6 +38,7 @@ const SubcategoryRow = ({ categoryId, subcategory, onRename, onDelete }) => {
     <div className="flex items-center gap-1.5 bg-white border rounded-full pl-3 pr-1.5 py-1">
       <input
         value={name}
+        title={name}
         disabled={isSaving}
         onChange={(e) => setName(e.target.value)}
         onBlur={handleBlur}
