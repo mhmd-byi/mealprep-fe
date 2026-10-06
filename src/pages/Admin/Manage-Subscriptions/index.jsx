@@ -118,6 +118,7 @@ export const ManageSubscriptions = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createStep, setCreateStep] = useState(0);
   const [createForm, setCreateForm] = useState(emptyCreateForm);
   const [createError, setCreateError] = useState(null);
   const [isSavingCreate, setIsSavingCreate] = useState(false);
@@ -255,11 +256,52 @@ export const ManageSubscriptions = () => {
   const openCreateModal = () => {
     setCreateForm({ ...emptyCreateForm, subscriptionStartDate: new Date().toISOString().split("T")[0] });
     setCreateError(null);
+    setCreateStep(0);
     setIsCreateOpen(true);
   };
 
   const handleCreateChange = (field, value) =>
     setCreateForm((prev) => ({ ...prev, [field]: value }));
+
+  const getCreateStepError = (step) => {
+    const { plan, subscriptionStartDate, lunchDinner, mealType, carbType, totalMeals, reason } = createForm;
+    if (step === 0 && (!plan || !subscriptionStartDate)) return "Pick a plan and a start date to continue.";
+    if (step === 1 && (!lunchDinner || !mealType || !carbType)) return "Choose meals, diet and carb type to continue.";
+    if (step === 2 && (!totalMeals || Number(totalMeals) <= 0)) return "Enter a positive number of total meals to continue.";
+    if (step === 3 && !reason.trim()) return "A reason is required to create this subscription.";
+    return null;
+  };
+
+  const handleCreateNext = () => {
+    const error = getCreateStepError(createStep);
+    if (error) {
+      setCreateError(error);
+      return;
+    }
+    setCreateError(null);
+    setCreateStep((step) => step + 1);
+  };
+
+  const handleCreateBack = () => {
+    setCreateError(null);
+    setCreateStep((step) => step - 1);
+  };
+
+  const lunchDinnerLabel = LUNCH_DINNER_OPTIONS.find((o) => o.value === createForm.lunchDinner)?.label || "—";
+  const dietLabel = MEAL_TYPES.find((o) => o.value === createForm.mealType)?.label || "—";
+  const carbLabel = CARB_TYPES.find((o) => o.value === createForm.carbType)?.label || "—";
+  const createSummaryRows = [
+    ["Customer", selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "—"],
+    ["Plan", createForm.plan || "—"],
+    ["Total meals", createForm.totalMeals || "—"],
+    ["Lunch / Dinner", lunchDinnerLabel],
+    ["Diet", dietLabel],
+    ["Carb type", carbLabel],
+    ["Start", createWouldOverlap ? "Automatic (will queue)" : formatDate(createForm.subscriptionStartDate)],
+    ["Allergy", createForm.allergy || "None"],
+    ["Payment", createForm.paymentMethod || "No charge"],
+  ];
+  const CREATE_STEP_LABELS = ["Plan", "Meals & Diet", "Pricing & Duration", "Review"];
 
   const handleCreateSave = async () => {
     const { plan, totalMeals, lunchDinner, mealType, carbType, subscriptionStartDate, reason } = createForm;
@@ -682,121 +724,197 @@ export const ManageSubscriptions = () => {
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         title="New Subscription"
+        maxWidthClass="max-w-4xl"
         content={
-          <div className="space-y-4">
-            {createError && <p className="text-sm text-red-600">{createError}</p>}
-            <div>
-              <FieldLabel label="Plan" help="The plan the customer is buying: Trial Meal Pack, Weekly Plan or Monthly Plan." />
-              <Input
-                type="select"
-                value={createForm.plan}
-                onChange={(e) => handleCreateChange("plan", e.target.value)}
-                placeholder="Select plan"
-                options={PLANS.map((p) => ({ value: p, label: p }))}
-              />
-            </div>
-            <div>
-              <FieldLabel label="Total Meals" help="How many meals are in this plan in total. If the plan covers both lunch and dinner, the meals are split equally between the two." />
-              <Input
-                type="number"
-                value={createForm.totalMeals}
-                onChange={(e) => handleCreateChange("totalMeals", e.target.value)}
-                placeholder="e.g. 6"
-              />
-            </div>
-            <div>
-              <FieldLabel label="Lunch / Dinner" help="Which meals the plan covers. Only Lunch or Only Dinner gives one meal a day. Both gives lunch and dinner. If the customer already has an active plan for the same meal, this plan waits in the queue and starts on its own when that one runs out." />
-              <Input
-                type="select"
-                value={createForm.lunchDinner}
-                onChange={(e) => handleCreateChange("lunchDinner", e.target.value)}
-                placeholder="Select"
-                options={LUNCH_DINNER_OPTIONS}
-              />
-            </div>
-            <div>
-              <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
-              <Input
-                type="select"
-                value={createForm.mealType}
-                onChange={(e) => handleCreateChange("mealType", e.target.value)}
-                placeholder="Select"
-                options={MEAL_TYPES}
-              />
-            </div>
-            <div>
-              <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
-              <Input
-                type="select"
-                value={createForm.carbType}
-                onChange={(e) => handleCreateChange("carbType", e.target.value)}
-                placeholder="Select"
-                options={CARB_TYPES}
-              />
-            </div>
-            {createWouldOverlap ? (
-              <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
-                📅 Start date: automatic — this plan overlaps an active plan for this user, so it will queue and
-                activate on its own once the current one finishes. Nothing to pick here.
-              </p>
-            ) : (
-              <div>
-                <FieldLabel label="Subscription Start Date" help="The first day the plan starts. If you pick today and the lunch (10:30 AM) or dinner (4:00 PM) cutoff has already passed, that meal moves to the next day. This field is hidden when the plan will queue, because its start date is set automatically when it begins." />
-                <Input
-                  type="date"
-                  value={createForm.subscriptionStartDate}
-                  onChange={(e) => handleCreateChange("subscriptionStartDate", e.target.value)}
-                />
-              </div>
-            )}
-            <div>
-              <FieldLabel label="Allergy (optional)" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
-              <Input
-                type="text"
-                value={createForm.allergy}
-                onChange={(e) => handleCreateChange("allergy", e.target.value)}
-                placeholder="None"
-              />
-            </div>
-            <div>
-              <FieldLabel label="Payment Method (optional)" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
-              <Input
-                type="select"
-                value={createForm.paymentMethod}
-                onChange={(e) => handleCreateChange("paymentMethod", e.target.value)}
-                placeholder="No charge / leave blank"
-                options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
-              />
-            </div>
-            <div>
-              <FieldLabel label="Payment Reference (optional)" help="The transaction ID, cheque number or other payment reference, kept for your records." />
-              <Input
-                type="text"
-                value={createForm.paymentId}
-                onChange={(e) => handleCreateChange("paymentId", e.target.value)}
-                placeholder="e.g. UPI transaction ID, cheque number, etc."
-              />
-            </div>
-            <div>
-              <FieldLabel label="Reason (required)" help="Why this subscription is being added by hand. It is saved in the Audit Log with your name." />
-              <textarea
-                value={createForm.reason}
-                onChange={(e) => handleCreateChange("reason", e.target.value)}
-                rows={2}
-                placeholder="Why is this subscription being created manually?"
-                className="block w-full rounded-lg border-0 px-5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 sm:text-sm sm:leading-6"
-              />
-            </div>
-            <p className="text-xs text-gray-500">
-              Active-vs-queued is decided automatically, same rule as checkout: this only queues if it shares a
-              meal-type track (lunch/dinner) with a plan already active for this user.
+          <div className="space-y-5">
+            <p className="text-sm text-gray-500">
+              Creating for <span className="font-semibold text-gray-900">{selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "—"}</span>
             </p>
+
+            <div className="flex gap-2 items-center">
+              {CREATE_STEP_LABELS.map((label, index) => (
+                <div key={label} className="flex flex-1 gap-2 items-center min-w-0">
+                  <div className={`flex flex-shrink-0 justify-center items-center w-7 h-7 rounded-full text-xs font-bold ${index <= createStep ? "bg-theme-color-1 text-white" : "bg-gray-200 text-gray-500"}`}>
+                    {index + 1}
+                  </div>
+                  <span className={`text-xs font-semibold truncate ${index === createStep ? "text-gray-900" : "text-gray-500"}`}>{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {createError && <p className="text-sm text-red-600">{createError}</p>}
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-4 md:col-span-2">
+                {createStep === 0 && (
+                  <>
+                    <div>
+                      <FieldLabel label="Plan" help="The plan the customer is buying: Trial Meal Pack, Weekly Plan or Monthly Plan." />
+                      <Input
+                        type="select"
+                        value={createForm.plan}
+                        onChange={(e) => handleCreateChange("plan", e.target.value)}
+                        placeholder="Select plan"
+                        options={PLANS.map((p) => ({ value: p, label: p }))}
+                      />
+                    </div>
+                    {createWouldOverlap ? (
+                      <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5">
+                        📅 Start date: automatic — this plan overlaps an active plan for this user, so it will queue and
+                        activate on its own once the current one finishes. Nothing to pick here.
+                      </p>
+                    ) : (
+                      <div>
+                        <FieldLabel label="Subscription Start Date" help="The first day the plan starts. If you pick today and the lunch (10:30 AM) or dinner (4:00 PM) cutoff has already passed, that meal moves to the next day. This field is hidden when the plan will queue, because its start date is set automatically when it begins." />
+                        <Input
+                          type="date"
+                          value={createForm.subscriptionStartDate}
+                          onChange={(e) => handleCreateChange("subscriptionStartDate", e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {createStep === 1 && (
+                  <>
+                    <div>
+                      <FieldLabel label="Lunch / Dinner" help="Which meals the plan covers. Only Lunch or Only Dinner gives one meal a day. Both gives lunch and dinner. If the customer already has an active plan for the same meal, this plan waits in the queue and starts on its own when that one runs out." />
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                        {LUNCH_DINNER_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => handleCreateChange("lunchDinner", opt.value)}
+                            className={`p-3 text-left rounded-xl border-2 transition-colors ${
+                              createForm.lunchDinner === opt.value ? "border-theme-color-1 bg-green-50" : "border-gray-200 hover:border-gray-300"
+                            }`}
+                          >
+                            <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
+                            <p className="text-xs text-gray-500">{opt.value === "lunchAndDinner" ? "2 meals a day" : "1 meal a day"}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <FieldLabel label="Meal Type (Diet)" help="The customer's food preference: Veg, Non-Veg, or Both (Flexible). This is about the diet only, not the meal time." />
+                      <div className="flex flex-wrap gap-2">
+                        {MEAL_TYPES.map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => handleCreateChange("mealType", opt.value)}
+                            className={`px-4 py-2 text-sm font-semibold rounded-full border ${
+                              createForm.mealType === opt.value
+                                ? "bg-theme-color-1 text-white border-theme-color-1"
+                                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <FieldLabel label="Carb Type" help="The meal style the customer chose for this plan." />
+                      <Input
+                        type="select"
+                        value={createForm.carbType}
+                        onChange={(e) => handleCreateChange("carbType", e.target.value)}
+                        placeholder="Select"
+                        options={CARB_TYPES}
+                      />
+                    </div>
+                    <div>
+                      <FieldLabel label="Allergy (optional)" help="Any allergy the customer has told us about. Leave blank if there is none. It shows in the Meal Delivery List." />
+                      <Input
+                        type="text"
+                        value={createForm.allergy}
+                        onChange={(e) => handleCreateChange("allergy", e.target.value)}
+                        placeholder="None"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {createStep === 2 && (
+                  <>
+                    <div>
+                      <FieldLabel label="Total Meals" help="How many meals are in this plan in total. If the plan covers both lunch and dinner, the meals are split equally between the two." />
+                      <Input
+                        type="number"
+                        value={createForm.totalMeals}
+                        onChange={(e) => handleCreateChange("totalMeals", e.target.value)}
+                        placeholder="e.g. 6"
+                      />
+                    </div>
+                    <div>
+                      <FieldLabel label="Payment Method (optional)" help="How the customer paid. Leave blank if there was no payment, for example a free or complimentary plan." />
+                      <Input
+                        type="select"
+                        value={createForm.paymentMethod}
+                        onChange={(e) => handleCreateChange("paymentMethod", e.target.value)}
+                        placeholder="No charge / leave blank"
+                        options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+                      />
+                    </div>
+                    <div>
+                      <FieldLabel label="Payment Reference (optional)" help="The transaction ID, cheque number or other payment reference, kept for your records." />
+                      <Input
+                        type="text"
+                        value={createForm.paymentId}
+                        onChange={(e) => handleCreateChange("paymentId", e.target.value)}
+                        placeholder="e.g. UPI transaction ID, cheque number, etc."
+                      />
+                    </div>
+                  </>
+                )}
+
+                {createStep === 3 && (
+                  <>
+                    <div>
+                      <FieldLabel label="Reason (required)" help="Why this subscription is being added by hand. It is saved in the Audit Log with your name." />
+                      <textarea
+                        value={createForm.reason}
+                        onChange={(e) => handleCreateChange("reason", e.target.value)}
+                        rows={3}
+                        placeholder="Why is this subscription being created manually?"
+                        className="block w-full rounded-lg border-0 px-5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Active-vs-queued is decided automatically, same rule as checkout: this only queues if it shares a
+                      meal-type track (lunch/dinner) with a plan already active for this user.
+                    </p>
+                  </>
+                )}
+              </div>
+
+              <aside className="p-4 space-y-3 h-fit bg-green-50 rounded-xl border border-green-100">
+                <p className="text-sm font-bold text-gray-900">Subscription Summary</p>
+                {createSummaryRows.map(([label, value]) => (
+                  <div key={label} className="flex gap-2 justify-between text-sm">
+                    <span className="text-gray-500">{label}</span>
+                    <span className="font-medium text-right text-gray-900 break-words">{value}</span>
+                  </div>
+                ))}
+              </aside>
+            </div>
           </div>
         }
-        buttons={[
-          { label: "Cancel", onClick: () => setIsCreateOpen(false), className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
-          { label: isSavingCreate ? "Saving..." : "Create Subscription", onClick: handleCreateSave, className: "bg-theme-color-1 text-white hover:bg-black" },
-        ]}
+        buttons={
+          createStep === 3
+            ? [
+                { label: "Back", onClick: handleCreateBack, className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
+                { label: isSavingCreate ? "Saving..." : "Create Subscription", onClick: handleCreateSave, className: "bg-theme-color-1 text-white hover:bg-black" },
+              ]
+            : [
+                createStep === 0
+                  ? { label: "Cancel", onClick: () => setIsCreateOpen(false), className: "bg-gray-100 text-gray-700 hover:bg-gray-200" }
+                  : { label: "Back", onClick: handleCreateBack, className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
+                { label: "Next", onClick: handleCreateNext, className: "bg-theme-color-1 text-white hover:bg-black" },
+              ]
+        }
       />
 
       {/* Edit Subscription Modal */}

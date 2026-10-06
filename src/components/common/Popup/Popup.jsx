@@ -1,13 +1,13 @@
 import React from "react";
 
-const Popup = ({ isOpen, onClose, title, content, buttons }) => {
+const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-w-2xl" }) => {
   if (!isOpen) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[100] backdrop-filter backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-fit max-h-[90vh] flex flex-col my-auto">
+      <div className={`bg-white rounded-lg shadow-xl p-6 w-full ${maxWidthClass} h-fit max-h-[90vh] flex flex-col my-auto`}>
         <div className="flex items-center justify-between mb-4 flex-none sticky top-0 bg-white pb-2 border-b">
           <h2 className="text-xl font-bold">{title}</h2>
           <button
