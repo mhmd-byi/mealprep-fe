@@ -109,9 +109,10 @@ export const Expenses = () => {
   // or the picked range when custom start/end dates are used instead.
   const hasDateFilter = !!(filters.startDate && filters.endDate);
   const isCurrentMonthSelected = monthFilter === `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const periodLabel = !monthFilter
-    ? (hasDateFilter ? "Selected Period" : "This Month")
-    : (isCurrentMonthSelected ? "This Month" : "Selected Month");
+  const selectedMonthName = MONTH_OPTIONS.find((m) => m.value === monthFilterMonthPart)?.label;
+  const periodLabel = monthFilter && selectedMonthName
+    ? `${selectedMonthName} ${monthFilterYearPart}`
+    : (hasDateFilter ? "Selected Period" : "This Month");
   const weekLabel = !monthFilter
     ? (hasDateFilter ? "Last 7 Days of Period" : "This Week")
     : (isCurrentMonthSelected ? "This Week" : "Last Week of Month");
