@@ -19,6 +19,7 @@ import {
   Percent,
   Phone,
   Mail,
+  MapPin,
   Pencil,
   Utensils,
   CreditCard,
@@ -471,8 +472,9 @@ export const UserMealTracking = () => {
                       <p className="text-lg font-bold text-gray-900">{userDetail.firstName} {userDetail.lastName}</p>
                       <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${USER_STATUS_STYLES[userStatus]}`}>{userStatus}</span>
                     </div>
-                    <p className="flex gap-1.5 items-center text-sm text-gray-500 truncate"><Mail className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.email}</p>
-                    <p className="flex gap-1.5 items-center text-sm text-gray-500"><Phone className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.mobile}</p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500 truncate"><Mail className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.email || "No email on file"}</p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500"><Phone className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.mobile || "No mobile on file"}</p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500 truncate"><MapPin className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.postalAddress || "No address on file"}</p>
                     <p className="flex gap-1.5 items-center text-xs text-gray-400">
                       <CalendarDays className="w-3.5 h-3.5 flex-shrink-0" />
                       Member since {formatDisplayDate(userDetail.createdAt)} · {latestSub?.plan || "No plan"}
