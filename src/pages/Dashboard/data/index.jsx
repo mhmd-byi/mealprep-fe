@@ -1,15 +1,41 @@
 import { useData } from "./useData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Utensils, Users, Settings2, XCircle, Clock } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 
+const StatCard = ({ icon: Icon, tone, label, value, loading, hint, onClick, valueClassName = "text-gray-900" }) => {
+  const Wrapper = onClick ? "button" : "div";
+  return (
+    <Wrapper
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      className={`p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full ${onClick ? "hover:border-theme-color-1 cursor-pointer" : ""}`}
+    >
+      <div className={`flex justify-center items-center mb-2 w-10 h-10 rounded-xl ${tone}`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</p>
+      {loading ? (
+        <div className="flex items-center py-1">
+          <div className="w-5 h-5 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent"></div>
+        </div>
+      ) : (
+        <p className={`text-2xl font-bold mt-0.5 ${valueClassName}`}>{value}</p>
+      )}
+      {hint && <p className="mt-0.5 text-xs text-gray-400">{hint}</p>}
+    </Wrapper>
+  );
+};
+
 export const Data = () => {
-  const { 
-    allRegisteredUsersCount, 
-    cancelledMealsCount, 
-    mealDeliveryListCountDinner, 
-    mealDeliveryListCountLunch, 
+  const {
+    allRegisteredUsersCount,
+    newUsersThisMonth,
+    cancelledMealsCount,
+    mealDeliveryListCountDinner,
+    mealDeliveryListCountLunch,
     customisationRequestCount,
     endingSoonCount,
     endingSoonUsers,
@@ -19,15 +45,6 @@ export const Data = () => {
     loadingStates
   } = useData();
 
-  const StatValue = ({ value, loading, className = "text-lg text-gray-900" }) => (
-    loading ? (
-      <div className="flex justify-center items-center py-1">
-        <div className="w-5 h-5 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent"></div>
-      </div>
-    ) : (
-      <span className={className}>{value}</span>
-    )
-  );
   const navigate = useNavigate();
   const [showEndingSoonModal, setShowEndingSoonModal] = useState(false);
 
@@ -35,147 +52,84 @@ export const Data = () => {
     navigate(`/dashboard/all-registered-users?plan=${planType}`);
   };
 
+  const deliveredToday = mealDeliveryListCountLunch + mealDeliveryListCountDinner;
+  const activeSubscribers = weeklyCount + monthlyCount + trialCount;
+  const mealsTodayTotal = deliveredToday + cancelledMealsCount;
+  const cancelledPercent = mealsTodayTotal > 0 ? Math.round((cancelledMealsCount / mealsTodayTotal) * 100) : 0;
+
   return (
-    <div className="px-4 my-16 lg:mt-4">
-      <section className="flex justify-center mb-6">
-        <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
-          <p className="text-2xl sm:text-xl">Today's Stats</p>
-        </div>
-      </section>
-      
-      {/* Table view for medium and larger screens */}
-      <section className="hidden flex-col gap-10 justify-center items-center p-8 bg-white rounded-lg border-2 shadow-sm transition-all duration-300 md:flex border-theme-color-1 hover:shadow-md hover:border-theme-color-2">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-          <thead className="text-center bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 font-medium tracking-wider text-gray-500 uppercase text-md">All Registered Users</th>
-              <th className="px-6 py-3 font-medium tracking-wider text-gray-500 uppercase text-md">Delivery count</th>
-              <th className="px-6 py-3 font-medium tracking-wider text-gray-500 uppercase text-md">Customised request</th>
-              <th className="px-6 py-3 font-medium tracking-wider text-gray-500 uppercase text-md">Cancelled request</th>
-              <th className="px-6 py-3 font-medium tracking-wider text-green-600 uppercase text-md">Active Subscriptions</th>
-              <th className="px-6 py-3 font-medium tracking-wider text-red-600 uppercase text-md">Ending Soon (3 Days)</th>
-            </tr>
-          </thead>
-          <tbody className="text-center bg-white divide-y divide-gray-200">
-            <tr>
-              <td className="px-6 py-4 text-lg text-gray-900 whitespace-nowrap">
-                <StatValue value={allRegisteredUsersCount} loading={loadingStates.users} />
-              </td>
-              <td className="px-6 py-4 text-lg text-gray-900 whitespace-nowrap">
-                Lunch: <StatValue value={mealDeliveryListCountLunch} loading={loadingStates.deliveryLunch} /> <br />
-                Dinner: <StatValue value={mealDeliveryListCountDinner} loading={loadingStates.deliveryDinner} />
-              </td>
-              <td className="px-6 py-4 text-lg text-gray-900 whitespace-nowrap">
-                <StatValue value={customisationRequestCount} loading={loadingStates.customisation} />
-              </td>
-              <td className="px-6 py-4 text-lg text-gray-900 whitespace-nowrap">
-                <StatValue value={cancelledMealsCount} loading={loadingStates.cancelled} />
-              </td>
-              <td className="px-6 py-4 text-lg font-bold text-gray-900 whitespace-nowrap">
-                <span 
-                  className="transition-colors duration-200 cursor-pointer hover:text-theme-color-1"
-                  onClick={() => handlePlanClick('Weekly')}
-                >
-                  Weekly: <StatValue value={weeklyCount} loading={loadingStates.subscriptions} className="font-bold" />
-                </span>
-                <br /> 
-                <span 
-                   className="transition-colors duration-200 cursor-pointer hover:text-theme-color-1"
-                   onClick={() => handlePlanClick('Monthly')}
-                >
-                  Monthly: <StatValue value={monthlyCount} loading={loadingStates.subscriptions} className="font-bold" />
-                </span>
-                <br />
-                <span 
-                   className="transition-colors duration-200 cursor-pointer hover:text-theme-color-1"
-                   onClick={() => handlePlanClick('Trial')}
-                >
-                  Trial: <StatValue value={trialCount} loading={loadingStates.subscriptions} className="font-bold" />
-                </span>
-              </td>
-              <td className="px-6 py-4 text-lg font-bold text-red-600 underline whitespace-nowrap cursor-pointer hover:text-red-700" onClick={() => setShowEndingSoonModal(true)}>
-                <StatValue value={endingSoonCount} loading={loadingStates.users} className="font-bold text-red-600 underline" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+    <div className="px-4 pt-6 pb-2 lg:pt-4">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Today's Stats</h2>
+      </div>
 
-      {/* Card view for mobile screens */}
-      <section className="space-y-4 md:hidden">
-        <div className="p-4 bg-white rounded-lg border-2 shadow-sm border-theme-color-1">
-          <h3 className="mb-2 text-sm font-medium text-gray-500 uppercase">All Registered Users</h3>
-          <p className="text-xl font-semibold text-gray-900">
-            <StatValue value={allRegisteredUsersCount} loading={loadingStates.users} className="text-xl font-semibold text-gray-900" />
-          </p>
-        </div>
+      <div className="grid grid-cols-2 gap-4 mb-4 lg:grid-cols-5">
+        <StatCard
+          icon={Utensils}
+          tone="bg-green-50 text-theme-color-1"
+          label="Meals Delivered Today"
+          value={deliveredToday}
+          loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
+          hint={`Lunch: ${mealDeliveryListCountLunch} · Dinner: ${mealDeliveryListCountDinner}`}
+        />
 
-        <div className="p-4 bg-white rounded-lg border-2 shadow-sm border-theme-color-1">
-          <h3 className="mb-2 text-sm font-medium text-gray-500 uppercase">Delivery Count</h3>
-          <div className="space-y-1">
-            <p className="text-gray-900">
-              <span className="font-medium">Lunch:</span> <StatValue value={mealDeliveryListCountLunch} loading={loadingStates.deliveryLunch} />
-            </p>
-            <p className="text-gray-900">
-              <span className="font-medium">Dinner:</span> <StatValue value={mealDeliveryListCountDinner} loading={loadingStates.deliveryDinner} />
-            </p>
-          </div>
-        </div>
+        <StatCard
+          icon={Users}
+          tone="bg-blue-50 text-blue-600"
+          label="Active Subscribers"
+          value={activeSubscribers}
+          loading={loadingStates.subscriptions}
+          hint={`of ${allRegisteredUsersCount} registered`}
+        />
 
-        <div className="p-4 bg-white rounded-lg border-2 border-green-200 shadow-sm">
-          <h3 className="mb-2 text-sm font-medium text-green-700 uppercase">Active Subscriptions</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div 
-              className="transition-opacity cursor-pointer hover:opacity-80"
-              onClick={() => handlePlanClick('Weekly')}
-            >
-              <p className="text-xs text-gray-500">Weekly</p>
-              <p className="text-xl font-bold text-gray-900">
-                <StatValue value={weeklyCount} loading={loadingStates.subscriptions} className="text-xl font-bold text-gray-900" />
-              </p>
-            </div>
-            <div 
-              className="transition-opacity cursor-pointer hover:opacity-80"
-              onClick={() => handlePlanClick('Monthly')}
-            >
-              <p className="text-xs text-gray-500">Monthly</p>
-              <p className="text-xl font-bold text-gray-900">
-                <StatValue value={monthlyCount} loading={loadingStates.subscriptions} className="text-xl font-bold text-gray-900" />
-              </p>
-            </div>
-            <div 
-              className="col-span-2 transition-opacity border-t pt-2 cursor-pointer hover:opacity-80"
-              onClick={() => handlePlanClick('Trial')}
-            >
-              <p className="text-xs text-gray-500">Trial</p>
-              <p className="text-xl font-bold text-gray-900">
-                <StatValue value={trialCount} loading={loadingStates.subscriptions} className="text-xl font-bold text-gray-900" />
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          icon={Settings2}
+          tone="bg-amber-50 text-amber-600"
+          label="Customised Requests Today"
+          value={customisationRequestCount}
+          loading={loadingStates.customisation}
+        />
 
-        <div className="p-4 bg-white rounded-lg border-2 shadow-sm border-theme-color-1">
-          <h3 className="mb-2 text-sm font-medium text-gray-500 uppercase">Customised Request</h3>
-          <p className="text-xl font-semibold text-gray-900">
-            <StatValue value={customisationRequestCount} loading={loadingStates.customisation} className="text-xl font-semibold text-gray-900" />
-          </p>
-        </div>
+        <StatCard
+          icon={XCircle}
+          tone="bg-red-50 text-red-600"
+          label="Meals Cancelled Today"
+          value={cancelledMealsCount}
+          loading={loadingStates.cancelled}
+          hint={`${cancelledPercent}% of today's meals`}
+        />
 
-        <div className="p-4 bg-white rounded-lg border-2 shadow-sm border-theme-color-1">
-          <h3 className="mb-2 text-sm font-medium text-gray-500 uppercase">Cancelled Request</h3>
-          <p className="text-xl font-semibold text-gray-900">
-            <StatValue value={cancelledMealsCount} loading={loadingStates.cancelled} className="text-xl font-semibold text-gray-900" />
-          </p>
-        </div>
+        <StatCard
+          icon={Clock}
+          tone="bg-red-50 text-red-600"
+          label="Ending Soon (3 Days)"
+          value={endingSoonCount}
+          loading={loadingStates.users}
+          valueClassName="text-red-600 underline"
+          onClick={() => setShowEndingSoonModal(true)}
+        />
+      </div>
 
-        <div className="p-4 bg-white rounded-lg border-2 border-red-200 shadow-sm">
-          <h3 className="mb-2 text-sm font-medium text-red-700 uppercase">Subscriptions Ending Soon (3 Days)</h3>
-          <p className="text-xl font-bold text-red-600 underline cursor-pointer" onClick={() => setShowEndingSoonModal(true)}>
-            <StatValue value={endingSoonCount} loading={loadingStates.users} className="text-xl font-bold text-red-600 underline" />
-          </p>
+      <div className="p-4 mb-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <p className="mb-3 text-sm font-semibold text-gray-700">Active Subscribers by Plan</p>
+        <div className="grid grid-cols-3 gap-4">
+          <button type="button" onClick={() => handlePlanClick("Weekly")} className="text-left transition-opacity hover:opacity-80">
+            <p className="text-xs text-gray-500">Weekly</p>
+            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : weeklyCount}</p>
+          </button>
+          <button type="button" onClick={() => handlePlanClick("Monthly")} className="text-left transition-opacity hover:opacity-80">
+            <p className="text-xs text-gray-500">Monthly</p>
+            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : monthlyCount}</p>
+          </button>
+          <button type="button" onClick={() => handlePlanClick("Trial")} className="text-left transition-opacity hover:opacity-80">
+            <p className="text-xs text-gray-500">Trial</p>
+            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : trialCount}</p>
+          </button>
         </div>
-      </section>
+        {!loadingStates.users && newUsersThisMonth > 0 && (
+          <p className="mt-3 text-xs text-gray-400">+{newUsersThisMonth} new registered users this month</p>
+        )}
+      </div>
 
       <RecentActivity />
 
@@ -221,7 +175,7 @@ export const Data = () => {
                               {user.mobile}
                             </td>
                             <td className="px-4 py-3 text-sm font-semibold whitespace-nowrap text-theme-color-1">
-                              Lunch: {(user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0)}, 
+                              Lunch: {(user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0)},
                               Dinner: {(user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0)}
                             </td>
                           </tr>

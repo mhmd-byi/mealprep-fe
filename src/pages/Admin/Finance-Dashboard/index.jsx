@@ -12,12 +12,12 @@ import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 // Same categorical palette used across the app's other charts (Expenses
 // module) — assign fixed slots to the 3 known plans, fall back to the
 // existing muted "Other" gray for anything outside that list.
-const PLAN_COLORS = {
+export const PLAN_COLORS = {
   "Monthly Plan": "#2a78d6",
   "Weekly Plan": "#eb6834",
   "Trial Meal Pack": "#1baf7a",
 };
-const getPlanColor = (plan) => PLAN_COLORS[plan] || "#898781";
+export const getPlanColor = (plan) => PLAN_COLORS[plan] || "#898781";
 
 const PAYMENT_METHOD_COLORS = {
   "Online (Razorpay)": "#2a78d6",
@@ -29,21 +29,21 @@ const PAYMENT_METHOD_COLORS = {
 };
 const getPaymentMethodColor = (method) => PAYMENT_METHOD_COLORS[method] || "#898781";
 
-const CARB_TYPE_LABELS = {
+export const CARB_TYPE_LABELS = {
   "low-carb-high-protein": "Low Carb High Protein (LCHP)",
   "high-carb-high-protein": "High Carb High Protein (HCHP)",
   "keto-meal": "Keto Meal",
   "balanced-meal": "Balanced Meal",
   "zero-carb": "Zero Carb Meal",
 };
-const CARB_TYPE_COLORS = {
+export const CARB_TYPE_COLORS = {
   "balanced-meal": "#2a78d6",
   "low-carb-high-protein": "#1baf7a",
   "high-carb-high-protein": "#eb6834",
   "keto-meal": "#4a3aa7",
   "zero-carb": "#e87ba4",
 };
-const getCarbTypeColor = (carbType) => CARB_TYPE_COLORS[carbType] || "#898781";
+export const getCarbTypeColor = (carbType) => CARB_TYPE_COLORS[carbType] || "#898781";
 
 const StatTile = ({ label, value, valueClassName = "text-gray-900" }) => (
   <div className="bg-gray-50 rounded-lg p-4">

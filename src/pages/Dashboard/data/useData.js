@@ -82,7 +82,13 @@ export const useData = () => {
         url: `${process.env.REACT_APP_API_URL}user`, // This calls getAllUsers which is just User.find({})
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data.users.length;
+      const users = response.data.users;
+      const now = new Date();
+      const newThisMonth = users.filter((u) => {
+        const created = new Date(u.createdAt);
+        return !Number.isNaN(created.getTime()) && created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+      }).length;
+      return { count: users.length, newThisMonth };
     },
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
@@ -157,7 +163,8 @@ export const useData = () => {
   });
 
   return {
-    allRegisteredUsersCount: totalUsersQuery.data || 0,
+    allRegisteredUsersCount: totalUsersQuery.data?.count || 0,
+    newUsersThisMonth: totalUsersQuery.data?.newThisMonth || 0,
     endingSoonCount: usersQuery.data?.endingSoonCount || 0,
     endingSoonUsers: usersQuery.data?.endingSoonUsers || [],
     cancelledMealsCount: cancelledQuery.data || 0,
