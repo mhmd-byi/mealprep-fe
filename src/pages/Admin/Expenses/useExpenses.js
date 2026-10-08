@@ -33,6 +33,9 @@ export const useExpenses = () => {
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
+  const [trendMonths, setTrendMonths] = useState(6);
+  const [monthlyTrend, setMonthlyTrend] = useState([]);
+
   const fetchExpenses = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -77,6 +80,19 @@ export const useExpenses = () => {
     }
   }, [filters.startDate, filters.endDate]);
 
+  const fetchMonthlyTrend = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}expense/monthly-trend`,
+        { ...authHeaders(), params: { months: trendMonths } }
+      );
+      setMonthlyTrend(response.data.series || []);
+    } catch (err) {
+      console.error("Error fetching expense monthly trend:", err);
+      setMonthlyTrend([]);
+    }
+  }, [trendMonths]);
+
   const fetchCategories = useCallback(async () => {
     try {
       setIsLoadingCategories(true);
@@ -104,6 +120,14 @@ export const useExpenses = () => {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchMonthlyTrend();
+  }, [fetchMonthlyTrend]);
+
+  const resetFilters = () => {
+    setFilters({ ...currentMonthToDateRange(), category: "", subcategory: "", paymentMethod: "", search: "" });
+  };
 
   const refreshAll = () => {
     fetchExpenses();
@@ -201,11 +225,15 @@ export const useExpenses = () => {
     error,
     filters,
     setFilters,
+    resetFilters,
     addExpense,
     editExpense,
     removeExpense,
     categories,
     isLoadingCategories,
+    monthlyTrend,
+    trendMonths,
+    setTrendMonths,
     addCategory,
     editCategory,
     removeCategory,
