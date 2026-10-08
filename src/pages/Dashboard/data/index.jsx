@@ -2,6 +2,7 @@ import { useData } from "./useData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Popup from "../../../components/common/Popup/Popup";
+import { RecentActivity } from "./RecentActivity";
 
 export const Data = () => {
   const { 
@@ -175,6 +176,8 @@ export const Data = () => {
           </p>
         </div>
       </section>
+
+      <RecentActivity />
 
       <Popup
         isOpen={showEndingSoonModal}
