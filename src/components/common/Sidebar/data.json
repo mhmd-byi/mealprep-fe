@@ -68,9 +68,23 @@
     "userOnly": true
   },
   {
-    "name": "Add Menu",
+    "name": "Upload Menu",
     "icon": "PlusSquare",
     "path": "/dashboard/add-menu",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
+    "name": "Meal Library",
+    "icon": "BookOpen",
+    "path": "/dashboard/meal-library",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
+    "name": "Meal Categories",
+    "icon": "Tags",
+    "path": "/dashboard/meal-categories",
     "requiresSubscription": false,
     "adminOnly": true
   },
