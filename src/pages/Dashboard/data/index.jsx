@@ -1,30 +1,27 @@
 import { useData } from "./useData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Utensils, Users, Settings2, XCircle, Clock } from "lucide-react";
+import { Users, Settings2, XCircle, Clock, Truck, Crown } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 
-const StatCard = ({ icon: Icon, tone, label, value, loading, hint, onClick, valueClassName = "text-gray-900" }) => {
+const Spinner = () => <div className="w-4 h-4 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent" />;
+
+const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight, valueClassName = "text-gray-900" }) => {
   const Wrapper = onClick ? "button" : "div";
   return (
     <Wrapper
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={`p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full ${onClick ? "hover:border-theme-color-1 cursor-pointer" : ""}`}
+      className={`flex items-center gap-3 p-4 text-left w-full ${highlight ? "bg-red-50" : ""} ${onClick ? "hover:bg-gray-50" : ""}`}
     >
-      <div className={`flex justify-center items-center mb-2 w-10 h-10 rounded-xl ${tone}`}>
+      <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</p>
-      {loading ? (
-        <div className="flex items-center py-1">
-          <div className="w-5 h-5 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent"></div>
-        </div>
-      ) : (
-        <p className={`text-2xl font-bold mt-0.5 ${valueClassName}`}>{value}</p>
-      )}
-      {hint && <p className="mt-0.5 text-xs text-gray-400">{hint}</p>}
+      <div className="min-w-0">
+        <p className={`text-xs font-medium ${highlight ? "text-red-500" : "text-gray-500"}`}>{label}</p>
+        {loading ? <Spinner /> : <div className={`text-xl font-bold ${valueClassName}`}>{value}</div>}
+      </div>
     </Wrapper>
   );
 };
@@ -52,84 +49,93 @@ export const Data = () => {
     navigate(`/dashboard/all-registered-users?plan=${planType}`);
   };
 
-  const deliveredToday = mealDeliveryListCountLunch + mealDeliveryListCountDinner;
-  const activeSubscribers = weeklyCount + monthlyCount + trialCount;
-  const mealsTodayTotal = deliveredToday + cancelledMealsCount;
-  const cancelledPercent = mealsTodayTotal > 0 ? Math.round((cancelledMealsCount / mealsTodayTotal) * 100) : 0;
-
   return (
-    <div className="px-4 pt-6 pb-2 lg:pt-4">
+    <div className="px-4 pt-6 pb-2 text-left lg:pt-4">
       <div className="mb-4">
         <h2 className="text-2xl font-bold text-gray-900">Today's Stats</h2>
+        <p className="text-sm text-gray-500">Overview of your meal prep subscriptions.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4 lg:grid-cols-5">
-        <StatCard
-          icon={Utensils}
-          tone="bg-green-50 text-theme-color-1"
-          label="Meals Delivered Today"
-          value={deliveredToday}
-          loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
-          hint={`Lunch: ${mealDeliveryListCountLunch} · Dinner: ${mealDeliveryListCountDinner}`}
-        />
-
-        <StatCard
+      <div className="grid overflow-hidden grid-cols-2 mb-1 bg-white rounded-2xl border divide-x divide-y divide-gray-100 shadow-sm border-gray-100 sm:grid-cols-3 lg:grid-cols-6 lg:divide-y-0">
+        <StatCell
           icon={Users}
-          tone="bg-blue-50 text-blue-600"
-          label="Active Subscribers"
-          value={activeSubscribers}
-          loading={loadingStates.subscriptions}
-          hint={`of ${allRegisteredUsersCount} registered`}
+          tone="bg-green-50 text-theme-color-1"
+          label="All Registered Users"
+          value={allRegisteredUsersCount}
+          loading={loadingStates.users}
+          onClick={() => navigate("/dashboard/all-registered-users")}
         />
 
-        <StatCard
+        <StatCell
+          icon={Truck}
+          tone="bg-blue-50 text-blue-600"
+          label="Delivery Count"
+          loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
+          value={
+            <>
+              Lunch: {mealDeliveryListCountLunch}
+              <br />
+              Dinner: {mealDeliveryListCountDinner}
+            </>
+          }
+        />
+
+        <StatCell
           icon={Settings2}
           tone="bg-amber-50 text-amber-600"
-          label="Customised Requests Today"
+          label="Customised Request"
           value={customisationRequestCount}
           loading={loadingStates.customisation}
         />
 
-        <StatCard
+        <StatCell
           icon={XCircle}
           tone="bg-red-50 text-red-600"
-          label="Meals Cancelled Today"
+          label="Cancelled Request"
           value={cancelledMealsCount}
           loading={loadingStates.cancelled}
-          hint={`${cancelledPercent}% of today's meals`}
         />
 
-        <StatCard
+        <div className="p-4">
+          <p className="flex gap-1.5 items-center mb-1.5 text-xs font-medium text-gray-500">
+            <Crown className="flex-shrink-0 w-3.5 h-3.5 text-purple-600" />
+            Active Subscriptions
+          </p>
+          {loadingStates.subscriptions ? (
+            <Spinner />
+          ) : (
+            <div className="space-y-0.5">
+              <button type="button" onClick={() => handlePlanClick("Weekly")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
+                <span className="text-gray-500">Weekly:</span>
+                <span className="font-bold text-gray-900">{weeklyCount}</span>
+              </button>
+              <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
+                <span className="text-gray-500">Monthly:</span>
+                <span className="font-bold text-gray-900">{monthlyCount}</span>
+              </button>
+              <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
+                <span className="text-gray-500">Trial:</span>
+                <span className="font-bold text-gray-900">{trialCount}</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <StatCell
           icon={Clock}
-          tone="bg-red-50 text-red-600"
+          tone="bg-red-100 text-red-600"
           label="Ending Soon (3 Days)"
           value={endingSoonCount}
           loading={loadingStates.users}
           valueClassName="text-red-600 underline"
           onClick={() => setShowEndingSoonModal(true)}
+          highlight
         />
       </div>
 
-      <div className="p-4 mb-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-        <p className="mb-3 text-sm font-semibold text-gray-700">Active Subscribers by Plan</p>
-        <div className="grid grid-cols-3 gap-4">
-          <button type="button" onClick={() => handlePlanClick("Weekly")} className="text-left transition-opacity hover:opacity-80">
-            <p className="text-xs text-gray-500">Weekly</p>
-            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : weeklyCount}</p>
-          </button>
-          <button type="button" onClick={() => handlePlanClick("Monthly")} className="text-left transition-opacity hover:opacity-80">
-            <p className="text-xs text-gray-500">Monthly</p>
-            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : monthlyCount}</p>
-          </button>
-          <button type="button" onClick={() => handlePlanClick("Trial")} className="text-left transition-opacity hover:opacity-80">
-            <p className="text-xs text-gray-500">Trial</p>
-            <p className="text-xl font-bold text-gray-900">{loadingStates.subscriptions ? "…" : trialCount}</p>
-          </button>
-        </div>
-        {!loadingStates.users && newUsersThisMonth > 0 && (
-          <p className="mt-3 text-xs text-gray-400">+{newUsersThisMonth} new registered users this month</p>
-        )}
-      </div>
+      {!loadingStates.users && newUsersThisMonth > 0 && (
+        <p className="mb-3 text-xs text-gray-400">+{newUsersThisMonth} new registered users this month</p>
+      )}
 
       <RecentActivity />
 
