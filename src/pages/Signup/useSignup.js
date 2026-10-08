@@ -131,6 +131,7 @@ export const useSignup = () => {
       .then((res) => {
         sessionStorage.setItem("token", res.data.tokens.access.token);
         sessionStorage.setItem("userId", res.data.user._id);
+        sessionStorage.setItem("userName", `${formData.firstName} ${formData.lastName}`.trim());
         activityEntry(res.data.user._id);
         sendEmail(formData.email, `${formData.firstName} ${formData.lastName}`, "Welcome to Mealprep – Your Fit Meal Journey Begins!", `Dear ${formData.firstName},\n
           Thank you for signing up with Mealprep! 🎉 Your journey towards healthy and convenient eating starts here.\n

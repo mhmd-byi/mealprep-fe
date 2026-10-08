@@ -100,6 +100,7 @@ export const useLogin = () => {
         );
         sessionStorage.setItem("userId", res.data.userId);
         sessionStorage.setItem("email", formData.email.toLowerCase());
+        sessionStorage.setItem("userName", `${res.data.firstName || ""} ${res.data.lastName || ""}`.trim());
         navigate("/dashboard");
       })
       .catch((err) => {
@@ -132,6 +133,7 @@ export const useLogin = () => {
       sessionStorage.setItem("userId", res.data.userId);
       sessionStorage.setItem("mobile", formData.mobile);
       sessionStorage.setItem("email", res.data.email);
+      sessionStorage.setItem("userName", `${res.data.firstName || ""} ${res.data.lastName || ""}`.trim());
       setLoaderState(false);
       navigate("/dashboard");
     } catch (err) {

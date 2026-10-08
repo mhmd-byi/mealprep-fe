@@ -117,7 +117,7 @@ export const useSubscription = () => {
 
     const userId = sessionStorage.getItem("userId");
     const token = sessionStorage.getItem("token");
-    const userName = sessionStorage.getItem("userName");
+    const userName = (sessionStorage.getItem("userName") || "").trim() || "Customer";
     const userEmail = sessionStorage.getItem("email");
 
     try {
