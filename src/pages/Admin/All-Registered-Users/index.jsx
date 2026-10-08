@@ -428,6 +428,7 @@ export const AllRegisteredUsers = () => {
                   <option value="None">No allergy</option>
                   <option value="Has">Has allergy</option>
                 </select>
+                {/*
                 <label className="flex gap-2 items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer select-none">
                   <input
                     type="checkbox"
@@ -440,6 +441,7 @@ export const AllRegisteredUsers = () => {
                     <span className="text-xs italic text-gray-400">(Loading all...)</span>
                   )}
                 </label>
+                */}
               </div>
 
               <div className="flex flex-wrap gap-2 justify-end">
