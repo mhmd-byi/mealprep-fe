@@ -1,25 +1,9 @@
-// Login.js file
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "./useLogin";
 import { Button, Input, MealprepLogo } from "../../components";
-import { Alert, Tabs, Tab, Box } from "@mui/material";
-
-const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`login-tabpanel-${index}`}
-      aria-labelledby={`login-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
-};
+import { AuthLayout } from "../../components/common/AuthLayout/AuthLayout";
+import { ShieldCheck } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,11 +11,11 @@ const Login = () => {
   const navigateToForgotPassword = () => navigate("/forgot-password");
   const [tabValue, setTabValue] = useState(0);
 
-  const { 
-    handleChange, 
-    handleSubmit, 
-    formData, 
-    loaderState, 
+  const {
+    handleChange,
+    handleSubmit,
+    formData,
+    loaderState,
     errMsg,
     // OTP login handlers
     handleOtpLogin,
@@ -40,175 +24,147 @@ const Login = () => {
     otp,
     handleOtpChange,
     sendOtp,
-    verifyOtp
+    verifyOtp,
   } = useLogin();
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
   return (
-    <div className="relative flex flex-col items-center justify-center h-screen bg-theme-bg-2 md:bg-theme-bg-3 bg-no-repeat bg-cover">
-      <div className="flex justify-center">
-        <div className="login-box max-h-[680px] px-12 py-8 shadow-md bg-white rounded-lg">
-          <div className="content">
-            <div className="flex flex-col justify-center items-center">
-              <MealprepLogo classes={"text-center justify-center max-w-52"} />
-              <h2 className="text-center font-medium text-4xl my-5 text-slate-950">Login</h2>
+    <AuthLayout
+      heading="Healthy Meals Made Easy"
+      subheading="Log in to manage your subscription, track meals and stay on top of your healthy-eating journey."
+    >
+      <div className="flex flex-col items-center mb-8 lg:hidden">
+        <MealprepLogo classes="max-w-40" />
+      </div>
+      <h2 className="text-2xl font-bold text-center text-gray-900 lg:text-left">Welcome back</h2>
+      <p className="mt-1 text-sm text-center text-gray-500 lg:text-left">Log in to your Mealprep account to continue.</p>
+
+      <div className="flex p-1 mt-8 bg-gray-100 rounded-lg">
+        <button
+          type="button"
+          onClick={() => setTabValue(0)}
+          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${
+            tabValue === 0 ? "bg-white text-theme-color-1 shadow-sm" : "text-gray-500"
+          }`}
+        >
+          Email &amp; Password
+        </button>
+        <button
+          type="button"
+          onClick={() => setTabValue(1)}
+          className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${
+            tabValue === 1 ? "bg-white text-theme-color-1 shadow-sm" : "text-gray-500"
+          }`}
+        >
+          Login with OTP
+        </button>
+      </div>
+
+      {tabValue === 0 && (
+        <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <div className="text-right">
+            <a
+              onClick={navigateToForgotPassword}
+              className="text-sm font-semibold text-gray-500 cursor-pointer hover:text-theme-color-1 hover:underline"
+            >
+              Forgot password?
+            </a>
+          </div>
+
+          {errMsg.length > 1 && (
+            <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">{errMsg}</div>
+          )}
+
+          <Button type="submit" id="login" classes="w-full justify-center">
+            {loaderState ? "Logging in..." : "Login"}
+          </Button>
+        </form>
+      )}
+
+      {tabValue === 1 && (
+        <form className="mt-6 space-y-5" onSubmit={handleOtpLogin}>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                placeholder="Phone Number"
+                value={formData.mobile}
+                onChange={handleChange}
+                disabled={otpVerified}
+                maxLength={10}
+              />
             </div>
-            <p className="text-center text-lg">
-              If you have an account with us, <br />
-              please log in.
-            </p>
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <Tabs
-                value={tabValue}
-                onChange={handleTabChange}
-                centered
-                className="mb-4"
-              >
-                <Tab label="Email/Password" />
-                <Tab label="Login with OTP" />
-              </Tabs>
+            {!otpVerified && (
+              <Button type="button" onClick={sendOtp} disabled={otpSent}>
+                {otpSent ? "OTP Sent" : "Send OTP"}
+              </Button>
+            )}
+          </div>
 
-              <TabPanel value={tabValue} index={0}>
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  <div>
-                    <div className="mt-2">
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Email Address"
-                        value={formData.email}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="mt-2">
-                      <Input
-                        id={"password"}
-                        name={"password"}
-                        type="password"
-                        placeholder={"Enter password"}
-                        value={formData.password}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm">
-                      <p>
-                        Having trouble in sign in?&nbsp;
-                        <a
-                          onClick={navigateToForgotPassword}
-                          className="cursor-pointer font-semibold text-black-200 hover:text-black-500 hover:text-theme-color-1 hover:underline hover:decoration-solid"
-                        >
-                          Forgot password
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-
-                  {errMsg.length > 1 && (
-                    <Alert severity="error">{errMsg}</Alert>
-                  )}
-                  <div className="flex justify-center">
-                    <Button type="submit" id={"login"}>
-                      {loaderState ? "Logging in..." : "Login"}
-                    </Button>
-                  </div>
-                </form>
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={1}>
-                <form className="space-y-6" onSubmit={handleOtpLogin}>
-                  <div>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <Input
-                          id="mobile"
-                          name="mobile"
-                          type="tel"
-                          placeholder="Phone Number"
-                          value={formData.mobile}
-                          onChange={handleChange}
-                          disabled={otpVerified}
-                          maxLength={10}
-                        />
-                      </div>
-                      {!otpVerified && (
-                        <Button
-                          type="button"
-                          onClick={sendOtp}
-                          disabled={otpSent}
-                          children={otpSent ? "OTP Sent" : "Send OTP"}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {otpSent && !otpVerified && (
-                    <div>
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <Input
-                            id="otp"
-                            name="otp"
-                            type="text"
-                            placeholder="Enter OTP"
-                            value={otp}
-                            onChange={handleOtpChange}
-                            maxLength={6}
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={verifyOtp}
-                          children="Verify OTP"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {otpVerified && (
-                    <div className="text-green-600 text-sm text-center">
-                      ✓ Phone number verified
-                    </div>
-                  )}
-
-                  {errMsg.length > 1 && (
-                    <Alert severity="error">{errMsg}</Alert>
-                  )}
-                  <div className="flex justify-center">
-                    <Button 
-                      type="submit" 
-                      id={"login"}
-                      disabled={!otpVerified}
-                    >
-                      {loaderState ? "Logging in..." : "Login with OTP"}
-                    </Button>
-                  </div>
-                </form>
-              </TabPanel>
-            </div>
-
-            <div className="mt-6 border-t border-gray-200 pt-6 text-center">
-              <p className="text-sm text-gray-500 mb-3">New to Mealprep?</p>
-              <Button
-                type="button"
-                onClick={navigateToSignup}
-                classes="w-full !bg-white border-2 border-theme-color-1 !text-theme-color-1 hover:!bg-theme-color-1 hover:!text-white transition-colors"
-              >
-                Create an Account
+          {otpSent && !otpVerified && (
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  id="otp"
+                  name="otp"
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={handleOtpChange}
+                  maxLength={6}
+                />
+              </div>
+              <Button type="button" onClick={verifyOtp}>
+                Verify OTP
               </Button>
             </div>
-          </div>
-        </div>
+          )}
+
+          {otpVerified && (
+            <div className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-green-700 border border-green-200 rounded-lg bg-green-50">
+              <ShieldCheck className="flex-shrink-0 w-4 h-4" />
+              Phone number verified
+            </div>
+          )}
+
+          {errMsg.length > 1 && (
+            <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">{errMsg}</div>
+          )}
+
+          <Button type="submit" id="login" disabled={!otpVerified} classes="w-full justify-center">
+            {loaderState ? "Logging in..." : "Login with OTP"}
+          </Button>
+        </form>
+      )}
+
+      <div className="pt-6 mt-8 text-center border-t border-gray-100">
+        <p className="mb-3 text-sm text-gray-500">New to Mealprep?</p>
+        <Button
+          type="button"
+          onClick={navigateToSignup}
+          classes="w-full justify-center !bg-white border-2 border-theme-color-1 !text-theme-color-1 hover:!bg-theme-color-1 hover:!text-white transition-colors"
+        >
+          Create an Account
+        </Button>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 
