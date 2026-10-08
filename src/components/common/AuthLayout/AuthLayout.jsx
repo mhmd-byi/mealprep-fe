@@ -1,5 +1,6 @@
 import { Utensils, CalendarCheck, Activity } from "lucide-react";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
+import authBg from "../../../assets/images/auth-bg.png";
 
 const FEATURES = [
   { icon: Utensils, text: "Fresh, chef-prepped meals delivered daily" },
@@ -9,9 +10,10 @@ const FEATURES = [
 
 export const AuthLayout = ({ heading, subheading, maxWidthClass = "max-w-sm", children }) => (
   <div className="flex min-h-screen bg-white">
-    <div className="relative items-center justify-center flex-1 hidden overflow-hidden lg:flex bg-theme-color-1">
-      <div className="absolute rounded-full -top-24 -left-24 w-72 h-72 bg-white/10" />
-      <div className="absolute rounded-full -bottom-32 -right-10 w-96 h-96 bg-white/10" />
+    <div
+      className="relative items-center justify-center flex-1 hidden bg-center bg-cover lg:flex bg-theme-color-1"
+      style={{ backgroundImage: `url(${authBg})` }}
+    >
       <div className="relative z-10 max-w-md px-10 text-white">
         <img src={whiteLogo} alt="Mealprep" className="mb-10 w-40" />
         <h1 className="text-3xl font-bold leading-tight">{heading}</h1>

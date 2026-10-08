@@ -24,7 +24,7 @@ module.exports = {
       backgroundImage: {
         'theme-bg-1': "url('/src/assets/images/screenbg.png')",
         'theme-bg-2': "url('/src/assets/images/theme-bg.png')",
-        'theme-bg-3': "url('/src/assets/images/theme-bg-desktop.jpg')",
+        'theme-bg-3': "url('/src/assets/images/theme-bg-desktop.png')",
         'theme-bg-4': "url('/src/assets/images/theme-bg1.png')",
       },
       colors: {
