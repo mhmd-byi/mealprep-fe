@@ -12,13 +12,13 @@ const DAY_PRESETS = { "1w": 7, "2w": 14, "1mo": 30 };
 const MONTH_PRESETS = { "3mo": 3, "6mo": 6, "12mo": 12, "24mo": 24 };
 
 export const PRESET_OPTIONS = [
-  { key: "1w", label: "1wk" },
-  { key: "2w", label: "2wk" },
-  { key: "1mo", label: "1mo" },
-  { key: "3mo", label: "3mo" },
-  { key: "6mo", label: "6mo" },
-  { key: "12mo", label: "12mo" },
-  { key: "24mo", label: "24mo" },
+  { key: "1w", label: "1 Week" },
+  { key: "2w", label: "2 Weeks" },
+  { key: "1mo", label: "1 Month" },
+  { key: "3mo", label: "3 Months" },
+  { key: "6mo", label: "6 Months" },
+  { key: "12mo", label: "12 Months" },
+  { key: "24mo", label: "24 Months" },
 ];
 
 // "1wk/2wk/1mo" are rolling day-count windows ending today; "3mo" and up stay
