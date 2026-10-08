@@ -6,7 +6,7 @@ const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[100] backdrop-filter backdrop-blur-sm p-4 overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-[100] backdrop-filter backdrop-blur-sm p-4 overflow-y-auto print:hidden">
       <div className={`bg-white rounded-lg shadow-xl p-6 w-full ${maxWidthClass} h-fit max-h-[90vh] flex flex-col my-auto`}>
         <div className="flex items-center justify-between mb-4 flex-none sticky top-0 bg-white pb-2 border-b">
           <h2 className="text-xl font-bold">{title}</h2>

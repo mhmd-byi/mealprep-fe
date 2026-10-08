@@ -201,7 +201,7 @@ export const UserListWithCustomisationRequest = () => {
                         ].map((header) => (
                           <th
                             key={header}
-                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell"
+                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell"
                           >
                             {header}
                           </th>
@@ -215,7 +215,7 @@ export const UserListWithCustomisationRequest = () => {
                           className="hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row"
                         >
                           {/* Mobile View - Card-like Layout */}
-                          <td className="md:hidden p-4">
+                          <td className="md:hidden print:hidden p-4">
                             <div className="space-y-2">
                               <div className="flex justify-between">
                                 <span className="font-medium">Name:</span>
@@ -235,10 +235,10 @@ export const UserListWithCustomisationRequest = () => {
                           </td>
 
                           {/* Desktop View */}
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left hidden md:table-cell">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left hidden md:table-cell print:table-cell">
                             {request.user.firstName} {request.user.lastName}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-left hidden md:table-cell">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-left hidden md:table-cell print:table-cell">
                             {request.items.map((item) => (
                               <>
                                 <tr>

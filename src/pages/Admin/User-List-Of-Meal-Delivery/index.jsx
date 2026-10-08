@@ -392,9 +392,9 @@ export const UserListOfMealDelivery = () => {
                     ) : sortedMeals.length > 0 ? (
                       <div className="w-full">
                         {/* Desktop View */}
-                        <div className="hidden overflow-x-auto md:block">
+                        <div className="hidden overflow-x-auto md:block print:block">
                           <table className="w-full text-left divide-y divide-gray-200">
-                            <thead className="sticky top-0 z-10 bg-gray-50">
+                            <thead className="sticky top-0 z-10 bg-gray-50 print:static">
                               <tr>
                                 <th 
                                   className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px] cursor-pointer hover:bg-gray-100"
@@ -484,7 +484,7 @@ export const UserListOfMealDelivery = () => {
                         </div>
 
                         {/* Mobile View */}
-                        <div className="mt-4 space-y-4 md:hidden">
+                        <div className="mt-4 space-y-4 md:hidden print:hidden">
                           {paginatedMeals.map((meal, index) => {
                             const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
                             const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
