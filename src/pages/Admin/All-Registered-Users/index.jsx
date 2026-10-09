@@ -221,7 +221,14 @@ export const AllRegisteredUsers = () => {
                       (user.mealCounts?.dinnerMeals || 0) +
                       (user.mealCounts?.nextDayDinnerMeals || 0);
 
-    const presenceMatch = showZeroMeals ? true : totalMeals > 0;
+    // Zero-meals hiding only makes sense on the "All"/"Active" views — it's meant
+    // to cut noise from users who nominally look active but have run dry. On the
+    // Queued/Inactive/Trial tabs a user having 0 current meals is the expected,
+    // normal case (queued plans haven't activated yet, cancelled/completed plans
+    // don't carry meals), so applying it there would hide almost everyone those
+    // tabs exist to show.
+    const presenceFilterApplies = statusTab === "all" || statusTab === "active";
+    const presenceMatch = !presenceFilterApplies || showZeroMeals ? true : totalMeals > 0;
 
     const latestSub = getLatestSub(user);
 
