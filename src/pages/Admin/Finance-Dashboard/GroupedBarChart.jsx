@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { formatCompactINR, formatINR, niceMax } from "./format";
+import { ChartTooltip } from "./ChartTooltip";
 
 const VIEW_W = 900;
 const VIEW_H = 340;
@@ -17,6 +18,7 @@ const BAR_GAP = 2;
 export const GroupedBarChart = ({ data, seriesKeys, title }) => {
   const [hoverIndex, setHoverIndex] = useState(null);
   const [showTable, setShowTable] = useState(false);
+  const containerRef = useRef(null);
 
   if (!data || data.length === 0) {
     return <p className="text-sm text-gray-500 py-8 text-center">No data for this range.</p>;
@@ -86,7 +88,7 @@ export const GroupedBarChart = ({ data, seriesKeys, title }) => {
           </table>
         </div>
       ) : (
-        <div className="relative">
+        <div className="relative" ref={containerRef}>
           <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-auto" role="img" aria-label={title}>
             <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
               {/* Gridlines + Y ticks */}
@@ -174,25 +176,20 @@ export const GroupedBarChart = ({ data, seriesKeys, title }) => {
             </g>
           </svg>
 
-          {hoverIndex !== null && (
-            <div
-              className="absolute top-2 bg-white border rounded-lg shadow-lg px-3 py-2 text-sm pointer-events-none"
-              style={{
-                left: `${((hoverIndex + 0.5) / data.length) * 100}%`,
-                transform: "translateX(-50%)",
-              }}
-            >
-              <p className="font-bold text-gray-900 mb-1">{data[hoverIndex].label}</p>
-              {seriesKeys.map((s) => (
-                <p key={s.key} className="flex items-center gap-1.5 text-gray-700">
-                  <span className="inline-block w-2 h-0.5 rounded" style={{ backgroundColor: s.color }} />
-                  <span className="font-bold">{formatINR(data[hoverIndex][s.key] || 0)}</span>
-                  <span className="font-semibold text-gray-500">{s.label}</span>
-                </p>
-              ))}
-            </div>
-          )}
         </div>
+      )}
+
+      {hoverIndex !== null && !showTable && (
+        <ChartTooltip anchorRef={containerRef} xRatio={(hoverIndex + 0.5) / data.length}>
+          <p className="mb-1 font-bold text-gray-900">{data[hoverIndex].label}</p>
+          {seriesKeys.map((s) => (
+            <p key={s.key} className="flex items-center gap-1.5 text-gray-700">
+              <span className="inline-block w-2 h-0.5 rounded" style={{ backgroundColor: s.color }} />
+              <span className="font-bold">{formatINR(data[hoverIndex][s.key] || 0)}</span>
+              <span className="font-semibold text-gray-500">{s.label}</span>
+            </p>
+          ))}
+        </ChartTooltip>
       )}
     </div>
   );
