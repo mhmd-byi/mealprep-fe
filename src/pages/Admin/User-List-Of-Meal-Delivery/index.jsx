@@ -1,13 +1,46 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Input } from "../../../components";
+import { Input } from "../../../components";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
-import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  CalendarDays,
+  SlidersHorizontal,
+  Download,
+  Printer,
+  RotateCcw,
+  Users,
+  Leaf,
+  Beef,
+  AlertTriangle,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  History,
+} from "lucide-react";
+
+const inputClass =
+  "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
+
+const StatTile = ({ icon: Icon, tone, label, value, highlight }) => (
+  <div className={`flex gap-3 items-center p-4 rounded-xl border ${highlight ? "bg-red-50 border-red-100" : "bg-gray-50 border-gray-100"}`}>
+    <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
+      <Icon className="w-5 h-5" />
+    </div>
+    <div>
+      <p className={`text-xs font-medium ${highlight ? "text-red-500" : "text-gray-500"}`}>{label}</p>
+      <p className={`text-xl font-bold ${highlight ? "text-red-600" : "text-gray-900"}`}>{value}</p>
+    </div>
+  </div>
+);
 
 export const UserListOfMealDelivery = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
@@ -21,6 +54,7 @@ export const UserListOfMealDelivery = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isPopupLoading, setIsPopupLoading] = useState(false);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState({
     planType: 'All',
     mealCount: '',
@@ -221,10 +255,16 @@ export const UserListOfMealDelivery = () => {
     }
   };
 
+  const resetFilters = () => {
+    setSearchQuery("");
+    setFilterCriteria({ planType: 'All', mealCount: '', operator: '>', category: 'All' });
+    setCurrentPage(1);
+  };
+
   const exportToCSV = () => {
     // Define headers
     const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Allergy", "Selected Plan", "Meal Counts Left"];
-    
+
     // Convert data to CSV format
     const csvData = filteredMeals.map(meal => [
       meal.name,
@@ -237,430 +277,479 @@ export const UserListOfMealDelivery = () => {
       meal.plan,
       `Lunch: ${meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: ${meal.dinnerMeals + meal.nextDayDinnerMeals}`,
     ]);
-    
+
     // Combine headers and data
     const csvContent = [
       headers.join(","),
       ...csvData.map(row => row.map(cell => `"${cell}"`).join(","))
     ].join("\n");
-    
+
     // Create blob and download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    
+
     link.setAttribute("href", url);
     link.setAttribute("download", `meal-delivery-${formData.date}-${formData.mealType}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setShowExportMenu(false);
   };
 
-  if (isLoading) {
-    return (
-      <DashboardLayoutComponent>
-        <div className="p-5">
-          <p>Loading meal delivery list...</p>
-        </div>
-      </DashboardLayoutComponent>
-    );
-  }
+  // Summary counts over the filtered set — mirrors the stat-row pattern used
+  // across the other redesigned admin pages.
+  const summary = filteredMeals.reduce(
+    (acc, meal) => {
+      const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
+      const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
+      const pref = meal.dietaryPreference || meal.mealType;
+      if (pref === "veg") acc.veg += 1;
+      else if (pref === "non-veg") acc.nonVeg += 1;
+      if (lunchCount === 0 && dinnerCount === 0) acc.zeroMeals += 1;
+      return acc;
+    },
+    { veg: 0, nonVeg: 0, zeroMeals: 0 }
+  );
+
   return (
     <>
       <DashboardLayoutComponent>
-      <div className="block flex-col justify-start items-start p-5 w-full lg:flex">
-        <div className="px-4 py-8 w-full max-w-full sm:px-6 lg:px-8">
-          <div className="mx-auto">
-            <h2 className="mb-4 text-2xl font-bold">Meal Delivery List</h2>
-            <div className="overflow-hidden bg-white rounded-lg shadow">
-              <div className="flex flex-col">
-                <div className="flex flex-col p-5 w-full text-center">
-                  <form onSubmit={handleFormSubmit} className="space-y-6 print:hidden">
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div>
-                        <Input
-                          type="date"
-                          value={formData.date}
-                          onChange={handleDateChange}
-                          min={getCurrentDate()}
-                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        />
-                      </div>
-                      <div>
-                        <Input
-                          type="select"
-                          value={formData.mealType}
-                          onChange={handleMealTypeChange}
-                          placeholder="Select Meal Type"
-                          options={[
-                            { value: "lunch", label: "Lunch" },
-                            { value: "dinner", label: "Dinner" },
-                          ]}
-                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="px-4 py-2 font-medium text-white bg-green-500 rounded-lg transition duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+        <div className="p-4 w-full text-left sm:p-6 md:p-8">
+          <div className="mx-auto space-y-6 w-full">
+            <div className="flex flex-wrap gap-3 justify-between items-start print:hidden">
+              <div>
+                <p className="text-sm text-gray-500">Dashboard &rsaquo; Meal Delivery List</p>
+                <h2 className="text-2xl font-bold text-gray-900">Meal Delivery List</h2>
+                <p className="text-sm text-gray-500">
+                  Pick a date and meal type to see exactly who's getting delivered to, and what to pack.
+                </p>
+              </div>
+              {mealDeliveryList.length > 0 && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowExportMenu((v) => !v)}
+                    className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  {showExportMenu && (
+                    <div className="absolute right-0 z-20 mt-2 w-44 bg-white rounded-lg border border-gray-200 shadow-lg">
+                      <button type="button" onClick={exportToCSV} className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50">
+                        <Download className="w-4 h-4" />
+                        Export CSV
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setShowExportMenu(false); setIsPrinting(true); }}
+                        className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50"
                       >
-                        {isLoading ? "Submitting..." : "Submit"}
-                      </Button>
-                      
-                      {mealDeliveryList.length > 0 && (
-                        <div className="flex flex-col gap-4 items-center sm:flex-row flex-wrap">
-                          <SearchBar
-                            value={searchQuery}
-                            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
-                            placeholder="Search name or email..."
-                          />
-                          <Input
-                            type="select"
-                            value={filterCriteria.category || 'All'}
-                            onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, category: e.target.value })); setCurrentPage(1); }}
-                            options={[
-                              { value: 'All', label: 'All Meal Types' },
-                              { value: 'veg', label: 'Veg' },
-                              { value: 'non-veg', label: 'Non-Veg' },
-                            ]}
-                            classes="border border-gray-300 bg-white text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                          />
-                          <Input
-                            type="select"
-                            value={filterCriteria.planType}
-                            onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, planType: e.target.value })); setCurrentPage(1); }}
-                            options={[
-                              { value: 'All', label: 'All Plans' },
-                              { value: 'Trial', label: 'Trial Pack' },
-                              { value: 'Weekly', label: 'Weekly Plan' },
-                              { value: 'Monthly', label: 'Monthly Plan' },
-                            ]}
-                            classes="border border-gray-300 bg-white text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                          />
-                          <button
-                            onClick={() => setShowFilterPopup(true)}
-                            type="button"
-                            className="flex justify-center items-center px-4 py-2 text-sm font-semibold bg-white rounded-md border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
-                          >
-                            <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                            </svg>
-                            Filter
-                          </button>
-                          <Button
-                            type="button"
-                            onClick={() => exportToCSV(sortedMeals)}
-                            className="px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition duration-300 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                          >
-                            Export to CSV
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={() => setIsPrinting(true)}
-                            className="px-4 py-2 font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
-                          >
-                            Export (Print / PDF)
-                          </Button>
-                        </div>
-                      )}
+                        <Printer className="w-4 h-4" />
+                        Print / PDF
+                      </button>
                     </div>
-                  </form>
-
-                  {/* Screen-only title + filter context, since the toolbar above is hidden when printing */}
-                  <h2 className="hidden print:block text-xl font-bold mb-2 text-left">Meal Delivery List</h2>
-                  <p className="hidden print:block text-sm text-gray-500 mb-3 text-left">
-                    {formData.date && `Date: ${formData.date} `}
-                    {formData.mealType && `Meal Type: ${capitalize(formData.mealType)} `}
-                    {searchQuery && `Search: "${searchQuery}" `}
-                    {filterCriteria.category !== 'All' && `Category: ${filterCriteria.category} `}
-                    {filterCriteria.planType !== 'All' && `Plan: ${filterCriteria.planType}`}
-                  </p>
-
-                  {error && (
-                    <p className="mt-4 mb-2 text-red-500">{error}</p>
                   )}
+                </div>
+              )}
+            </div>
 
-                  <div className="mt-4 w-full">
-                    {isLoading ? (
-                      <div className="flex flex-col justify-center items-center py-20">
-                        <div className="w-12 h-12 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
-                        <p className="mt-4 font-medium text-gray-500">Loading delivery list...</p>
-                      </div>
-                    ) : sortedMeals.length > 0 ? (
-                      <div className="w-full">
-                        {/* Desktop View */}
-                        <div className="hidden overflow-x-auto md:block print:block">
-                          <table className="w-full text-left divide-y divide-gray-200">
-                            <thead className="sticky top-0 z-10 bg-gray-50 print:static">
-                              <tr>
-                                <th 
-                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px] cursor-pointer hover:bg-gray-100"
-                                  onClick={() => handleSort('name')}
-                                >
-                                  Customer Info <SortIcon columnKey="name" />
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                  Mobile
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
-                                  Address
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
-                                  onClick={() => handleSort('category')}
-                                >
-                                  Meal Type <SortIcon columnKey="category" />
-                                </th>
-                                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                  Carb Type
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
-                                  onClick={() => handleSort('plan')}
-                                >
-                                  Selected Plan <SortIcon columnKey="plan" />
-                                </th>
-                                <th 
-                                  className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] cursor-pointer hover:bg-gray-100"
-                                  onClick={() => handleSort('mealCount')}
-                                >
-                                  Meal Counts Left <SortIcon columnKey="mealCount" />
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {paginatedMeals.map((meal, index) => {
-                                const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
-                                const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
-                                const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+            <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm print:hidden">
+              <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 items-end sm:flex-row">
+                <div className="flex-1 w-full">
+                  <label className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                    <CalendarDays className="w-4 h-4 text-gray-400" />
+                    Delivery Date
+                  </label>
+                  <Input
+                    type="date"
+                    value={formData.date}
+                    onChange={handleDateChange}
+                    min={getCurrentDate()}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="flex-1 w-full">
+                  <label className="block mb-1 text-sm font-medium text-gray-700">Meal Type</label>
+                  <Input
+                    type="select"
+                    value={formData.mealType}
+                    onChange={handleMealTypeChange}
+                    placeholder="Select Meal Type"
+                    options={[
+                      { value: "lunch", label: "Lunch" },
+                      { value: "dinner", label: "Dinner" },
+                    ]}
+                    className={inputClass}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="px-5 py-2 w-full text-sm font-semibold text-white rounded-lg shadow-sm bg-theme-color-1 hover:bg-black disabled:opacity-50 sm:w-auto whitespace-nowrap"
+                >
+                  {isLoading ? "Loading..." : "Load List"}
+                </button>
+              </form>
+            </div>
 
-                                return (
-                                  <tr key={index} className={`hover:bg-gray-100 ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
-                                    <td className="px-4 py-4 text-sm font-medium border-b max-w-[250px]">
-                                      <div 
-                                        className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
-                                        onClick={() => fetchUserDetails(meal.userId)}
-                                      >
-                                        {meal.name}
-                                      </div>
-                                      <div className="text-xs text-gray-500 break-all">{meal.email}</div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">{meal.mobile}</div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">{meal.address}</div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="flex items-center break-words">
-                                        {formatDietLabel(meal)}
-                                        <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
-                                      </div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">
-                                        {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                      </div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">
-                                        {meal?.plan}
-                                      </div>
-                                    </td>
-                                    <td className="px-4 py-4 text-sm text-gray-900 border-b">
-                                      <div className="break-words">
-                                        Lunch: {lunchCount},<br/>
-                                        Dinner: {dinnerCount}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
+            {/* Screen-only title + filter context, since the toolbar above is hidden when printing */}
+            <h2 className="hidden mb-2 text-xl font-bold text-left print:block">Meal Delivery List</h2>
+            <p className="hidden mb-3 text-sm text-left text-gray-500 print:block">
+              {formData.date && `Date: ${formData.date} `}
+              {formData.mealType && `Meal Type: ${capitalize(formData.mealType)} `}
+              {searchQuery && `Search: "${searchQuery}" `}
+              {filterCriteria.category !== 'All' && `Category: ${filterCriteria.category} `}
+              {filterCriteria.planType !== 'All' && `Plan: ${filterCriteria.planType}`}
+            </p>
 
-                        {/* Mobile View */}
-                        <div className="mt-4 space-y-4 md:hidden print:hidden">
-                          {paginatedMeals.map((meal, index) => {
-                            const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
-                            const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
-                            const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+            {error && <p className="text-sm text-red-600">{error}</p>}
 
-                            return (
-                              <div key={index} className={`p-4 rounded-lg border border-gray-200 shadow-sm ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
-                                <div className="space-y-2">
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Name:</span>
-                                    <span 
-                                      className="font-bold text-right cursor-pointer text-theme-color-1 hover:underline"
+            {isLoading && (
+              <div className="flex flex-col justify-center items-center py-20">
+                <div className="w-12 h-12 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
+                <p className="mt-4 font-medium text-gray-500">Loading delivery list...</p>
+              </div>
+            )}
+
+            {!isLoading && mealDeliveryList.length > 0 && (
+              <>
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 print:hidden">
+                  <StatTile icon={Users} tone="bg-blue-50 text-blue-600" label="Total Customers" value={filteredMeals.length} />
+                  <StatTile icon={Leaf} tone="bg-green-50 text-theme-color-1" label="Veg" value={summary.veg} />
+                  <StatTile icon={Beef} tone="bg-orange-50 text-orange-600" label="Non-Veg" value={summary.nonVeg} />
+                  <StatTile icon={AlertTriangle} tone="bg-red-100 text-red-600" label="Zero Meals Left" value={summary.zeroMeals} highlight={summary.zeroMeals > 0} />
+                </div>
+
+                <div className="p-5 space-y-4 bg-white rounded-2xl border border-gray-100 shadow-sm print:hidden">
+                  <div className="flex flex-col gap-3 items-end sm:flex-row sm:flex-wrap">
+                    <div className="flex-1 min-w-[200px] w-full sm:w-auto">
+                      <SearchBar
+                        value={searchQuery}
+                        onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                        placeholder="Search name or email..."
+                      />
+                    </div>
+                    <Input
+                      type="select"
+                      value={filterCriteria.category || 'All'}
+                      onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, category: e.target.value })); setCurrentPage(1); }}
+                      options={[
+                        { value: 'All', label: 'All Meal Types' },
+                        { value: 'veg', label: 'Veg' },
+                        { value: 'non-veg', label: 'Non-Veg' },
+                      ]}
+                      classes={inputClass}
+                    />
+                    <Input
+                      type="select"
+                      value={filterCriteria.planType}
+                      onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, planType: e.target.value })); setCurrentPage(1); }}
+                      options={[
+                        { value: 'All', label: 'All Plans' },
+                        { value: 'Trial', label: 'Trial Pack' },
+                        { value: 'Weekly', label: 'Weekly Plan' },
+                        { value: 'Monthly', label: 'Monthly Plan' },
+                      ]}
+                      classes={inputClass}
+                    />
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Reset
+                    </button>
+                    <button
+                      onClick={() => setShowFilterPopup(true)}
+                      type="button"
+                      className="flex gap-2 items-center px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                    >
+                      <SlidersHorizontal className="w-4 h-4" />
+                      Meal Count Filter
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+                  {sortedMeals.length > 0 ? (
+                    <div className="w-full">
+                      {/* Desktop View */}
+                      <div className="hidden overflow-x-auto md:block print:block">
+                        <table className="w-full text-left divide-y divide-gray-200">
+                          <thead className="bg-gray-50 print:static">
+                            <tr>
+                              <th
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[200px] hover:bg-gray-100"
+                                onClick={() => handleSort('name')}
+                              >
+                                Customer Info <SortIcon columnKey="name" />
+                              </th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[120px]">
+                                Mobile
+                              </th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[200px]">
+                                Address
+                              </th>
+                              <th
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                onClick={() => handleSort('category')}
+                              >
+                                Meal Type <SortIcon columnKey="category" />
+                              </th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px]">
+                                Carb Type
+                              </th>
+                              <th
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                onClick={() => handleSort('plan')}
+                              >
+                                Selected Plan <SortIcon columnKey="plan" />
+                              </th>
+                              <th
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                onClick={() => handleSort('mealCount')}
+                              >
+                                Meal Counts Left <SortIcon columnKey="mealCount" />
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-100">
+                            {paginatedMeals.map((meal, index) => {
+                              const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
+                              const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
+                              const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+
+                              return (
+                                <tr key={index} className={`hover:bg-gray-50 ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 text-sm font-medium max-w-[250px]">
+                                    <div
+                                      className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
                                       onClick={() => fetchUserDetails(meal.userId)}
                                     >
                                       {meal.name}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Email:</span>
-                                    <span className="text-gray-900 text-right break-all max-w-[60%]">{meal.email}</span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Mobile:</span>
-                                    <span className="text-right text-gray-900">{meal.mobile}</span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Address:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.postalAddress}</span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Meal Type:</span>
-                                    <span className="flex items-center text-gray-900 text-right break-words max-w-[60%]">
+                                    </div>
+                                    <div className="text-xs text-gray-500 break-all">{meal.email}</div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="break-words">{meal.mobile}</div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="break-words">{meal.address}</div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="flex items-center break-words">
                                       {formatDietLabel(meal)}
                                       <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Carb Type:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="break-words">
                                       {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Selected Plan:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
-                                  </div>
-                                  <div className="flex justify-between pb-2 border-b">
-                                    <span className="font-medium text-gray-500">Allergy:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="font-medium text-gray-500">Meal Counts Left:</span>
-                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                      Lunch: {lunchCount}, Dinner: {dinnerCount}
-                                    </span>
-                                  </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="break-words">
+                                      {meal?.plan}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <div className="break-words">
+                                      Lunch: {lunchCount},<br/>
+                                      Dinner: {dinnerCount}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile View */}
+                      <div className="p-4 space-y-4 md:hidden print:hidden">
+                        {paginatedMeals.map((meal, index) => {
+                          const lunchCount = (meal.lunchMeals || 0) + (meal.nextDayLunchMeals || 0);
+                          const dinnerCount = (meal.dinnerMeals || 0) + (meal.nextDayDinnerMeals || 0);
+                          const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
+
+                          return (
+                            <div key={index} className={`p-4 rounded-xl border border-gray-100 shadow-sm ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
+                              <div className="space-y-2">
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Name:</span>
+                                  <span
+                                    className="font-bold text-right cursor-pointer text-theme-color-1 hover:underline"
+                                    onClick={() => fetchUserDetails(meal.userId)}
+                                  >
+                                    {meal.name}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Email:</span>
+                                  <span className="text-gray-900 text-right break-all max-w-[60%]">{meal.email}</span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Mobile:</span>
+                                  <span className="text-right text-gray-900">{meal.mobile}</span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Address:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.postalAddress}</span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Meal Type:</span>
+                                  <span className="flex items-center text-gray-900 text-right break-words max-w-[60%]">
+                                    {formatDietLabel(meal)}
+                                    <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
+                                  </span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Carb Type:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Selected Plan:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Allergy:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-gray-500">Meal Counts Left:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                    Lunch: {lunchCount}, Dinner: {dinnerCount}
+                                  </span>
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                          );
+                        })}
+                      </div>
 
-                        {/* Pagination */}
-                        <div className="print:hidden">
-                          <Pagination
-                            totalItems={sortedMeals.length}
-                            currentPage={currentPage}
-                            rowsPerPage={rowsPerPage}
-                            onPageChange={setCurrentPage}
-                            onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
-                          />
+                      {/* Pagination */}
+                      <div className="p-4 border-t border-gray-100 print:hidden">
+                        <Pagination
+                          totalItems={sortedMeals.length}
+                          currentPage={currentPage}
+                          rowsPerPage={rowsPerPage}
+                          onPageChange={setCurrentPage}
+                          onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="py-10 text-center text-gray-500">No meal delivery data matches these filters.</p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {!isLoading && mealDeliveryList.length === 0 && !error && (
+              <p className="py-10 text-center text-gray-500">Pick a date and meal type, then load the list.</p>
+            )}
+          </div>
+        </div>
+      </DashboardLayoutComponent>
+
+      <FilterPopup
+        isOpen={showFilterPopup}
+        onClose={() => setShowFilterPopup(false)}
+        criteria={filterCriteria}
+        setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
+        title="Filter Meal Delivery"
+        showEndDateFilter={false}
+      />
+
+      <Popup
+        isOpen={!!selectedUser || isPopupLoading}
+        onClose={() => setSelectedUser(null)}
+        title="Customer Details"
+        content={
+          isPopupLoading ? (
+            <div className="flex justify-center p-10">
+              <div className="w-8 h-8 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
+            </div>
+          ) : (
+            selectedUser && (
+              <div className="space-y-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b">
+                  <div>
+                    <p className="text-gray-500">Name</p>
+                    <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
+                  </div>
+                  <div>
+                    <p className="flex gap-1.5 items-center text-gray-500"><Mail className="w-3.5 h-3.5" />Email</p>
+                    <p className="font-semibold">{selectedUser.email}</p>
+                  </div>
+                  <div>
+                    <p className="flex gap-1.5 items-center text-gray-500"><Phone className="w-3.5 h-3.5" />Mobile</p>
+                    <p className="font-semibold">{selectedUser.mobile}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="flex gap-1.5 items-center text-gray-500"><MapPin className="w-3.5 h-3.5" />Address</p>
+                    <p className="font-semibold">{selectedUser.postalAddress}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center p-3 mb-4 bg-green-50 rounded-xl border border-green-100">
+                  <div>
+                    <p className="text-gray-500">Meal Counts Left</p>
+                    <p className="text-lg font-bold text-theme-color-1">
+                      Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)},
+                      Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="flex gap-1.5 items-center mb-2 text-base font-bold text-gray-900">
+                    <History className="w-4 h-4" />
+                    Subscription History
+                  </h3>
+                  <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
+                    {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
+                      [...selectedUser.subscriptions].reverse().map((sub, i) => (
+                        <div key={i} className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <div className="flex gap-1.5 justify-between items-center font-bold text-theme-color-1">
+                            <span className="flex gap-1.5 items-center"><CreditCard className="w-4 h-4" />{sub.plan}</span>
+                            <span>₹{sub.price}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+                            <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
+                            <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
+                            <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
+                            <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
+                            <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
+                            {sub.allergy && (
+                              <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ))
                     ) : (
-                      <div className="flex flex-col justify-center items-center py-10">
-                        <p className="font-medium text-center text-gray-500">No meal delivery data found</p>
-                      </div>
+                      <p className="py-4 text-center text-gray-500">No subscription history found.</p>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </DashboardLayoutComponent>
-
-    <FilterPopup
-      isOpen={showFilterPopup}
-      onClose={() => setShowFilterPopup(false)}
-      criteria={filterCriteria}
-      setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
-      title="Filter Meal Delivery"
-      showEndDateFilter={false}
-    />
-
-    <Popup
-      isOpen={!!selectedUser || isPopupLoading}
-      onClose={() => setSelectedUser(null)}
-      title="Customer Details"
-      content={
-        isPopupLoading ? (
-          <div className="flex justify-center p-10">
-            <div className="w-8 h-8 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
-          </div>
-        ) : (
-          selectedUser && (
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 pb-4 border-b">
-                <div>
-                  <p className="text-gray-500">Name</p>
-                  <p className="font-semibold">{selectedUser.firstName} {selectedUser.lastName}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Email</p>
-                  <p className="font-semibold">{selectedUser.email}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Mobile</p>
-                  <p className="font-semibold">{selectedUser.mobile}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-gray-500">Address</p>
-                  <p className="font-semibold">{selectedUser.postalAddress}</p>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center p-3 mb-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-gray-500">Meal Counts Left</p>
-                  <p className="text-lg font-bold text-theme-color-1">
-                    Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)}, 
-                    Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="mb-2 text-lg font-bold">Subscription History</h3>
-                <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
-                  {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
-                    [...selectedUser.subscriptions].reverse().map((sub, i) => (
-                      <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
-                        <div className="flex justify-between font-bold text-theme-color-1">
-                          <span>{sub.plan}</span>
-                          <span>₹{sub.price}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                          <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
-                          <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
-                          <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                          <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
-                          <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
-                          {sub.allergy && (
-                            <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="py-4 text-center text-gray-500">No subscription history found.</p>
-                  )}
-                </div>
-              </div>
-            </div>
+            )
           )
-        )
-      }
-      buttons={[
-        {
-          label: "Close",
-          onClick: () => setSelectedUser(null),
-          className: "bg-gray-100 text-gray-700 hover:bg-gray-200"
         }
-      ]}
-    />
+        buttons={[
+          {
+            label: "Close",
+            onClick: () => setSelectedUser(null),
+            className: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }
+        ]}
+      />
     </>
   );
 };
