@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
@@ -26,17 +27,40 @@ const Sidebar = ({ closeSidebar }) => {
   const location = useLocation();
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState(null);
   const profileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target) &&
+        !event.target.closest("[data-sidebar-profile-menu]")
+      ) {
         setIsProfileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Portaled to <body> with real viewport coordinates — local absolute
+  // positioning here gets painted over by the nav buttons above it, since
+  // Framer Motion gives each one its own stacking context (via the
+  // transform/will-change it applies for the stagger-in and active pill),
+  // which breaks normal DOM-order stacking.
+  useEffect(() => {
+    if (!isProfileMenuOpen || !profileMenuRef.current) {
+      setMenuPos(null);
+      return;
+    }
+    const rect = profileMenuRef.current.getBoundingClientRect();
+    setMenuPos({
+      left: rect.left + 16,
+      width: rect.width - 32,
+      bottom: window.innerHeight - rect.top + 8,
+    });
+  }, [isProfileMenuOpen]);
 
   const handleNavigate = (path) => {
     if (path.startsWith('http')) {
@@ -141,36 +165,42 @@ const Sidebar = ({ closeSidebar }) => {
       </nav>
 
       <div className="relative flex-shrink-0 p-4 border-t border-white/10" ref={profileMenuRef}>
-        <AnimatePresence>
-          {isProfileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 6 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97, y: 4 }}
-              transition={{ type: "spring", stiffness: 450, damping: 32 }}
-              className="overflow-hidden absolute right-4 left-4 bottom-full mb-2 bg-[#1f251f] rounded-xl border border-white/10 shadow-lg origin-bottom"
-            >
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={handleProfileNavigate}
-                className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
-              >
-                <UserCircle className="flex-shrink-0 w-4 h-4" />
-                Profile
-              </motion.button>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={logout}
-                className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left text-red-300 transition-colors border-t border-white/10 hover:bg-white/10 hover:text-red-200"
-              >
-                <LogOut className="flex-shrink-0 w-4 h-4" />
-                Log out
-              </motion.button>
-            </motion.div>
+        {menuPos &&
+          createPortal(
+            <AnimatePresence>
+              {isProfileMenuOpen && (
+                <motion.div
+                  data-sidebar-profile-menu
+                  initial={{ opacity: 0, scale: 0.95, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97, y: 4 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="overflow-hidden fixed bg-[#1f251f] rounded-xl border border-white/10 shadow-lg origin-bottom z-[300]"
+                  style={{ left: menuPos.left, width: menuPos.width, bottom: menuPos.bottom }}
+                >
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleProfileNavigate}
+                    className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
+                  >
+                    <UserCircle className="flex-shrink-0 w-4 h-4" />
+                    Profile
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    onClick={logout}
+                    className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left text-red-300 transition-colors border-t border-white/10 hover:bg-white/10 hover:text-red-200"
+                  >
+                    <LogOut className="flex-shrink-0 w-4 h-4" />
+                    Log out
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body
           )}
-        </AnimatePresence>
         <button
           type="button"
           onClick={() => setIsProfileMenuOpen((v) => !v)}
