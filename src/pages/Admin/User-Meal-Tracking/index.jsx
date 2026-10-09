@@ -286,8 +286,17 @@ export const UserMealTracking = () => {
   const deliveredCount = monthRecords.filter((r) => r.category === "meal_count" && /delivered on/i.test(r.description)).length;
   const cancelledCount = monthRecords.filter((r) => r.category === "cancellation").length;
   const holidaysCount = monthRecords.filter((r) => r.category === "holiday").length;
+
+  // Completion % is plan progress, not a monthly ratio — meals actually
+  // delivered since this subscription started, out of what it was bought for.
+  const planDeliveredCount = latestSub
+    ? activityRecords.filter((r) => {
+        if (r.category !== "meal_count" || !/delivered on/i.test(r.description)) return false;
+        return new Date(r.date) >= new Date(latestSub.subscriptionStartDate);
+      }).length
+    : 0;
   const completionRate =
-    deliveredCount + cancelledCount > 0 ? Math.round((deliveredCount / (deliveredCount + cancelledCount)) * 100) : null;
+    latestSub?.totalMeals > 0 ? Math.round((planDeliveredCount / latestSub.totalMeals) * 100) : null;
 
   const nextDelivery = (() => {
     const mc = userDetail?.mealCounts;
@@ -486,7 +495,7 @@ export const UserMealTracking = () => {
                   <StatTile icon={Utensils} tone="bg-green-50 text-theme-color-1" label="Delivered" value={deliveredCount} />
                   <StatTile icon={X} tone="bg-red-50 text-red-600" label="Cancelled" value={cancelledCount} />
                   <StatTile icon={CalendarDays} tone="bg-purple-50 text-purple-600" label="Holidays" value={holidaysCount} />
-                  <StatTile icon={Percent} tone="bg-blue-50 text-blue-600" label="Completion" value={completionRate === null ? "—" : `${completionRate}%`} />
+                  <StatTile icon={Percent} tone="bg-blue-50 text-blue-600" label="Plan Completion" value={completionRate === null ? "—" : `${completionRate}%`} />
                 </div>
 
                 <div className="p-4 bg-green-50 rounded-xl border border-green-100">
