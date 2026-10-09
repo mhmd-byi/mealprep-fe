@@ -66,7 +66,6 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
             </div>
           </div>
 
-          {/*
           {showEndDateFilter && (
             <>
               <hr className="border-gray-200" />
@@ -105,7 +104,6 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
               </div>
             </>
           )}
-          */}
 
         </div>
       }
