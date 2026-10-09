@@ -157,7 +157,26 @@ const useProfile = (setUserDetails) => {
           },
           data: updatedFormData,
         });
-        setFormData(response.data);
+        // Not response.data — that's the raw server document, and its
+        // `password` is the bcrypt hash, not something to show back in a
+        // password field. Clear the form instead; userDetails (below) is
+        // the canonical source the inputs fall back to display.
+        setFormData({
+          firstName: "",
+          lastName: "",
+          mobile: "",
+          password: "",
+          confirmPassword: "",
+          email: "",
+          postalAddress: "",
+          profileImageUrl: "",
+        });
+        setUserDetails((prev) => ({
+          ...prev,
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          postalAddress: response.data.postalAddress,
+        }));
         toast.success("Profile updated successfully.");
 
         const changedFields = Object.keys(CHANGED_FIELD_LABELS).filter((key) => formData[key]);
