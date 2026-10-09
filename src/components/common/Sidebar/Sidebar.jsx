@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
 import Diet from "../../../assets/images/diet.png";
@@ -113,17 +114,26 @@ const Sidebar = ({ closeSidebar }) => {
                 {showAdminLabel && (
                   <p className="px-3 pt-5 pb-2 text-xs font-semibold tracking-wider uppercase text-white/30">Admin</p>
                 )}
-                <button
-                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-theme-color-1 text-white shadow-sm"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                <motion.button
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.025, duration: 0.2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`relative flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium ${
+                    isActive ? "text-white shadow-sm" : "text-white/70 hover:bg-white/10 hover:text-white"
                   }`}
                   onClick={() => handleNavigate(item.path)}
                 >
-                  <Icon className="flex-shrink-0 w-5 h-5" />
-                  <span className="truncate">{item.name}</span>
-                </button>
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebarActivePill"
+                      className="absolute inset-0 rounded-xl bg-theme-color-1"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <Icon className="relative z-10 flex-shrink-0 w-5 h-5" />
+                  <span className="relative z-10 truncate">{item.name}</span>
+                </motion.button>
               </React.Fragment>
             );
           })
@@ -131,26 +141,36 @@ const Sidebar = ({ closeSidebar }) => {
       </nav>
 
       <div className="relative flex-shrink-0 p-4 border-t border-white/10" ref={profileMenuRef}>
-        {isProfileMenuOpen && (
-          <div className="absolute right-4 left-4 bottom-full mb-2 overflow-hidden bg-[#1f251f] rounded-xl border border-white/10 shadow-lg">
-            <button
-              type="button"
-              onClick={handleProfileNavigate}
-              className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
+        <AnimatePresence>
+          {isProfileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 4 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              className="overflow-hidden absolute right-4 left-4 bottom-full mb-2 bg-[#1f251f] rounded-xl border border-white/10 shadow-lg origin-bottom"
             >
-              <UserCircle className="flex-shrink-0 w-4 h-4" />
-              Profile
-            </button>
-            <button
-              type="button"
-              onClick={logout}
-              className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left text-red-300 transition-colors border-t border-white/10 hover:bg-white/10 hover:text-red-200"
-            >
-              <LogOut className="flex-shrink-0 w-4 h-4" />
-              Log out
-            </button>
-          </div>
-        )}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.98 }}
+                onClick={handleProfileNavigate}
+                className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
+              >
+                <UserCircle className="flex-shrink-0 w-4 h-4" />
+                Profile
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.98 }}
+                onClick={logout}
+                className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left text-red-300 transition-colors border-t border-white/10 hover:bg-white/10 hover:text-red-200"
+              >
+                <LogOut className="flex-shrink-0 w-4 h-4" />
+                Log out
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <button
           type="button"
           onClick={() => setIsProfileMenuOpen((v) => !v)}

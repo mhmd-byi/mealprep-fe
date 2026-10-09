@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export const Button = ({
   type = "submit",
   id = undefined,
@@ -10,8 +12,17 @@ export const Button = ({
   const disabledBtnClasses = "!bg-[#295f3f] !cursor-not-allowed !pointer-events-none"
   const combinedClasses = `${defaultClasses} ${classes} ${disabled === true ? disabledBtnClasses : ""}`;
   return (
-    <button id={id} type={type} className={combinedClasses} onClick={onClick} disabled={disabled}>
+    <motion.button
+      id={id}
+      type={type}
+      className={combinedClasses}
+      onClick={onClick}
+      disabled={disabled}
+      whileHover={disabled ? undefined : { scale: 1.015 }}
+      whileTap={disabled ? undefined : { scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+    >
       {children}
-    </button>
+    </motion.button>
   );
 };

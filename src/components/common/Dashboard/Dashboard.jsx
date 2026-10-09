@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Sidebar from "../Sidebar/Sidebar";
 import Header from "../Header";
 import { ProtectedRoute } from "../../security/protectedRoute";
@@ -6,6 +8,7 @@ import { Footer } from "../footer";
 
 const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -37,7 +40,17 @@ const DashboardLayoutComponent = ({ children, showSidebar = true }) => {
             }`}
             onClick={isSidebarOpen ? toggleSidebar : undefined}
           >
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
         <div className="block lg:hidden print:hidden">
