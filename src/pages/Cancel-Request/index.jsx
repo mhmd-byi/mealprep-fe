@@ -4,6 +4,10 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import { Button } from "../../components";
 import { sendEmail } from "../../utils";
 import useSubscription from "../Plans/useSubscription";
+import { CalendarDays, Utensils, Info, CheckCircle2, AlertTriangle } from "lucide-react";
+
+const inputClass =
+  "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
 const CancelRequest = () => {
   const [startDate, setStartDate] = useState("");
@@ -86,110 +90,111 @@ const CancelRequest = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="block flex-col justify-center items-center p-5 w-full h-full lg:flex">
-        <div className="px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className="bg-white shadow-xl rounded-lg overflow-hidden min-w[350px] max-w-xl ">
-              <div className="p-6 sm:p-10">
-                <h2 className="mb-4 text-xl font-semibold text-gray-800 sm:text-2xl sm:mb-6">
-                  Cancel Meal Request
-                </h2>
-                <p className="mb-4">Steps to use:
-                  <ul>
-                    <li>1. First select start date and end date for which you need to cancel the request</li>
-                    <li>2. If you want to cancel for 1 day then start date and end date will be same</li>
-                    <li>3. Select the meal type like Lunch, Dinner or Both whatever you want to raise a cancel request for</li>
-                    <li>4. Submit the request</li>
-                  </ul>
-                  <br />
-                  &nbsp;
-                  <strong>Note 1</strong>: You Can Raise Cancel Meal Request From 12 Mid Night To Morning 10:00 AM For Lunch<br />
-                  <strong>Note 2</strong>: You Can Raise Cancel Meal Request From 12 Mid Night Till 4:00 PM For Dinner
-                </p>
-                {message && (
-                  <div className="mt-5 mb-4 text-sm font-medium text-green-600">
-                    {message}
-                  </div>
-                )}
-                {errorMessage && (
-                  <div className="mt-5 mb-4 text-sm font-medium text-red-700">
-                    {errorMessage}
-                  </div>
-                )}
-                <form onSubmit={handleSubmit}>
-                  <div className="flex flex-col space-y-4">
-                    <div>
-                      <label
-                        htmlFor="startDate"
-                        className="block mb-1 text-sm font-medium text-gray-700"
-                      >
-                        Start Date
-                      </label>
-                      <input
-                        type="date"
-                        id="startDate"
-                        value={startDate}
-                        onChange={(e) => {
-                          const selectedDate = new Date(e.target.value);
-                          if (selectedDate.getDay() === 0) {
-                            setErrorMessage("Sundays cannot be selected. Please choose another date.");
-                            setStartDate("");
-                          } else {
-                            setErrorMessage("");
-                            setStartDate(e.target.value);
-                          }
-                        }}
-                        min={getTomorrow()}
-                        className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="endDate"
-                        className="block mb-1 text-sm font-medium text-gray-700"
-                      >
-                        End Date
-                      </label>
-                      <input
-                        type="date"
-                        id="endDate"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        min={startDate || getTomorrow()}
-                        className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="mealType"
-                        className="block mb-1 text-sm font-medium text-gray-700"
-                      >
-                        Meal Type
-                      </label>
-                      <select
-                        id="mealType"
-                        value={mealType}
-                        onChange={(e) => setMealType(e.target.value)}
-                        className="block px-4 py-2 w-full text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      >
-                        <option value="">Select meal type</option>
-                        {currentPlan && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0) ? <option value="lunch">Lunch</option> : null}
-                        {currentPlan && ((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) ? <option value="dinner">Dinner</option> : null}
-                        {currentPlan && (((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0)) ? <option value="both">Both</option> : null}
-                      </select>
-                    </div>
-                    <div>
-                      <Button type="submit" classes="w-full">
-                        Submit Cancel Request
-                      </Button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+      <div className="p-4 w-full text-left sm:p-6 md:p-8">
+        <div className="mx-auto space-y-6 max-w-3xl">
+          <div>
+            <p className="text-sm text-gray-500">Dashboard &rsaquo; Cancel Meal Request</p>
+            <h2 className="text-2xl font-bold text-gray-900">Cancel Meal Request</h2>
+            <p className="text-sm text-gray-500">Skip a meal for a single day or a whole range.</p>
+          </div>
+
+          <div className="flex gap-3 items-start p-4 text-sm text-blue-800 bg-blue-50 rounded-2xl border border-blue-200">
+            <Info className="flex-shrink-0 mt-0.5 w-4 h-4" />
+            <div>
+              <p className="font-semibold">Steps to use:</p>
+              <ol className="mt-1 ml-4 list-decimal">
+                <li>Select a start date and end date to cancel</li>
+                <li>Cancelling a single day? Use the same date for both</li>
+                <li>Select Lunch, Dinner, or Both</li>
+                <li>Submit the request</li>
+              </ol>
+              <p className="mt-2">
+                <strong>Lunch:</strong> request accepted from 12 midnight to 10:00 AM.{" "}
+                <strong>Dinner:</strong> request accepted from 12 midnight to 4:00 PM.
+              </p>
             </div>
+          </div>
+
+          {message && (
+            <div className="flex gap-2 items-center p-4 text-sm font-medium text-green-700 bg-green-50 rounded-2xl border border-green-200">
+              <CheckCircle2 className="flex-shrink-0 w-4 h-4" />
+              {message}
+            </div>
+          )}
+          {errorMessage && (
+            <div className="flex gap-2 items-center p-4 text-sm font-medium text-red-700 bg-red-50 rounded-2xl border border-red-200">
+              <AlertTriangle className="flex-shrink-0 w-4 h-4" />
+              {errorMessage}
+            </div>
+          )}
+
+          <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <form onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="startDate" className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                      <CalendarDays className="w-4 h-4 text-gray-400" />
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={startDate}
+                      onChange={(e) => {
+                        const selectedDate = new Date(e.target.value);
+                        if (selectedDate.getDay() === 0) {
+                          setErrorMessage("Sundays cannot be selected. Please choose another date.");
+                          setStartDate("");
+                        } else {
+                          setErrorMessage("");
+                          setStartDate(e.target.value);
+                        }
+                      }}
+                      min={getTomorrow()}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="endDate" className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                      <CalendarDays className="w-4 h-4 text-gray-400" />
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      min={startDate || getTomorrow()}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="mealType" className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                    <Utensils className="w-4 h-4 text-gray-400" />
+                    Meal Type
+                  </label>
+                  <select
+                    id="mealType"
+                    value={mealType}
+                    onChange={(e) => setMealType(e.target.value)}
+                    className={inputClass}
+                    required
+                  >
+                    <option value="">Select meal type</option>
+                    {currentPlan && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0) ? <option value="lunch">Lunch</option> : null}
+                    {currentPlan && ((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) ? <option value="dinner">Dinner</option> : null}
+                    {currentPlan && (((currentPlan.dinnerMeals + currentPlan.nextDayDinnerMeals) > 0) && ((currentPlan.lunchMeals + currentPlan.nextDayLunchMeals) > 0)) ? <option value="both">Both</option> : null}
+                  </select>
+                </div>
+                <Button type="submit" classes="w-full justify-center">
+                  Submit Cancel Request
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

@@ -1,12 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import FoodMenuIcon from "../../../assets/images/icons/update/menu.png";
-import CancelRequestIcon from "../../../assets/images/icons/update/cancel-request-icon.png";
-import MealCalendarIcon from "../../../assets/images/icons/update/calender.png";
-import CustomizedMealIcon from "../../../assets/images/icons/update/customizes.png";
-import ReceiptIcon from "../../../assets/images/icons/update/rc.png";
-import SubscriptionPlansIcon from "../../../assets/images/icons/update/subs.png";
-import HelpIcon from "../../../assets/images/icons/update/help.png";
-import WhatsAppIcon from "../../../assets/images/icons/update/chat.png";
+import { UtensilsCrossed, Activity, XCircle, Settings2, Receipt, ClipboardList, HelpCircle, MessageCircle } from "lucide-react";
 import useSubscription from "../../Plans/useSubscription";
 
 export const Services = () => {
@@ -28,92 +21,48 @@ export const Services = () => {
   const showServices = checkForMeals();
 
   const services = [
-    { name: "Food Menu", path: "/dashboard/food-menu", icon: FoodMenuIcon, showOnlyToSubscribed: false },
-    { name: "Meal Trackings", path: "/dashboard/meal-tracking", icon: MealCalendarIcon, showOnlyToSubscribed: false },
-    { name: "Cancel Meal Request", path: "/dashboard/cancel-request", icon: CancelRequestIcon, showOnlyToSubscribed: true },
-    { name: "Customized Meal", path: "/dashboard/customize-your-meal", icon: CustomizedMealIcon, showOnlyToSubscribed: true },
-    { name: "My Billings", path: "/dashboard/my-billing", icon: ReceiptIcon, showOnlyToSubscribed: true },
-    {
-      name: "Subscription Plans",
-      path: "/dashboard/plans",
-      icon: SubscriptionPlansIcon,
-      showOnlyToSubscribed: false,
-    },
-    { name: "FAQs", path: "/dashboard/help", icon: HelpIcon, showOnlyToSubscribed: false },
-    { name: "Chat on WhatsApp", path: "https://wa.me/+919826157131", icon: WhatsAppIcon, showOnlyToSubscribed: false },
+    { name: "Food Menu", path: "/dashboard/food-menu", icon: UtensilsCrossed, tone: "bg-green-50 text-theme-color-1", showOnlyToSubscribed: false },
+    { name: "Meal Trackings", path: "/dashboard/meal-tracking", icon: Activity, tone: "bg-blue-50 text-blue-600", showOnlyToSubscribed: false },
+    { name: "Cancel Meal Request", path: "/dashboard/cancel-request", icon: XCircle, tone: "bg-red-50 text-red-600", showOnlyToSubscribed: true },
+    { name: "Customized Meal", path: "/dashboard/customize-your-meal", icon: Settings2, tone: "bg-amber-50 text-amber-600", showOnlyToSubscribed: true },
+    { name: "My Billings", path: "/dashboard/my-billing", icon: Receipt, tone: "bg-purple-50 text-purple-600", showOnlyToSubscribed: true },
+    { name: "Subscription Plans", path: "/dashboard/plans", icon: ClipboardList, tone: "bg-teal-50 text-teal-600", showOnlyToSubscribed: false },
+    { name: "FAQs", path: "/dashboard/help", icon: HelpCircle, tone: "bg-indigo-50 text-indigo-600", showOnlyToSubscribed: false },
+    { name: "Chat on WhatsApp", path: "https://wa.me/+919826157131", icon: MessageCircle, tone: "bg-green-50 text-green-600", showOnlyToSubscribed: false },
   ];
 
-  const renderServiceItem = (service, index) => (
-    (service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)) && (<div
-      key={index}
-      className="w-[calc(25%-0.375rem)] lg:w-[200px] lg:h-[200px] p-4 flex flex-col items-center justify-center rounded-lg transition-all duration-300 cursor-pointer"
-      onClick={() => {
-        if (service.path.startsWith('http')) {
-          window.open(service.path, '_blank');
-        } else {
-          navigate(service.path);
-        }
-      }}
-    >
-      <div className="mb-3 rounded-md flex items-center justify-center">
-        <img
-          src={service.icon}
-          alt={service.name}
-          className="w-16 h-16  object-contain"
-        />
-      </div>
-      <h3 className="text-sm lg:text-base font-medium text-gray-800 text-center">
-        {service.name}
-      </h3>
-    </div>)
-  );
+  const handleClick = (path) => {
+    if (path.startsWith("http")) {
+      window.open(path, "_blank");
+    } else {
+      navigate(path);
+    }
+  };
 
-  const renderMobileServiceItem = (service, index) => (
-    (service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)) && (<div
-      key={index}
-      className="w-full p-2 flex flex-col items-center justify-start cursor-pointer"
-      onClick={() => {
-        if (service.path.startsWith('http')) {
-          window.open(service.path, '_blank');
-        } else {
-          navigate(service.path);
-        }
-      }}
-    >
-      <div className="mb-2 rounded-md flex items-center justify-center w-full">
-        <img
-          src={service.icon}
-          alt={service.name}
-          className="w-14 h-14 object-contain"
-        />
-      </div>
-      <h3 className="text-xs font-medium text-gray-800 text-center mt-1">
-        {service.name}
-      </h3>
-    </div>)
+  const visibleServices = services.filter(
+    (service) => service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)
   );
 
   return (
-    <div className="px-4 mt-16 lg:mt-0">
-      <section className="mb-6 flex justify-center">
-        <div className="bg-[#D5ECDB] p-3 rounded-lg w-fit">
-          <p className="text-2xl sm:text-xl">Features</p>
-        </div>
-      </section>
-
-      {/* Mobile view - 4 columns */}
-      <section className="mt-6 lg:hidden flex justify-center">
-        <div className="grid grid-cols-4 gap-1 w-full max-w-[500px] mx-auto">
-          {services.map(renderMobileServiceItem)}
-        </div>
-      </section>
-
-      {/* Desktop view - 4 columns */}
-      <section className="my-20 hidden lg:block flex justify-center">
-        <div className="grid grid-cols-4 gap-4 lg:gap-10 max-w-[1500px] w-full mx-auto justify-items-center">
-          {services.map(renderServiceItem)}
-        </div>
-      </section>
+    <div className="px-4 pt-4 pb-8 text-left">
+      <p className="mb-3 text-base font-bold text-gray-900">Quick Actions</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {visibleServices.map((service) => (
+          <button
+            key={service.name}
+            type="button"
+            onClick={() => handleClick(service.path)}
+            className="flex flex-col items-center p-4 text-center bg-white rounded-2xl border border-gray-100 shadow-sm transition-colors hover:border-theme-color-1"
+          >
+            <div className={`flex justify-center items-center mb-2 w-12 h-12 rounded-xl ${service.tone}`}>
+              <service.icon className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-gray-800">{service.name}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
+
+export default Services;

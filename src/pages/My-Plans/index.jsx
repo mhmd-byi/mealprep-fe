@@ -2,6 +2,7 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import useSubscription from "../Plans/useSubscription";
 import { useMealSchedule } from "./useMealSchedule";
 import { formatNutritionLine } from "../../nutritionInfo";
+import { CreditCard, Clock, Utensils, Sun, Moon, Lock, Info } from "lucide-react";
 
 const formatDayLabel = (dateStr) => {
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -18,27 +19,28 @@ const formatDate = (dateValue) => {
   });
 };
 
-const DietToggle = ({ date, mealSlot, value, locked, isSaving, onSelect }) => {
+const DietToggle = ({ value, locked, isSaving, onSelect }) => {
   if (locked) {
     return (
       <span
-        className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+        className={`inline-flex gap-1 items-center px-2 py-1 rounded-full text-xs font-semibold ${
           value === "non-veg" ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"
         }`}
         title="Locked — within 3 days of delivery, already planned for"
       >
-        🔒 {value === "non-veg" ? "Non-Veg" : "Veg"}
+        <Lock className="w-3 h-3" />
+        {value === "non-veg" ? "Non-Veg" : "Veg"}
       </span>
     );
   }
   return (
-    <div className="inline-flex rounded-md border border-gray-300 overflow-hidden text-xs">
+    <div className="inline-flex overflow-hidden text-xs rounded-lg border border-gray-300">
       <button
         type="button"
         disabled={isSaving}
         onClick={() => value !== "veg" && onSelect("veg")}
-        className={`px-2 py-1 font-medium ${
-          value === "veg" ? "bg-green-500 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
+        className={`px-2 py-1 font-semibold ${
+          value === "veg" ? "bg-theme-color-1 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
         }`}
       >
         Veg
@@ -47,7 +49,7 @@ const DietToggle = ({ date, mealSlot, value, locked, isSaving, onSelect }) => {
         type="button"
         disabled={isSaving}
         onClick={() => value !== "non-veg" && onSelect("non-veg")}
-        className={`px-2 py-1 font-medium border-l border-gray-300 ${
+        className={`px-2 py-1 font-semibold border-l border-gray-300 ${
           value === "non-veg" ? "bg-orange-500 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
         }`}
       >
@@ -71,201 +73,202 @@ export const MyPlan = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-start items-center p-5 w-full pt-10 gap-6">
-
-        {/* ── Current Plan(s) ── */}
-        {(isSubscribed && currentPlans.length > 0) ? (
-          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px]">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
-                {currentPlans.length > 1 ? "Current Active Plans" : "Current Active Plan"}
-              </h2>
-              <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
-                ● Active
-              </span>
-            </div>
-            {currentPlans.length > 1 && (
-              <p className="text-sm text-gray-500 mb-4">
-                You have {currentPlans.length} active plans running at once, covering different meal types.
-              </p>
-            )}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-gray-200">
-                    <th className="text-left py-2">Plan Name</th>
-                    <th className="text-left py-2">Start Date</th>
-                    <th className="text-left py-2">Total Meals</th>
-                    <th className="text-left py-2">Meals Left</th>
-                    <th className="text-left py-2">Lunch Left</th>
-                    <th className="text-left py-2">Dinner Left</th>
-                    <th className="text-left py-2">Meal Type</th>
-                    <th className="text-left py-2">Carb Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentPlans.map((plan) => (
-                    <tr key={plan._id} className="text-left">
-                      <td className="py-2 font-medium">{plan?.plan}</td>
-                      <td className="py-2">{formatDate(plan?.subscriptionStartDate)}</td>
-                      <td className="py-2">{plan?.totalMeals} Meals</td>
-                      <td className="py-2">{totalMealsLeft(plan)} Meals</td>
-                      <td className="py-2">
-                        {(plan?.lunchMeals || 0) + (plan?.nextDayLunchMeals || 0)} Meals
-                      </td>
-                      <td className="py-2">
-                        {(plan?.dinnerMeals || 0) + (plan?.nextDayDinnerMeals || 0)} Meals
-                      </td>
-                      <td className="py-2">{(plan?.mealType || "").toUpperCase()}</td>
-                      <td className="py-2 capitalize">
-                        {plan?.carbType || "—"}
-                        {formatNutritionLine(plan?.carbType) && (
-                          <p className="text-xs text-gray-500 normal-case">
-                            {formatNutritionLine(plan?.carbType)}
-                          </p>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <div className="p-4 w-full text-left sm:p-6 md:p-8">
+        <div className="mx-auto space-y-6 max-w-5xl">
+          <div>
+            <p className="text-sm text-gray-500">Dashboard &rsaquo; My Billing</p>
+            <h2 className="text-2xl font-bold text-gray-900">My Billing &amp; Plan</h2>
+            <p className="text-sm text-gray-500">Your active subscription, meal schedule and anything queued up next.</p>
           </div>
-        ) : (
-          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px]">
-            <p className="text-center text-gray-600">
-              You don&apos;t have any active subscription plans.
-            </p>
-          </div>
-        )}
 
-        {/* ── Meal Schedule (Veg / Non-Veg per day, only for "Both" plans) ── */}
-        {isSubscribed && isBothMealType && (
-          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px]">
-            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-2">
-              Meal Schedule
-            </h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Choose Veg or Non-Veg for each upcoming day. Days within the next 3 days are locked
-              because we've already planned stock against them — anything further out can be
-              changed any time.
-            </p>
-
-            {scheduleError && (
-              <p className="mb-3 text-sm text-red-600">{scheduleError}</p>
-            )}
-
-            {isScheduleLoading ? (
-              <p className="text-gray-500 text-sm">Loading schedule…</p>
-            ) : applicable && days.length > 0 ? (
+          {/* ── Current Plan(s) ── */}
+          {(isSubscribed && currentPlans.length > 0) ? (
+            <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-center p-5 border-b border-gray-100">
+                <p className="flex gap-2 items-center text-base font-bold text-gray-900">
+                  <CreditCard className="w-5 h-5 text-theme-color-1" />
+                  {currentPlans.length > 1 ? "Current Active Plans" : "Current Active Plan"}
+                </p>
+                <span className="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Active</span>
+              </div>
+              {currentPlans.length > 1 && (
+                <p className="px-5 pt-4 text-sm text-gray-500">
+                  You have {currentPlans.length} active plans running at once, covering different meal types.
+                </p>
+              )}
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left py-2">Date</th>
-                      {days.some((d) => d.lunch) && <th className="text-left py-2">Lunch</th>}
-                      {days.some((d) => d.dinner) && <th className="text-left py-2">Dinner</th>}
+                <table className="w-full text-sm divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {["Plan Name", "Start Date", "Total Meals", "Meals Left", "Lunch Left", "Dinner Left", "Meal Type", "Carb Type"].map((h) => (
+                        <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">{h}</th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody>
-                    {days.map((day) => (
-                      <tr key={day.date} className="text-left border-b border-gray-100">
-                        <td className="py-2 font-medium">{formatDayLabel(day.date)}</td>
-                        {days.some((d) => d.lunch) && (
-                          <td className="py-2">
-                            {day.lunch ? (
-                              <DietToggle
-                                date={day.date}
-                                mealSlot="lunch"
-                                value={day.lunch}
-                                locked={day.locked}
-                                isSaving={savingKey === `${day.date}_lunch`}
-                                onSelect={(pref) => updatePreference(day.date, "lunch", pref)}
-                              />
-                            ) : (
-                              <span className="text-gray-300 text-xs">—</span>
-                            )}
-                          </td>
-                        )}
-                        {days.some((d) => d.dinner) && (
-                          <td className="py-2">
-                            {day.dinner ? (
-                              <DietToggle
-                                date={day.date}
-                                mealSlot="dinner"
-                                value={day.dinner}
-                                locked={day.locked}
-                                isSaving={savingKey === `${day.date}_dinner`}
-                                onSelect={(pref) => updatePreference(day.date, "dinner", pref)}
-                              />
-                            ) : (
-                              <span className="text-gray-300 text-xs">—</span>
-                            )}
-                          </td>
-                        )}
+                  <tbody className="divide-y divide-gray-100">
+                    {currentPlans.map((plan) => (
+                      <tr key={plan._id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{plan?.plan}</td>
+                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{formatDate(plan?.subscriptionStartDate)}</td>
+                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{plan?.totalMeals} Meals</td>
+                        <td className="px-4 py-3 font-semibold whitespace-nowrap text-theme-color-1">{totalMealsLeft(plan)} Meals</td>
+                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                          {(plan?.lunchMeals || 0) + (plan?.nextDayLunchMeals || 0)} Meals
+                        </td>
+                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                          {(plan?.dinnerMeals || 0) + (plan?.nextDayDinnerMeals || 0)} Meals
+                        </td>
+                        <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{plan?.mealType}</td>
+                        <td className="px-4 py-3 text-gray-700 capitalize whitespace-nowrap">
+                          {plan?.carbType || "—"}
+                          {formatNutritionLine(plan?.carbType) && (
+                            <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(plan?.carbType)}</p>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <p className="text-gray-500 text-sm">No upcoming delivery days to schedule yet.</p>
-            )}
-          </div>
-        )}
-
-        {/* ── Next (Queued) Plan ── */}
-        {hasQueuedPlan && nextPlan ? (
-          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1500px] lg:w-[1200px] border-l-4 border-amber-400">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
-                Next Queued Plan
-              </h2>
-              <span className="px-3 py-1 rounded-full text-sm font-semibold bg-amber-100 text-amber-700">
-                🕐 Queued
-              </span>
             </div>
-            <p className="text-sm text-gray-500 mb-4">
-              This plan will activate automatically once your current plan's meals run out.
-              Only an admin can cancel a queued plan.
-            </p>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left py-2">Plan Name</th>
-                  <th className="text-left py-2">Total Meals</th>
-                  <th className="text-left py-2">Meal Type</th>
-                  <th className="text-left py-2">Carb Type</th>
-                  <th className="text-left py-2">Allergy</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-left">
-                  <td className="py-2 font-medium">{nextPlan?.plan}</td>
-                  <td className="py-2">{nextPlan?.totalMeals} Meals</td>
-                  <td className="py-2">{(nextPlan?.mealType || "").toUpperCase()}</td>
-                  <td className="py-2 capitalize">
-                    {nextPlan?.carbType || "—"}
-                    {formatNutritionLine(nextPlan?.carbType) && (
-                      <p className="text-xs text-gray-500 normal-case">
-                        {formatNutritionLine(nextPlan?.carbType)}
-                      </p>
-                    )}
-                  </td>
-                  <td className="py-2">{nextPlan?.allergy || "None"}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : isSubscribed ? (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 w-full max-w-[1500px] lg:w-[1200px] text-sm text-amber-800">
-            💡 You can queue a next plan on the{" "}
-            <a href="/dashboard/plans" className="underline font-medium">Plans page</a>{" "}
-            before your current plan runs out.
-          </div>
-        ) : null}
+          ) : (
+            <div className="p-8 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <p className="text-gray-500">You don&apos;t have any active subscription plans.</p>
+            </div>
+          )}
 
+          {/* ── Meal Schedule (Veg / Non-Veg per day, only for "Both" plans) ── */}
+          {isSubscribed && isBothMealType && (
+            <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <p className="flex gap-2 items-center mb-2 text-base font-bold text-gray-900">
+                <Utensils className="w-5 h-5 text-theme-color-1" />
+                Meal Schedule
+              </p>
+              <p className="mb-4 text-sm text-gray-500">
+                Choose Veg or Non-Veg for each upcoming day. Days within the next 3 days are locked
+                because we've already planned stock against them — anything further out can be
+                changed any time.
+              </p>
+
+              {scheduleError && <p className="mb-3 text-sm text-red-600">{scheduleError}</p>}
+
+              {isScheduleLoading ? (
+                <p className="text-sm text-gray-500">Loading schedule…</p>
+              ) : applicable && days.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Date</th>
+                        {days.some((d) => d.lunch) && (
+                          <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
+                            <span className="flex gap-1 items-center"><Sun className="w-3.5 h-3.5 text-amber-500" />Lunch</span>
+                          </th>
+                        )}
+                        {days.some((d) => d.dinner) && (
+                          <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
+                            <span className="flex gap-1 items-center"><Moon className="w-3.5 h-3.5 text-indigo-500" />Dinner</span>
+                          </th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {days.map((day) => (
+                        <tr key={day.date}>
+                          <td className="px-3 py-3 font-medium text-gray-900 whitespace-nowrap">{formatDayLabel(day.date)}</td>
+                          {days.some((d) => d.lunch) && (
+                            <td className="px-3 py-3">
+                              {day.lunch ? (
+                                <DietToggle
+                                  value={day.lunch}
+                                  locked={day.locked}
+                                  isSaving={savingKey === `${day.date}_lunch`}
+                                  onSelect={(pref) => updatePreference(day.date, "lunch", pref)}
+                                />
+                              ) : (
+                                <span className="text-xs text-gray-300">—</span>
+                              )}
+                            </td>
+                          )}
+                          {days.some((d) => d.dinner) && (
+                            <td className="px-3 py-3">
+                              {day.dinner ? (
+                                <DietToggle
+                                  value={day.dinner}
+                                  locked={day.locked}
+                                  isSaving={savingKey === `${day.date}_dinner`}
+                                  onSelect={(pref) => updatePreference(day.date, "dinner", pref)}
+                                />
+                              ) : (
+                                <span className="text-xs text-gray-300">—</span>
+                              )}
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No upcoming delivery days to schedule yet.</p>
+              )}
+            </div>
+          )}
+
+          {/* ── Next (Queued) Plan ── */}
+          {hasQueuedPlan && nextPlan ? (
+            <div className="overflow-hidden bg-white rounded-2xl border-l-4 border-amber-400 shadow-sm">
+              <div className="flex justify-between items-center p-5 border-b border-gray-100">
+                <p className="flex gap-2 items-center text-base font-bold text-gray-900">
+                  <Clock className="w-5 h-5 text-amber-500" />
+                  Next Queued Plan
+                </p>
+                <span className="px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-100 rounded-full">Queued</span>
+              </div>
+              <p className="px-5 pt-4 text-sm text-gray-500">
+                This plan will activate automatically once your current plan's meals run out.
+                Only an admin can cancel a queued plan.
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {["Plan Name", "Total Meals", "Meal Type", "Carb Type", "Allergy"].map((h) => (
+                        <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{nextPlan?.plan}</td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.totalMeals} Meals</td>
+                      <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{nextPlan?.mealType}</td>
+                      <td className="px-4 py-3 text-gray-700 capitalize whitespace-nowrap">
+                        {nextPlan?.carbType || "—"}
+                        {formatNutritionLine(nextPlan?.carbType) && (
+                          <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(nextPlan?.carbType)}</p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.allergy || "None"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : isSubscribed ? (
+            <div className="flex gap-3 items-start p-4 text-sm text-amber-800 bg-amber-50 rounded-2xl border border-amber-200">
+              <Info className="flex-shrink-0 mt-0.5 w-4 h-4" />
+              <p>
+                You can queue a next plan on the{" "}
+                <a href="/dashboard/plans" className="font-semibold underline">Plans page</a>{" "}
+                before your current plan runs out.
+              </p>
+            </div>
+          ) : null}
+        </div>
       </div>
     </DashboardLayoutComponent>
   );
 };
+
+export default MyPlan;

@@ -5,6 +5,10 @@ import data from "./data.json";
 import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
 import { formatNutritionLine } from "../../nutritionInfo";
+import { CheckCircle2, Clock, Lock, Info, CalendarDays, AlertTriangle } from "lucide-react";
+
+const selectClass =
+  "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
 const SubscriptionPlans = () => {
   const { plans } = data;
@@ -17,16 +21,6 @@ const SubscriptionPlans = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-  };
-
-  const getTomorrow = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    // If tomorrow is Sunday (0), set it to Monday (add 1 more day)
-    if (tomorrow.getDay() === 0) {
-      tomorrow.setDate(tomorrow.getDate() + 1);
-    }
-    return formatDateLocal(tomorrow);
   };
 
   const getMinimumDate = (lunchDinner) => {
@@ -51,7 +45,7 @@ const SubscriptionPlans = () => {
         minDate.setDate(minDate.getDate() + 1);
       }
     } else if (lunchDinner === "lunchAndDinner") {
-      // For both: if lunch time has passed, we should ideally start from tomorrow 
+      // For both: if lunch time has passed, we should ideally start from tomorrow
       // to ensure the user gets a full day's worth of meals
       if (currentTimeInMinutes >= 10.5 * 60) {
         minDate.setDate(minDate.getDate() + 1);
@@ -209,29 +203,31 @@ const SubscriptionPlans = () => {
 
   return (
     <DashboardLayoutComponent>
-      <div className="flex flex-col justify-start items-center p-5 w-full pt-10">
-        <div className="bg-white shadow-md rounded-lg p-5 lg:p-20 w-full max-w-[1500px] lg:w-[1200px]">
-          <h2 className="text-2xl lg:text-3xl text-black font-semibold text-center mb-4">
-            Subscribe Your Meal Plans
-          </h2>
+      <div className="p-4 w-full text-left sm:p-6 md:p-8">
+        <div className="mx-auto space-y-6 max-w-6xl">
+          <div>
+            <p className="text-sm text-gray-500">Dashboard &rsaquo; Plans</p>
+            <h2 className="text-2xl font-bold text-gray-900">Subscribe to a Meal Plan</h2>
+            <p className="text-sm text-gray-500">Pick a plan, customize it to your diet, and we'll take it from there.</p>
+          </div>
 
           {/* Info banner: user has active plan but no queued plan yet */}
           {isSubscribed && !hasQueuedPlan && (
-            <div className="mb-6 bg-amber-50 border border-amber-300 text-amber-800 rounded-lg px-4 py-3 text-sm">
-              ⚠️ <strong>You have an active plan.</strong> You can queue up one more plan now — it will
-              activate automatically when your current plan's meals run out.
+            <div className="flex gap-3 items-start p-4 text-sm text-amber-800 bg-amber-50 rounded-2xl border border-amber-200">
+              <Info className="flex-shrink-0 mt-0.5 w-4 h-4" />
+              <p><strong>You have an active plan.</strong> You can queue up one more plan now — it will activate automatically when your current plan's meals run out.</p>
             </div>
           )}
 
           {/* Info banner: next plan already queued */}
           {hasQueuedPlan && (
-            <div className="mb-6 bg-blue-50 border border-blue-300 text-blue-800 rounded-lg px-4 py-3 text-sm">
-              🔵 <strong>You have a plan queued.</strong> It will activate as soon as your current plan finishes.
-              Only one plan can be queued at a time.
+            <div className="flex gap-3 items-start p-4 text-sm text-blue-800 bg-blue-50 rounded-2xl border border-blue-200">
+              <Clock className="flex-shrink-0 mt-0.5 w-4 h-4" />
+              <p><strong>You have a plan queued.</strong> It will activate as soon as your current plan finishes. Only one plan can be queued at a time.</p>
             </div>
           )}
 
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-0">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {plans.map((plan, index) => {
               const { price, meals, duration } = getAdjustedPlanDetails(plan);
               const currentPlanDetails = planDetails[plan.name];
@@ -246,227 +242,191 @@ const SubscriptionPlans = () => {
               return (
                 <div
                   key={index}
-                  className={`bg-white border-b-2 border-grey-500 pt-5 pb-5 lg:pt-0 rounded-lg lg:rounded-none lg:pb-0 px-4 lg:border-b-0 lg:border-r-2 border-grey-500 flex-1 ${
-                    index === plans.length - 1 ? "lg:border-r-0" : ""
+                  className={`flex flex-col p-5 bg-white rounded-2xl border shadow-sm ${
+                    isActive ? "border-theme-color-1 ring-1 ring-theme-color-1" : "border-gray-100"
                   }`}
                 >
-                  <div className="py-5">
-                    <h2 className="text-2xl font-medium pb-2 border-b-2 border-grey-500">
-                      {plan.name}
-                    </h2>
-                    <h1 className="text-4xl text-black font-bold mt-2">
-                      ₹{price}
-                    </h1>
-                    <p className="mt-4 mb-4">
-                      {plan.description} <br />
-                      Valid for {duration}
-                    </p>
-                    <div className="flex flex-col space-y-4 justify-between items-center mb-4">
-                      <div className="flex items-center">
-                        <label className="mr-2">Meal Type:</label>
-                        <select
-                          className="border-2 border-grey-500 rounded-md p-1"
-                          value={currentPlanDetails.mealType}
-                          onChange={(e) =>
-                            handleDetailChange(
-                              plan.name,
-                              "mealType",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="veg">Veg</option>
-                          <option value="non-veg">Non-Veg</option>
-                          <option value="both">Both</option>
-                        </select>
-                      </div>
-                      <div className="flex items-center">
-                        <label className="mr-2">Lunch/Dinner:</label>
-                        <select
-                          className="border-2 border-grey-500 rounded-md p-1"
-                          value={currentPlanDetails.lunchDinner}
-                          onChange={(e) =>
-                            handleDetailChange(
-                              plan.name,
-                              "lunchDinner",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="lunch">Only Lunch</option>
-                          <option value="dinner">Only Dinner</option>
-                          <option value="lunchAndDinner">Both</option>
-                        </select>
-                      </div>
-                      <div className="flex items-center">
-                        <label className="mr-2">Carb Type:</label>
-                        <select
-                          className="border-2 border-grey-500 rounded-md p-1"
-                          value={currentPlanDetails.carbType}
-                          onChange={(e) =>
-                            handleDetailChange(
-                              plan.name,
-                              "carbType",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="low-carb-high-protein">
-                            Low Carb High Protein Meal
-                          </option>
-                          <option value="balanced-meal">Balanced Meal</option>
-                          <option value="high-carb-high-protein">
-                            High Carb High Protein Meal
-                          </option>
-                          <option value="zero-carb">Zero Carb Meal</option>
-                          <option value="keto-meal">Keto Meal</option>
-                        </select>
-                      </div>
+                  <h2 className="text-xl font-bold text-gray-900">{plan.name}</h2>
+                  <p className="mt-1 text-3xl font-bold text-gray-900">₹{price}</p>
+                  <p className="mt-2 mb-4 text-sm text-gray-500">
+                    {plan.description} <br />
+                    Valid for {duration}
+                  </p>
+
+                  <div className="mb-4 space-y-3">
+                    <div>
+                      <label className="block mb-1 text-xs font-medium text-gray-500">Meal Type</label>
+                      <select
+                        className={selectClass}
+                        value={currentPlanDetails.mealType}
+                        onChange={(e) => handleDetailChange(plan.name, "mealType", e.target.value)}
+                      >
+                        <option value="veg">Veg</option>
+                        <option value="non-veg">Non-Veg</option>
+                        <option value="both">Both</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-xs font-medium text-gray-500">Lunch / Dinner</label>
+                      <select
+                        className={selectClass}
+                        value={currentPlanDetails.lunchDinner}
+                        onChange={(e) => handleDetailChange(plan.name, "lunchDinner", e.target.value)}
+                      >
+                        <option value="lunch">Only Lunch</option>
+                        <option value="dinner">Only Dinner</option>
+                        <option value="lunchAndDinner">Both</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-xs font-medium text-gray-500">Carb Type</label>
+                      <select
+                        className={selectClass}
+                        value={currentPlanDetails.carbType}
+                        onChange={(e) => handleDetailChange(plan.name, "carbType", e.target.value)}
+                      >
+                        <option value="low-carb-high-protein">Low Carb High Protein Meal</option>
+                        <option value="balanced-meal">Balanced Meal</option>
+                        <option value="high-carb-high-protein">High Carb High Protein Meal</option>
+                        <option value="zero-carb">Zero Carb Meal</option>
+                        <option value="keto-meal">Keto Meal</option>
+                      </select>
                       {formatNutritionLine(currentPlanDetails.carbType) && (
-                        <p className="text-xs text-gray-500 -mt-2">
-                          {formatNutritionLine(currentPlanDetails.carbType)} (per meal)
-                        </p>
+                        <p className="mt-1 text-xs text-gray-400">{formatNutritionLine(currentPlanDetails.carbType)} (per meal)</p>
                       )}
-                      {wouldOverlap ? (
-                        // This purchase will queue behind the current plan and activate
-                        // automatically the moment it finishes — whatever start date is
-                        // stored now gets overwritten with the real activation date at
-                        // that point, so asking the customer to guess one here only
-                        // invites exactly the confusion this note is meant to prevent.
-                        <p className="text-xs text-gray-600 bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-center">
-                          📅 Start date: automatic — this activates right after your
-                          current plan ends, so there's nothing to pick here.
-                        </p>
-                      ) : (
-                        <div className="flex flex-col">
-                          <div className="flex items-center">
-                            <label className="mr-2">Meal Start Date:</label>
-                            <input
-                              type="date"
-                              className="border-2 border-grey-500 rounded-md p-1"
-                              onChange={(e) =>
-                                handleDetailChange(
-                                  plan.name,
-                                  "mealStartDate",
-                                  e.target.value
-                                )
-                              }
-                              value={currentPlanDetails.mealStartDate}
-                              min={getMinimumDate(currentPlanDetails.lunchDinner)}
-                              onKeyDown={(e) => e.preventDefault()}
-                            />
-                          </div>
-                          {dateWarnings[plan.name] && (
-                            <p className="mt-1 text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-                              ⚠️ {dateWarnings[plan.name]}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      <div className="flex items-center">
-                        <label className="mr-2">Allergy:</label>
-                        <input
-                          type="text"
-                          placeholder="Any allergies?"
-                          className="border-2 border-grey-500 rounded-md p-1 w-full max-w-[200px]"
-                          value={currentPlanDetails.allergy}
-                          onChange={(e) =>
-                            handleDetailChange(
-                              plan.name,
-                              "allergy",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
                     </div>
 
-                    {/* ── Status area ── */}
-                    {isActive ? (
-                      // This plan is already one of the user's active plans
-                      <>
-                        <p className="text-green-700 font-bold py-3 border-2 rounded-md border-green-500 bg-green-50">
-                          ✅ Currently Active Plan
-                        </p>
-                        {(!hasQueuedPlan || !wouldOverlap) && (
-                          <>
-                            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mt-2 mb-2">
-                              {wouldOverlap
-                                ? "ℹ️ This will be queued and activate when your current plan finishes."
-                                : "ℹ️ This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
-                            </p>
-                            <Button
-                              onClick={() =>
-                                handlePlanSubscribe(
-                                  plan.name,
-                                  meals,
-                                  price,
-                                  currentPlanDetails.mealType,
-                                  currentPlanDetails.carbType,
-                                  currentPlanDetails.lunchDinner,
-                                  currentPlanDetails.mealStartDate,
-                                  currentPlanDetails.allergy
-                                )
-                              }
-                              classes="w-full mt-2"
-                            >
-                              {wouldOverlap ? "Queue as Next Plan" : "Subscribe"}
-                            </Button>
-                          </>
-                        )}
-                      </>
-                    ) : isQueued ? (
-                      // This plan is already queued as next
-                      <p className="text-amber-700 font-bold py-3 border-2 rounded-md border-amber-400 bg-amber-50">
-                        🕐 Queued as Your Next Plan
-                      </p>
-                    ) : hasQueuedPlan && wouldOverlap ? (
-                      // User already has a different plan queued, and this selection
-                      // would also need to queue — can't queue a second one
-                      <p className="text-gray-500 font-medium py-3 border-2 rounded-md border-gray-300 bg-gray-50">
-                        🔒 Next plan slot is already taken
+                    {wouldOverlap ? (
+                      // This purchase will queue behind the current plan and activate
+                      // automatically the moment it finishes — whatever start date is
+                      // stored now gets overwritten with the real activation date at
+                      // that point, so asking the customer to guess one here only
+                      // invites exactly the confusion this note is meant to prevent.
+                      <p className="flex gap-1.5 items-start px-3 py-2 text-xs text-center text-gray-600 bg-gray-50 rounded-lg border border-gray-200">
+                        <CalendarDays className="flex-shrink-0 mt-0.5 w-3.5 h-3.5" />
+                        Start date: automatic — this activates right after your current plan ends, so there's nothing to pick here.
                       </p>
                     ) : (
-                      // Normal subscribe / queue-as-next
-                      <>
-                        {isSubscribed && (
-                          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-300 rounded px-2 py-1 mb-2">
-                            {wouldOverlap
-                              ? "ℹ️ This will be queued and activate when your current plan finishes."
-                              : "ℹ️ This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
+                      <div>
+                        <label className="block mb-1 text-xs font-medium text-gray-500">Meal Start Date</label>
+                        <input
+                          type="date"
+                          className={selectClass}
+                          onChange={(e) => handleDetailChange(plan.name, "mealStartDate", e.target.value)}
+                          value={currentPlanDetails.mealStartDate}
+                          min={getMinimumDate(currentPlanDetails.lunchDinner)}
+                          onKeyDown={(e) => e.preventDefault()}
+                        />
+                        {dateWarnings[plan.name] && (
+                          <p className="flex gap-1.5 items-start px-2 py-1 mt-1 text-xs text-amber-700 bg-amber-50 rounded border border-amber-300">
+                            <AlertTriangle className="flex-shrink-0 mt-0.5 w-3.5 h-3.5" />
+                            {dateWarnings[plan.name]}
                           </p>
                         )}
-                        <Button
-                          onClick={() =>
-                            handlePlanSubscribe(
-                              plan.name,
-                              meals,
-                              price,
-                              currentPlanDetails.mealType,
-                              currentPlanDetails.carbType,
-                              currentPlanDetails.lunchDinner,
-                              currentPlanDetails.mealStartDate,
-                              currentPlanDetails.allergy
-                            )
-                          }
-                          classes="w-full"
-                        >
-                          {isSubscribed ? (wouldOverlap ? "Queue as Next Plan" : "Subscribe") : "Select"}
-                        </Button>
-                      </>
+                      </div>
                     )}
 
-                    {errorMessages[plan.name] && (
-                      <p className="mt-1 error text-red-500">
-                        {errorMessages[plan.name]}
-                      </p>
-                    )}
+                    <div>
+                      <label className="block mb-1 text-xs font-medium text-gray-500">Allergy</label>
+                      <input
+                        type="text"
+                        placeholder="Any allergies?"
+                        className={selectClass}
+                        value={currentPlanDetails.allergy}
+                        onChange={(e) => handleDetailChange(plan.name, "allergy", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-5 pb-4">
-                    <ul className="text-left space-y-2">
+
+                  {/* ── Status area ── */}
+                  {isActive ? (
+                    // This plan is already one of the user's active plans
+                    <>
+                      <p className="flex gap-1.5 justify-center items-center py-2.5 font-bold text-green-700 rounded-lg border-2 border-green-500 bg-green-50">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Currently Active Plan
+                      </p>
+                      {(!hasQueuedPlan || !wouldOverlap) && (
+                        <>
+                          <p className="flex gap-1.5 items-start px-2 py-1.5 mt-2 mb-2 text-xs text-amber-700 bg-amber-50 rounded border border-amber-300">
+                            <Info className="flex-shrink-0 mt-0.5 w-3.5 h-3.5" />
+                            {wouldOverlap
+                              ? "This will be queued and activate when your current plan finishes."
+                              : "This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
+                          </p>
+                          <Button
+                            onClick={() =>
+                              handlePlanSubscribe(
+                                plan.name,
+                                meals,
+                                price,
+                                currentPlanDetails.mealType,
+                                currentPlanDetails.carbType,
+                                currentPlanDetails.lunchDinner,
+                                currentPlanDetails.mealStartDate,
+                                currentPlanDetails.allergy
+                              )
+                            }
+                            classes="w-full justify-center mt-2"
+                          >
+                            {wouldOverlap ? "Queue as Next Plan" : "Subscribe"}
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  ) : isQueued ? (
+                    // This plan is already queued as next
+                    <p className="flex gap-1.5 justify-center items-center py-2.5 font-bold text-amber-700 rounded-lg border-2 border-amber-400 bg-amber-50">
+                      <Clock className="w-4 h-4" />
+                      Queued as Your Next Plan
+                    </p>
+                  ) : hasQueuedPlan && wouldOverlap ? (
+                    // User already has a different plan queued, and this selection
+                    // would also need to queue — can't queue a second one
+                    <p className="flex gap-1.5 justify-center items-center py-2.5 font-medium text-gray-500 rounded-lg border-2 border-gray-300 bg-gray-50">
+                      <Lock className="w-4 h-4" />
+                      Next plan slot is already taken
+                    </p>
+                  ) : (
+                    // Normal subscribe / queue-as-next
+                    <>
+                      {isSubscribed && (
+                        <p className="flex gap-1.5 items-start px-2 py-1.5 mb-2 text-xs text-amber-700 bg-amber-50 rounded border border-amber-300">
+                          <Info className="flex-shrink-0 mt-0.5 w-3.5 h-3.5" />
+                          {wouldOverlap
+                            ? "This will be queued and activate when your current plan finishes."
+                            : "This covers a different meal type than your active plan, so it will activate immediately and run alongside it."}
+                        </p>
+                      )}
+                      <Button
+                        onClick={() =>
+                          handlePlanSubscribe(
+                            plan.name,
+                            meals,
+                            price,
+                            currentPlanDetails.mealType,
+                            currentPlanDetails.carbType,
+                            currentPlanDetails.lunchDinner,
+                            currentPlanDetails.mealStartDate,
+                            currentPlanDetails.allergy
+                          )
+                        }
+                        classes="w-full justify-center"
+                      >
+                        {isSubscribed ? (wouldOverlap ? "Queue as Next Plan" : "Subscribe") : "Select"}
+                      </Button>
+                    </>
+                  )}
+
+                  {errorMessages[plan.name] && (
+                    <p className="mt-1 text-sm text-red-500">{errorMessages[plan.name]}</p>
+                  )}
+
+                  <div className="pt-4 mt-4 border-t border-gray-100">
+                    <ul className="space-y-2 text-left">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start">
-                          <CheckmarkCircleOutline className="text-theme-color-1 mr-2 h-5 w-5 flex-shrink-0" />
+                        <li key={featureIndex} className="flex gap-2 items-start text-sm text-gray-700">
+                          <CheckmarkCircleOutline className="flex-shrink-0 w-5 h-5 text-theme-color-1" />
                           {feature}
                         </li>
                       ))}

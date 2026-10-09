@@ -5,6 +5,7 @@ import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Data } from "./data";
 import { FinanceOverview } from "./data/FinanceOverview";
 import { AdminServices } from "./adminServices";
+import { CustomerOverview } from "./customerOverview";
 
 export const DashboardPage = () => {
   const { userDetails, isLoading } = useDashboard();
@@ -21,6 +22,7 @@ export const DashboardPage = () => {
 
   return (
     <DashboardLayoutComponent>
+      {userDetails.role !== "admin" && <CustomerOverview />}
       {userDetails.role !== "admin" && <HeroSlider />}
       {userDetails.role === "admin" && <Data />}
       {userDetails.role === "admin" && <FinanceOverview />}

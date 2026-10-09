@@ -5,9 +5,9 @@ import Popup from "../../components/common/Popup/Popup";
 import useProfile from "./useProfile";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
-import { Edit } from "@mui/icons-material";
 import { Helmet } from "react-helmet";
 import { Loader } from "../../components";
+import { Camera, Mail, Phone, MapPin, Lock } from "lucide-react";
 
 const Profile = () => {
   const { userDetails, getInitials, setUserDetails } = useDashboard();
@@ -28,11 +28,17 @@ const Profile = () => {
   const UserName = userDetails.firstName + " " + userDetails.lastName;
 
   const formRef = useRef(null);
+  const { ValidationMessage } = usePasswordValidation(formRef, "password", "confirmPassword");
+
+  const inputClass =
+    "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
+  const disabledInputClass =
+    "w-full px-3 py-2 text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-200 cursor-not-allowed";
 
   return (
     <div>
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-[999] flex justify-center items-center">
+        <div className="fixed inset-0 z-[999] flex justify-center items-center bg-black bg-opacity-50">
           <Loader />
         </div>
       )}
@@ -53,126 +59,165 @@ const Profile = () => {
             {
               label: "Cancel",
               onClick: () => setShowPopup(false),
-              className: "bg-black text-white hover:bg-theme-color-1",
+              className: "bg-gray-100 text-gray-700 hover:bg-gray-200",
             },
             {
               label: "Update Profile Photo",
               onClick: handlePopupSubmit,
-              className:
-                "flex justify-center rounded-md bg-theme-color-1 px-5 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+              className: "bg-theme-color-1 text-white hover:bg-black",
             },
           ]}
         />
-        <div className="flex flex-col justify-start items-center p-5 w-full pt-10">
-          <div className="bg-white shadow-md rounded-lg p-3 md:p-10 lg:p-20 block md:block lg:flex lg:gap-20 max-w-[1500px] mx-auto">
-            <div className="w-full lg:w-2/6 p-0 md:p-2 lg:p-5 flex flex-col items-center lg:items-center justify-center">
-              {userDetails.profileImageUrl ? (
-                <img
-                  src={userDetails.profileImageUrl}
-                  alt="User"
-                  className="lg:w-60 lg:h-60 object-cover rounded-lg"
-                />
-              ) : (
-                <div className="lg:w-60 lg:h-60 flex items-center justify-center rounded-lg text-white font-bold text-6xl bg-theme-color-1">
-                  {initials}
-                </div>
-              )}
-              <h1 className="text-2xl mt-3 text-center lg:text-left">
-                {UserName}
-              </h1>
-              <a
-                className="text-sm mt-3 flex items-center justify-center text-[#A6A6A6] cursor-pointer"
-                onClick={() => setShowPopup(true)}
-              >
-                Change Profile Picture{" "}
-                {
-                  <Edit className="max-h-[16px]  max-w-[16px] h-[16px] w-[16px] ml-2" />
-                }
-              </a>
+
+        <div className="p-4 w-full text-left sm:p-6 md:p-8">
+          <div className="mx-auto space-y-6 max-w-4xl">
+            <div>
+              <p className="text-sm text-gray-500">Dashboard &rsaquo; Profile</p>
+              <h2 className="text-2xl font-bold text-gray-900">My Profile</h2>
+              <p className="text-sm text-gray-500">Manage your personal details and account security.</p>
             </div>
-            <div className="w-fit mt-5 lg:w-4/6 lg:p-12">
-              <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
-                <div className="flex flex-wrap -mx-3 mb-6">
-                  <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div className="flex flex-col items-center p-6 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
+                {userDetails.profileImageUrl ? (
+                  <img
+                    src={userDetails.profileImageUrl}
+                    alt="User"
+                    className="object-cover w-32 h-32 rounded-full ring-4 ring-green-50"
+                  />
+                ) : (
+                  <div className="flex justify-center items-center w-32 h-32 text-4xl font-bold text-white rounded-full bg-theme-color-1 ring-4 ring-green-50">
+                    {initials}
+                  </div>
+                )}
+                <p className="mt-4 text-lg font-bold text-gray-900">{UserName}</p>
+                <p className="text-xs text-gray-400 capitalize">{userDetails.role || "Customer"}</p>
+                <button
+                  type="button"
+                  onClick={() => setShowPopup(true)}
+                  className="flex gap-1.5 items-center px-3 py-1.5 mt-4 text-sm font-semibold rounded-lg border-2 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white"
+                >
+                  <Camera className="w-4 h-4" />
+                  Change Photo
+                </button>
+              </div>
+
+              <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm lg:col-span-2">
+                <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className="block mb-1 text-sm font-medium text-gray-700">First Name</label>
+                      <Input
+                        type="text"
+                        name="firstName"
+                        id="firstName"
+                        className={inputClass}
+                        placeholder="First Name"
+                        value={formData.firstName || userDetails.firstName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-sm font-medium text-gray-700">Last Name</label>
+                      <Input
+                        type="text"
+                        name="lastName"
+                        id="lastName"
+                        className={inputClass}
+                        placeholder="Last Name"
+                        value={formData.lastName || userDetails.lastName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+                        WhatsApp Number
+                      </label>
+                      <Input
+                        type="number"
+                        name="mobile"
+                        id="mobile"
+                        className={disabledInputClass}
+                        placeholder="WhatsApp Number"
+                        value={userDetails.mobile}
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <label className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+                        Email Address
+                      </label>
+                      <Input
+                        type="email"
+                        name="email"
+                        id="email"
+                        className={disabledInputClass}
+                        placeholder="Email Address"
+                        value={userDetails.email}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                        <Lock className="w-3.5 h-3.5 text-gray-400" />
+                        New Password
+                      </label>
+                      <Input
+                        type="password"
+                        name="password"
+                        id="password"
+                        className={inputClass}
+                        placeholder="Enter Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-sm font-medium text-gray-700">Confirm Password</label>
+                      <Input
+                        type="password"
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        className={inputClass}
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                      />
+                      <div className="mt-1 text-xs">
+                        <ValidationMessage />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                      <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                      Postal Address
+                    </label>
                     <Input
-                      type={"text"}
-                      name={"firstName"}
-                      id={"firstName"}
-                      className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                      placeholder={"First Name"}
-                      value={formData.firstName || userDetails.firstName}
+                      type="text"
+                      name="postalAddress"
+                      id="postal_address"
+                      className={inputClass}
+                      placeholder="Postal Address"
+                      value={formData.postalAddress || userDetails.postalAddress}
                       onChange={handleChange}
                     />
                   </div>
-                  <div className="w-full md:w-1/2 px-3">
-                    <Input
-                      type={"text"}
-                      name={"lastName"}
-                      id={"lastName"}
-                      className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                      placeholder={"Last Name"}
-                      value={formData.lastName || userDetails.lastName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <Input
-                  type={"number"}
-                  name={"mobile"}
-                  id={"mobile"}
-                  className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  placeholder={"WhatsApp Number"}
-                  value={userDetails.mobile}
-                  disabled={true}
-                />
-                <Input
-                  type={"email"}
-                  name={"email"}
-                  id={"email"}
-                  className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  placeholder={"Email Address"}
-                  value={userDetails.email}
-                  disabled={true}
-                />
-                <div className="flex flex-wrap -mx-3 mb-6">
-                  <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                    <Input
-                      type={"password"}
-                      name={"password"}
-                      id={"password"}
-                      className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                      placeholder={"Enter Password"}
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="w-full md:w-1/2 px-3">
-                    <Input
-                      type={"password"}
-                      name={"confirmPassword"}
-                      id={"confirmPassword"}
-                      className="appearance-none block w-full bg-gray-100 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                      placeholder={"Confirm Password"}
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <Input
-                  type={"text"}
-                  name={"postalAddress"}
-                  id={"postal_address"}
-                  className="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  placeholder={"Postal Address"}
-                  value={formData.postalAddress || userDetails.postalAddress}
-                  onChange={handleChange}
-                />
-                <Button
-                  type={"submit"}
-                  className="w-full text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
-                  children={"Update"}
-                />
-              </form>
+
+                  <Button type="submit" classes="w-full justify-center">
+                    Update Profile
+                  </Button>
+                </form>
+              </div>
             </div>
           </div>
         </div>

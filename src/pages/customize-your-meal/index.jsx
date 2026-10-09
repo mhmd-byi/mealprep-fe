@@ -6,6 +6,10 @@ import { Button, Input } from "../../components";
 import { Helmet } from "react-helmet";
 import { useCustomiseYourMeal } from "./useCustomiseYourMeal";
 import useSubscription from "../Plans/useSubscription";
+import { CalendarDays, Utensils, Info, CheckCircle2, AlertTriangle, ListChecks } from "lucide-react";
+
+const inputClass =
+  "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
 export const CustomizeYourMeal = () => {
   const [startDate, setStartDate] = useState("");
@@ -74,195 +78,175 @@ export const CustomizeYourMeal = () => {
       ? getTodayString()
       : getTomorrow();
   };
+
   return (
     <DashboardLayoutComponent>
       <Helmet>
         <title>Customise Meal Request | Mealprep</title>
       </Helmet>
-      <div className="block lg:flex flex-col justify-start items-center p-2 sm:p-5 w-full pt-5">
-        <div className="py-6 sm:py-12 px-2 sm:px-6 lg:px-8 w-full">
-          <div className="mx-auto">
-            <div className="bg-white shadow-xl rounded-lg overflow-hidden w-full">
-              <div className="p-3 sm:p-10">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-6 text-gray-800">
-                  Customise Meal Request
-                </h2>
-                <p className="mb-4 text-sm sm:text-base">Steps to use:
-                  <ul className="text-sm sm:text-base">
-                    <li>1. First select the date and meal type for which you need to make customization request</li>
-                    <li>2. Input your requests</li>
-                    <li>3. Submit the request</li>
-                  </ul>
-                  Note: You Can Raise Customisation Request From 12 Midnight To 10:30 AM For Lunch And 12 Midnight Till 4:00 PM For Dinner
-                </p>
-                {message && (
-                  <div className="mb-4 text-sm font-medium text-green-600 mt-5">
-                    {message}
-                  </div>
-                )}
-                {errorMessage && (
-                  <div className="mb-4 text-sm font-medium text-red-700 mt-5">
-                    {errorMessage}
-                  </div>
-                )}
-                {items.length > 0 ? (
-                  <form onSubmit={handleSubmitCustomiseRequest}>
-                    <div className="space-y-4">
-                      <h3 className="text-base sm:text-lg font-medium text-gray-900">
-                        Meal Items
-                      </h3>
-                      <div className="max-h-[50vh] sm:max-h-[60vh] overflow-y-auto space-y-4">
-                        {items.map((item, index) => (
-                          <div
-                            key={index}
-                            style={{ backgroundColor: item.exclude ? "#d1d5db" : undefined }}
-                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 items-center p-2 sm:p-4 bg-gray-100 rounded-lg"
-                          >
-                            <div className="w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Item Name
-                              </label>
-                              <Input
-                                type="text"
-                                value={item.name}
-                                disabled={true}
-                                placeholder="Meal name"
-                                className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
-                              />
-                            </div>
-                            <div className="w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                              </label>
-                              <Input
-                                type="text"
-                                value={item.description}
-                                disabled={true}
-                                placeholder="Description"
-                                className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
-                              />
-                            </div>
-                            <div className="w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Weight
-                              </label>
-                              <Input
-                                type="select"
-                                value={item.weight}
-                                onChange={(e) =>
-                                  handleItemChange(
-                                    index,
-                                    "weight",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={(item.exclude ?? false)}
-                                options={item.weights}
-                              />
-                            </div>
-                            <div className="w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Exclude this Item
-                              </label>
-                              <Input
-                                type="checkbox"
-                                value={item.exclude ?? false}
-                                onChange={(e) => handleItemChange(index, "exclude", !(item.exclude ?? false))}
-                                classes="rounded-lg size-5 border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-theme-color-1 focus:border-theme-color-1 sm:text-sm sm:leading-6"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-                        <Button
-                          type="submit"
-                          classes="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                        >
-                          Submit
-                        </Button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setItems([{
-                              name: "",
-                              description: "",
-                              weight: "",
-                            }]);
-                            setStartDate("");
-                            setMealType("");
-                          }}
-                          className="w-full sm:w-auto text-red-600 border-2 bg-white border-red-600 hover:bg-red-600 font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50 hover:text-white"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                ) : (
-                  <form onSubmit={handleSubmit} className="w-full">
-                    <div className="flex flex-col space-y-4">
-                      <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="w-full sm:w-1/2">
-                          <label
-                            htmlFor="startDate"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Date
-                          </label>
-                          <input
-                            type="date"
-                            id="startDate"
-                            value={startDate}
-                            onChange={(e) => {
-                              const selectedDate = new Date(e.target.value);
-                              if (selectedDate.getDay() === 0) {
-                                setErrorMessage("Sundays cannot be selected. Please choose another date.");
-                                setStartDate("");
-                              } else {
-                                setErrorMessage("");
-                                setStartDate(e.target.value);
-                                // Clear a previously chosen meal type if it's no longer open for the new date
-                                if (e.target.value === getTodayString() && mealType && !isMealTypeOpenToday(mealType)) {
-                                  setMealType("");
-                                }
-                              }
-                            }}
-                            min={getMinSelectableDate()}
-                            className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
+      <div className="p-4 w-full text-left sm:p-6 md:p-8">
+        <div className="mx-auto space-y-6 max-w-4xl">
+          <div>
+            <p className="text-sm text-gray-500">Dashboard &rsaquo; Customize Your Meal</p>
+            <h2 className="text-2xl font-bold text-gray-900">Customise Meal Request</h2>
+            <p className="text-sm text-gray-500">Pick a date and meal, then tell us what to leave out or swap.</p>
+          </div>
+
+          <div className="flex gap-3 items-start p-4 text-sm text-blue-800 bg-blue-50 rounded-2xl border border-blue-200">
+            <Info className="flex-shrink-0 mt-0.5 w-4 h-4" />
+            <div>
+              <p className="font-semibold">Steps to use:</p>
+              <ol className="mt-1 ml-4 list-decimal">
+                <li>Select the date and meal type you want to customise</li>
+                <li>Edit your requests</li>
+                <li>Submit the request</li>
+              </ol>
+              <p className="mt-2">You can raise a customisation request from 12 midnight to 10:30 AM for lunch, and 12 midnight to 4:00 PM for dinner.</p>
+            </div>
+          </div>
+
+          {message && (
+            <div className="flex gap-2 items-center p-4 text-sm font-medium text-green-700 bg-green-50 rounded-2xl border border-green-200">
+              <CheckCircle2 className="flex-shrink-0 w-4 h-4" />
+              {message}
+            </div>
+          )}
+          {errorMessage && (
+            <div className="flex gap-2 items-center p-4 text-sm font-medium text-red-700 bg-red-50 rounded-2xl border border-red-200">
+              <AlertTriangle className="flex-shrink-0 w-4 h-4" />
+              {errorMessage}
+            </div>
+          )}
+
+          <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            {items.length > 0 ? (
+              <form onSubmit={handleSubmitCustomiseRequest}>
+                <div className="space-y-4">
+                  <p className="flex gap-2 items-center text-base font-bold text-gray-900">
+                    <ListChecks className="w-5 h-5 text-theme-color-1" />
+                    Meal Items
+                  </p>
+                  <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1">
+                    {items.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`grid grid-cols-1 gap-3 items-center p-4 rounded-xl border sm:grid-cols-4 ${
+                          item.exclude ? "bg-gray-100 border-gray-200" : "bg-gray-50 border-gray-100"
+                        }`}
+                      >
+                        <div className="w-full">
+                          <label className="block mb-1 text-xs font-medium text-gray-500">Item Name</label>
+                          <Input type="text" value={item.name} disabled placeholder="Meal name" className={inputClass} />
+                        </div>
+                        <div className="w-full">
+                          <label className="block mb-1 text-xs font-medium text-gray-500">Description</label>
+                          <Input type="text" value={item.description} disabled placeholder="Description" className={inputClass} />
+                        </div>
+                        <div className="w-full">
+                          <label className="block mb-1 text-xs font-medium text-gray-500">Weight</label>
+                          <Input
+                            type="select"
+                            value={item.weight}
+                            onChange={(e) => handleItemChange(index, "weight", e.target.value)}
+                            disabled={item.exclude ?? false}
+                            options={item.weights}
+                            classes={inputClass}
                           />
                         </div>
-                        <div className="w-full sm:w-1/2">
-                          <label
-                            htmlFor="mealType"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Meal Type
+                        <div className="w-full">
+                          <label className="flex gap-2 items-center text-xs font-medium text-gray-500 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={item.exclude ?? false}
+                              onChange={() => handleItemChange(index, "exclude", !(item.exclude ?? false))}
+                              className="w-4 h-4 rounded border-gray-300 cursor-pointer text-theme-color-1 focus:ring-theme-color-1"
+                            />
+                            Exclude this item
                           </label>
-                          <select
-                            id="mealType"
-                            value={mealType}
-                            onChange={(e) => setMealType(e.target.value)}
-                            className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                          >
-                            <option value="">Select meal type</option>
-                            {currentPlan && ((currentPlan.lunchMeals || 0) + (currentPlan.nextDayLunchMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("lunch")) ? <option value="lunch">Lunch</option> : null}
-                            {currentPlan && ((currentPlan.dinnerMeals || 0) + (currentPlan.nextDayDinnerMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("dinner")) ? <option value="dinner">Dinner</option> : null}
-                          </select>
                         </div>
                       </div>
-                      <div>
-                        <Button type="submit" classes="w-full sm:w-1/4 text-white">
-                          View menu
-                        </Button>
-                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-col gap-3 justify-between items-center pt-2 sm:flex-row">
+                    <Button type="submit" classes="w-full sm:w-auto justify-center">
+                      Submit
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setItems([{
+                          name: "",
+                          description: "",
+                          weight: "",
+                        }]);
+                        setStartDate("");
+                        setMealType("");
+                      }}
+                      className="px-5 py-3 w-full text-sm font-semibold text-red-600 bg-white rounded-md border-2 border-red-600 transition-colors hover:bg-red-600 hover:text-white sm:w-auto"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    <div className="w-full sm:w-1/2">
+                      <label htmlFor="startDate" className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                        <CalendarDays className="w-4 h-4 text-gray-400" />
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        id="startDate"
+                        value={startDate}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          if (selectedDate.getDay() === 0) {
+                            setErrorMessage("Sundays cannot be selected. Please choose another date.");
+                            setStartDate("");
+                          } else {
+                            setErrorMessage("");
+                            setStartDate(e.target.value);
+                            // Clear a previously chosen meal type if it's no longer open for the new date
+                            if (e.target.value === getTodayString() && mealType && !isMealTypeOpenToday(mealType)) {
+                              setMealType("");
+                            }
+                          }
+                        }}
+                        min={getMinSelectableDate()}
+                        className={inputClass}
+                        required
+                      />
                     </div>
-                  </form>
-                )}
-              </div>
-            </div>
+                    <div className="w-full sm:w-1/2">
+                      <label htmlFor="mealType" className="flex gap-1.5 items-center mb-1 text-sm font-medium text-gray-700">
+                        <Utensils className="w-4 h-4 text-gray-400" />
+                        Meal Type
+                      </label>
+                      <select
+                        id="mealType"
+                        value={mealType}
+                        onChange={(e) => setMealType(e.target.value)}
+                        className={inputClass}
+                        required
+                      >
+                        <option value="">Select meal type</option>
+                        {currentPlan && ((currentPlan.lunchMeals || 0) + (currentPlan.nextDayLunchMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("lunch")) ? <option value="lunch">Lunch</option> : null}
+                        {currentPlan && ((currentPlan.dinnerMeals || 0) + (currentPlan.nextDayDinnerMeals || 0) > 0) && (startDate !== getTodayString() || isMealTypeOpenToday("dinner")) ? <option value="dinner">Dinner</option> : null}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <Button type="submit" classes="w-full sm:w-auto justify-center">
+                      View menu
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>
