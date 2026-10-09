@@ -74,7 +74,7 @@ const STATUS_TABS = [
   { key: "all", label: "All Users", match: () => true },
   { key: "active", label: "Active", match: (u) => getStatus(u) === "Active" },
   { key: "queued", label: "Queued", match: (u) => getStatus(u) === "Queued" },
-  { key: "inactive", label: "Cancelled / Inactive", match: (u) => isInactive(getStatus(u)) },
+  { key: "inactive", label: "Completed / Inactive", match: (u) => isInactive(getStatus(u)) },
   { key: "new", label: "New This Month", match: isNewThisMonth },
 ];
 
@@ -93,8 +93,8 @@ const DetailRow = ({ label, children }) => (
 
 const SubscriptionField = ({ icon: Icon, label, children }) => (
   <div className="flex gap-3 items-center">
-    <Icon className="w-4 h-4 text-gray-500 flex-shrink-0" />
-    <span className="w-24 text-sm text-gray-500 flex-shrink-0">{label}</span>
+    <Icon className="flex-shrink-0 w-4 h-4 text-gray-500" />
+    <span className="flex-shrink-0 w-24 text-sm text-gray-500">{label}</span>
     <div className="text-sm font-semibold text-gray-900">{children}</div>
   </div>
 );
@@ -105,7 +105,7 @@ const DayBalanceCard = ({ icon: Icon, tone, label, lunch, dinner }) => (
       <Icon className="w-5 h-5" />
     </div>
     <p className="w-20 font-bold text-gray-900">{label}</p>
-    <div className="flex flex-1 divide-x divide-gray-200 text-center">
+    <div className="flex flex-1 text-center divide-x divide-gray-200">
       <div className="flex-1 px-4">
         <p className="text-xs text-gray-500">Lunch</p>
         <p className="text-xl font-bold text-theme-color-1">{lunch}</p>
@@ -206,7 +206,7 @@ export const AllRegisteredUsers = () => {
   const statCards = [
     { label: "Total Users", value: allRegisteredUsers.length, icon: Users },
     { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck },
-    { label: "Cancelled / Inactive", value: tabCounts.inactive, icon: PauseCircle },
+    { label: "Completed / Inactive", value: tabCounts.inactive, icon: PauseCircle },
     { label: "New This Month", value: tabCounts.new, icon: UserPlus },
   ];
 
@@ -338,7 +338,7 @@ export const AllRegisteredUsers = () => {
     <>
       <DashboardLayoutComponent>
         <div className="p-4 w-full text-left sm:p-6 md:p-8">
-          <div className="mx-auto w-full space-y-6">
+          <div className="mx-auto space-y-6 w-full">
             <div className="flex flex-col gap-4 justify-between sm:flex-row sm:items-center print:hidden">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{pageTitle}</h2>
@@ -356,7 +356,7 @@ export const AllRegisteredUsers = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 print:hidden">
               {statCards.map((card) => (
                 <div key={card.label} className="flex gap-4 items-center p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                  <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 rounded-xl bg-green-50 text-theme-color-1">
+                  <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 bg-green-50 rounded-xl text-theme-color-1">
                     <card.icon className="w-6 h-6" />
                   </div>
                   <div>
@@ -453,7 +453,7 @@ export const AllRegisteredUsers = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 justify-end">
-                <button type="button" onClick={handleReset} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 bg-white rounded-lg border border-gray-300 shadow-sm transition-colors hover:bg-gray-100">
+                <button type="button" onClick={handleReset} className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-600 bg-white rounded-lg border border-gray-300 shadow-sm transition-colors hover:bg-gray-100">
                   <RotateCcw className="w-4 h-4" />
                   Reset
                 </button>
@@ -465,7 +465,7 @@ export const AllRegisteredUsers = () => {
             </div>
 
             {/* Print-only title + filter context, since the controls above are hidden when printing */}
-            <div className="hidden print:block px-4 mb-3 text-left">
+            <div className="hidden px-4 mb-3 text-left print:block">
               <h2 className="mb-1 text-xl font-bold">{pageTitle}</h2>
               <p className="text-sm text-gray-500">
                 {searchQuery && `Search: "${searchQuery}" `}
@@ -739,7 +739,7 @@ export const AllRegisteredUsers = () => {
                     <p className="mt-1 text-xs text-gray-500">Registered on {detailRegistered}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-3 mt-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-y-3 gap-x-6 mt-4 sm:grid-cols-2">
                   <DetailRow label="Email">{selectedUser.email}</DetailRow>
                   <DetailRow label="Mobile">{selectedUser.mobile}</DetailRow>
                   <div className="sm:col-span-2">
@@ -775,7 +775,7 @@ export const AllRegisteredUsers = () => {
                     <p className="text-xs text-gray-500">Current plan and preferences.</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-x-8 gap-y-4 p-5 mt-3 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-y-4 gap-x-8 p-5 mt-3 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
                   <div className="space-y-4">
                     <SubscriptionField icon={Package} label="Plan">{detailLatestSub?.plan || "No active plan"}</SubscriptionField>
                     <SubscriptionField icon={Clock} label="Status">
