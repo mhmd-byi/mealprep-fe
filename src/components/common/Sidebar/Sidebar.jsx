@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
+import Diet from "../../../assets/images/diet.png";
 import { useDashboard } from "../Dashboard/useDashboard";
-import { LogOut, X } from "lucide-react";
+import { LogOut, X, ChevronUp, UserCircle } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { useHeader } from "../Header/useHeader";
 import useSubscription from "../../../pages/Plans/useSubscription";
@@ -23,6 +24,19 @@ const Sidebar = ({ closeSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleNavigate = (path) => {
     if (path.startsWith('http')) {
       window.open(path, '_blank');
@@ -32,7 +46,18 @@ const Sidebar = ({ closeSidebar }) => {
     closeSidebar();
   };
 
+  const handleProfileNavigate = () => {
+    setIsProfileMenuOpen(false);
+    handleNavigate("/dashboard/profile");
+  };
+
   const mealConditions = currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals === 0 || currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals === null || isNaN(currentPlan?.lunchMeals + currentPlan?.dinnerMeals + currentPlan?.nextDayLunchMeals + currentPlan?.nextDayDinnerMeals)
+
+  const mealsLeft =
+    (currentPlan?.lunchMeals || 0) +
+    (currentPlan?.dinnerMeals || 0) +
+    (currentPlan?.nextDayLunchMeals || 0) +
+    (currentPlan?.nextDayDinnerMeals || 0);
 
   const isItemVisible = (item) => {
     if (item.requiresSubscription && !isSubscribed) {
@@ -56,26 +81,21 @@ const Sidebar = ({ closeSidebar }) => {
 
   return (
     <div className="bg-[#161b16] text-white w-80 lg:w-72 h-full flex flex-col overflow-y-auto">
-      <div className="flex flex-shrink-0 justify-between items-center px-5 pt-8 pb-6 md:hidden">
+      <div className="flex flex-shrink-0 justify-between items-center px-5 pt-8 pb-4">
         <img src={whiteLogo} alt="Mealprep Logo" className="w-32" />
-        <button onClick={closeSidebar} className="p-1.5 rounded-lg hover:bg-white/10">
+        <button onClick={closeSidebar} className="p-1.5 rounded-lg hover:bg-white/10 md:hidden">
           <X className="w-5 h-5 text-white" />
         </button>
       </div>
 
-      <div className="flex-shrink-0 hidden h-6 md:block" />
-
-      <div className="flex gap-3 items-center p-3 mx-4 mb-4 rounded-xl md:hidden bg-white/5">
-        <img
-          src={fetchUserProfileImage || userProfileImg}
-          alt="Profile"
-          className="object-cover flex-shrink-0 w-11 h-11 rounded-full ring-2 ring-white/10"
-        />
-        <div className="min-w-0">
-          <p className="text-xs text-white/50">Hi there,</p>
-          <p className="font-semibold text-white truncate">{fetchUserName}</p>
+      {!isLoading && userRole !== "admin" && (
+        <div className="flex gap-1.5 items-center px-5 pb-4 flex-shrink-0">
+          <span className="flex gap-1.5 items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-white/10 text-theme-color-1">
+            <img src={Diet} alt="meal-icon" className="w-4 h-4" />
+            {mealsLeft} meals left
+          </span>
         </div>
-      </div>
+      )}
 
       <nav className="flex-1 px-4 pb-4 space-y-1">
         {isLoading ? (
@@ -110,13 +130,42 @@ const Sidebar = ({ closeSidebar }) => {
         )}
       </nav>
 
-      <div className="flex-shrink-0 p-4 border-t md:hidden border-white/10">
+      <div className="relative flex-shrink-0 p-4 border-t border-white/10" ref={profileMenuRef}>
+        {isProfileMenuOpen && (
+          <div className="absolute right-4 left-4 bottom-full mb-2 overflow-hidden bg-[#1f251f] rounded-xl border border-white/10 shadow-lg">
+            <button
+              type="button"
+              onClick={handleProfileNavigate}
+              className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
+            >
+              <UserCircle className="flex-shrink-0 w-4 h-4" />
+              Profile
+            </button>
+            <button
+              type="button"
+              onClick={logout}
+              className="flex gap-3 items-center px-4 py-3 w-full text-sm font-medium text-left text-red-300 transition-colors border-t border-white/10 hover:bg-white/10 hover:text-red-200"
+            >
+              <LogOut className="flex-shrink-0 w-4 h-4" />
+              Log out
+            </button>
+          </div>
+        )}
         <button
-          className="flex gap-3 items-center px-3 py-2.5 w-full text-sm font-medium rounded-xl transition-colors text-white/70 hover:bg-white/10 hover:text-white"
-          onClick={logout}
+          type="button"
+          onClick={() => setIsProfileMenuOpen((v) => !v)}
+          className="flex gap-3 items-center p-2 w-full rounded-xl transition-colors hover:bg-white/10"
         >
-          <LogOut className="flex-shrink-0 w-5 h-5" />
-          <span>Log out</span>
+          <img
+            src={fetchUserProfileImage || userProfileImg}
+            alt="Profile"
+            className="object-cover flex-shrink-0 w-10 h-10 rounded-full ring-2 ring-white/10"
+          />
+          <div className="flex-1 min-w-0 text-left">
+            <p className="text-xs text-white/50">Hi there,</p>
+            <p className="font-semibold text-white truncate">{fetchUserName}</p>
+          </div>
+          <ChevronUp className={`flex-shrink-0 w-4 h-4 text-white/50 transition-transform ${isProfileMenuOpen ? "" : "rotate-180"}`} />
         </button>
       </div>
     </div>

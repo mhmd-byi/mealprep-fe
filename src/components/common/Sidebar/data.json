@@ -6,12 +6,6 @@
     "requiresSubscription": false
   },
   {
-    "name": "Profile",
-    "icon": "UserCircle",
-    "path": "/dashboard/profile",
-    "requiresSubscription": false
-  },
-  {
     "name": "Food Menu",
     "icon": "UtensilsCrossed",
     "path": "/dashboard/food-menu",
