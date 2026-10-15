@@ -480,7 +480,7 @@ export const Expenses = () => {
                 type="text"
                 value={filters.search}
                 onChange={(e) => { setFilters((prev) => ({ ...prev, search: e.target.value })); setCurrentPage(1); }}
-                placeholder="Search description..."
+                placeholder="Search description, category, payment method, amount..."
               />
               {/* Two plain selects instead of <input type="month"> — Safari has never
                   supported that input type and silently falls back to a text box. */}
