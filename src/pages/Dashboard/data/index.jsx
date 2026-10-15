@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Users, Settings2, XCircle, Clock, Truck, Crown } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
+import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 
 const Spinner = () => <div className="w-4 h-4 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent" />;
 
@@ -73,9 +74,9 @@ export const Data = () => {
           loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
           value={
             <>
-              Lunch: {mealDeliveryListCountLunch}
+              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {mealDeliveryListCountLunch}</span>
               <br />
-              Dinner: {mealDeliveryListCountDinner}
+              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {mealDeliveryListCountDinner}</span>
             </>
           }
         />
@@ -181,8 +182,8 @@ export const Data = () => {
                               {user.mobile}
                             </td>
                             <td className="px-4 py-3 text-sm font-semibold whitespace-nowrap text-theme-color-1">
-                              Lunch: {(user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0)},
-                              Dinner: {(user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0)}
+                              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {(user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0)}</span>,{" "}
+                              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {(user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0)}</span>
                             </td>
                           </tr>
                         ))}

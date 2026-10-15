@@ -8,7 +8,7 @@ import {
   Search,
   Users,
   XCircle,
-  UtensilsCrossed,
+  Sun,
   Moon,
   Download,
   Printer,
@@ -195,7 +195,7 @@ export const UserListWithCancelRequest = () => {
       change: percentChange(uniqueUsers, previousUniqueUsers),
       goodWhenUp: true,
     },
-    { label: "Lunch Cancelled", value: lunchCount, icon: UtensilsCrossed, tone: "bg-blue-50 text-blue-600", share: sharePercent(lunchCount), bar: "bg-blue-500" },
+    { label: "Lunch Cancelled", value: lunchCount, icon: Sun, tone: "bg-amber-50 text-amber-600", share: sharePercent(lunchCount), bar: "bg-amber-500" },
     { label: "Dinner Cancelled", value: dinnerCount, icon: Moon, tone: "bg-purple-50 text-purple-600", share: sharePercent(dinnerCount), bar: "bg-purple-500" },
   ];
 

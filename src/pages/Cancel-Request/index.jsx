@@ -5,6 +5,7 @@ import { Button } from "../../components";
 import { sendEmail } from "../../utils";
 import useSubscription from "../Plans/useSubscription";
 import { CalendarDays, Utensils, Info, CheckCircle2, AlertTriangle } from "lucide-react";
+import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
 
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -108,9 +109,9 @@ const CancelRequest = () => {
                 <li>Select Lunch, Dinner, or Both</li>
                 <li>Submit the request</li>
               </ol>
-              <p className="mt-2">
-                <strong>Lunch:</strong> request accepted from 12 midnight to 10:00 AM.{" "}
-                <strong>Dinner:</strong> request accepted from 12 midnight to 4:00 PM.
+              <p className="flex flex-wrap gap-1 items-center mt-2">
+                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><strong>Lunch:</strong></span> request accepted from 12 midnight to 10:00 AM.
+                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><strong>Dinner:</strong></span> request accepted from 12 midnight to 4:00 PM.
               </p>
             </div>
           </div>

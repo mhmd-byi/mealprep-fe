@@ -7,6 +7,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { formatCarbType } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
@@ -113,11 +114,11 @@ const DayBalanceCard = ({ icon: Icon, tone, label, lunch, dinner }) => (
     <p className="w-20 font-bold text-gray-900">{label}</p>
     <div className="flex flex-1 text-center divide-x divide-gray-200">
       <div className="flex-1 px-4">
-        <p className="text-xs text-gray-500">Lunch</p>
+        <p className="flex items-center gap-1 text-xs text-gray-500"><MealSlotIcon slot="lunch" />Lunch</p>
         <p className="text-xl font-bold text-theme-color-1">{lunch}</p>
       </div>
       <div className="flex-1 px-4">
-        <p className="text-xs text-gray-500">Dinner</p>
+        <p className="flex items-center gap-1 text-xs text-gray-500"><MealSlotIcon slot="dinner" />Dinner</p>
         <p className="text-xl font-bold text-orange-600">{dinner}</p>
       </div>
     </div>
@@ -597,9 +598,9 @@ export const AllRegisteredUsers = () => {
                                 {latestSub && <VegNonVegIcon value={latestSub.mealType} />}
                               </td>
                               <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
-                                Lunch: {lunchCount}
+                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
                                 <br />
-                                Dinner: {dinnerCount}
+                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                               </td>
                               <td className="px-4 py-4 text-sm text-gray-700 max-w-[160px] break-words">{latestSub?.allergy || "None"}</td>
                               <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
@@ -692,8 +693,9 @@ export const AllRegisteredUsers = () => {
                             )}
                             <div className="flex justify-between pb-2 border-b">
                               <span className="font-medium text-gray-500">Meal Counts Left:</span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                Lunch: {lunchCount}, Dinner: {dinnerCount}
+                              <span className="text-gray-900 text-right break-words max-w-[60%] inline-flex items-center gap-2 flex-wrap justify-end">
+                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
+                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                               </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
@@ -785,13 +787,13 @@ export const AllRegisteredUsers = () => {
                 <p className="mb-3 text-xs text-gray-500">Remaining meal counts across active plans.</p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                    <p className="text-xs font-semibold text-theme-color-1">Lunch</p>
+                    <p className="flex items-center gap-1 text-xs font-semibold text-theme-color-1"><MealSlotIcon slot="lunch" />Lunch</p>
                     <p className="text-2xl font-bold text-gray-900">
                       {detailLunchLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
                     </p>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
-                    <p className="text-xs font-semibold text-orange-700">Dinner</p>
+                    <p className="flex items-center gap-1 text-xs font-semibold text-orange-700"><MealSlotIcon slot="dinner" />Dinner</p>
                     <p className="text-2xl font-bold text-gray-900">
                       {detailDinnerLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
                     </p>
@@ -904,8 +906,8 @@ export const AllRegisteredUsers = () => {
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}
-                          <div><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
-                          <div><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>
+                          <div className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
+                          <div className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>
                         </div>
                       </div>
                     ))

@@ -5,6 +5,7 @@ import { CalendarDays, Utensils, SlidersHorizontal, CreditCard, Minus, Plus } fr
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
+import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { useManageSubscriptions } from "./useManageSubscriptions";
 import { FieldLabel } from "./FieldLabel";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
@@ -311,7 +312,7 @@ export const ManageSubscriptions = () => {
     ["Customer", selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "—"],
     ["Plan", createForm.plan || "—"],
     ["Total meals", createForm.totalMeals || "—"],
-    ["Lunch / Dinner", lunchDinnerLabel],
+    [<span className="inline-flex items-center gap-1"><MealSlotIcon slot="both" />Lunch / Dinner</span>, lunchDinnerLabel],
     ["Diet", dietLabel],
     ["Carb type", carbLabel],
     ["Start", createWouldOverlap ? "Automatic (will queue)" : formatDate(createForm.subscriptionStartDate)],
@@ -441,8 +442,8 @@ export const ManageSubscriptions = () => {
         ["Status", capitalize(editingSub.status)],
         ["Start", formatDate(editingSub.subscriptionStartDate)],
         ["End", getSubscriptionEndLabel(editingSub)],
-        ["Lunch left", (editingSub.lunchMeals || 0) + (editingSub.nextDayLunchMeals || 0)],
-        ["Dinner left", (editingSub.dinnerMeals || 0) + (editingSub.nextDayDinnerMeals || 0)],
+        [<span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch left</span>, (editingSub.lunchMeals || 0) + (editingSub.nextDayLunchMeals || 0)],
+        [<span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner left</span>, (editingSub.dinnerMeals || 0) + (editingSub.nextDayDinnerMeals || 0)],
         ["Diet", capitalize(editingSub.mealType)],
         ["Carb type", editingSub.carbType],
         ["Payment", editingSub.paymentMethod || (editingSub.paymentId ? "Online" : "—")],
@@ -619,7 +620,12 @@ export const ManageSubscriptions = () => {
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDate(sub.subscriptionStartDate)}</td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{getSubscriptionEndLabel(sub)}</td>
-                                  <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">L: {lunchCount}, D: {dinnerCount}</td>
+                                  <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                                    <span className="inline-flex items-center gap-2">
+                                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />L: {lunchCount}</span>
+                                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />D: {dinnerCount}</span>
+                                    </span>
+                                  </td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{capitalize(sub.mealType)}</td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{sub.carbType}</td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
@@ -842,7 +848,10 @@ export const ManageSubscriptions = () => {
                               createForm.lunchDinner === opt.value ? "border-theme-color-1 bg-green-50" : "border-gray-200 hover:border-gray-300"
                             }`}
                           >
-                            <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
+                            <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+                              <MealSlotIcon slot={opt.value === "lunch" ? "lunch" : opt.value === "dinner" ? "dinner" : "both"} />
+                              {opt.label}
+                            </p>
                             <p className="text-xs text-gray-500">{opt.value === "lunchAndDinner" ? "2 meals a day" : "1 meal a day"}</p>
                           </button>
                         ))}
@@ -944,8 +953,8 @@ export const ManageSubscriptions = () => {
 
               <aside className="p-4 space-y-3 h-fit bg-green-50 rounded-xl border border-green-100">
                 <p className="text-sm font-bold text-gray-900">Subscription Summary</p>
-                {createSummaryRows.map(([label, value]) => (
-                  <div key={label} className="flex gap-2 justify-between text-sm">
+                {createSummaryRows.map(([label, value], index) => (
+                  <div key={index} className="flex gap-2 justify-between text-sm">
                     <span className="text-gray-500">{label}</span>
                     <span className="font-medium text-right text-gray-900 break-words">{value}</span>
                   </div>
@@ -1187,8 +1196,8 @@ export const ManageSubscriptions = () => {
 
                 <aside className="p-4 space-y-3 h-fit bg-green-50 rounded-xl border border-green-100">
                   <p className="text-sm font-bold text-gray-900">Current Plan Summary</p>
-                  {editSummaryRows.map(([label, value]) => (
-                    <div key={label} className="flex gap-2 justify-between text-sm">
+                  {editSummaryRows.map(([label, value], index) => (
+                    <div key={index} className="flex gap-2 justify-between text-sm">
                       <span className="text-gray-500">{label}</span>
                       <span className="font-medium text-right text-gray-900 break-words">{value}</span>
                     </div>

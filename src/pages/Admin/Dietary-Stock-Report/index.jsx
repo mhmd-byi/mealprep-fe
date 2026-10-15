@@ -3,6 +3,7 @@ import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button } from "../../../components";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 
 const DAY_OPTIONS = [3, 7, 14, 30];
 const AUTO_REFRESH_MS = 60 * 1000;
@@ -125,16 +126,16 @@ export const DietaryStockReport = () => {
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <span className="flex items-center gap-1.5">Lunch — Veg <VegNonVegIcon value="veg" /></span>
+                            <span className="flex items-center gap-1.5"><MealSlotIcon slot="lunch" />Lunch — Veg <VegNonVegIcon value="veg" /></span>
                           </th>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <span className="flex items-center gap-1.5">Lunch — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                            <span className="flex items-center gap-1.5"><MealSlotIcon slot="lunch" />Lunch — Non-Veg <VegNonVegIcon value="non-veg" /></span>
                           </th>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <span className="flex items-center gap-1.5">Dinner — Veg <VegNonVegIcon value="veg" /></span>
+                            <span className="flex items-center gap-1.5"><MealSlotIcon slot="dinner" />Dinner — Veg <VegNonVegIcon value="veg" /></span>
                           </th>
                           <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <span className="flex items-center gap-1.5">Dinner — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                            <span className="flex items-center gap-1.5"><MealSlotIcon slot="dinner" />Dinner — Non-Veg <VegNonVegIcon value="non-veg" /></span>
                           </th>
                         </tr>
                       </thead>
@@ -151,14 +152,14 @@ export const DietaryStockReport = () => {
                                     day.lunchLocked ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
                                   }`}
                                 >
-                                  Lunch: {day.lunchLocked ? "Confirmed" : "Projected"}
+                                  <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {day.lunchLocked ? "Confirmed" : "Projected"}</span>
                                 </span>
                                 <span
                                   className={`px-2 py-1 text-xs font-semibold rounded-full w-fit ${
                                     day.dinnerLocked ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
                                   }`}
                                 >
-                                  Dinner: {day.dinnerLocked ? "Confirmed" : "Projected"}
+                                  <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {day.dinnerLocked ? "Confirmed" : "Projected"}</span>
                                 </span>
                               </div>
                             </td>

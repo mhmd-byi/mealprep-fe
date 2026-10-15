@@ -7,6 +7,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import {
   ChevronUp,
   ChevronDown,
@@ -558,8 +559,8 @@ export const UserListOfMealDelivery = () => {
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <div className="break-words">
-                                      Lunch: {lunchCount},<br/>
-                                      Dinner: {dinnerCount}
+                                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>,<br/>
+                                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                                     </div>
                                   </td>
                                 </tr>
@@ -623,8 +624,9 @@ export const UserListOfMealDelivery = () => {
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="font-medium text-gray-500">Meal Counts Left:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    Lunch: {lunchCount}, Dinner: {dinnerCount}
+                                  <span className="text-gray-900 text-right break-words max-w-[60%] inline-flex items-center gap-2 flex-wrap justify-end">
+                                    <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
+                                    <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                                   </span>
                                 </div>
                               </div>
@@ -701,9 +703,9 @@ export const UserListOfMealDelivery = () => {
                 <div className="flex justify-between items-center p-3 mb-4 bg-green-50 rounded-xl border border-green-100">
                   <div>
                     <p className="text-gray-500">Meal Counts Left</p>
-                    <p className="text-lg font-bold text-theme-color-1">
-                      Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)},
-                      Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}
+                    <p className="flex flex-wrap gap-2 items-center text-lg font-bold text-theme-color-1">
+                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {(selectedUser.mealCounts?.lunchMeals || 0) + (selectedUser.mealCounts?.nextDayLunchMeals || 0)}</span>
+                      <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {(selectedUser.mealCounts?.dinnerMeals || 0) + (selectedUser.mealCounts?.nextDayDinnerMeals || 0)}</span>
                     </p>
                   </div>
                 </div>

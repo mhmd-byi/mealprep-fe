@@ -6,6 +6,7 @@ import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
 import { formatNutritionLine } from "../../nutritionInfo";
 import { CheckCircle2, Clock, Lock, Info, CalendarDays, AlertTriangle } from "lucide-react";
+import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
 
 const selectClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -267,7 +268,7 @@ const SubscriptionPlans = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block mb-1 text-xs font-medium text-gray-500">Lunch / Dinner</label>
+                      <label className="flex items-center gap-1 mb-1 text-xs font-medium text-gray-500"><MealSlotIcon slot="both" />Lunch / Dinner</label>
                       <select
                         className={selectClass}
                         value={currentPlanDetails.lunchDinner}

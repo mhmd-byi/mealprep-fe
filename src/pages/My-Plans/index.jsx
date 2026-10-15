@@ -101,8 +101,14 @@ export const MyPlan = () => {
                 <table className="w-full text-sm divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      {["Plan Name", "Start Date", "Total Meals", "Meals Left", "Lunch Left", "Dinner Left", "Meal Type", "Carb Type"].map((h) => (
-                        <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">{h}</th>
+                      {["Plan Name", "Start Date", "Total Meals", "Meals Left", "Lunch Left", "Dinner Left", "Meal Type", "Carb Type"].map((h, i) => (
+                        <th key={i} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">
+                          <span className="flex gap-1 items-center">
+                            {h === "Lunch Left" && <Sun className="w-3.5 h-3.5 text-amber-500" />}
+                            {h === "Dinner Left" && <Moon className="w-3.5 h-3.5 text-indigo-500" />}
+                            {h}
+                          </span>
+                        </th>
                       ))}
                     </tr>
                   </thead>

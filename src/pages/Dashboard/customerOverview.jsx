@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import useSubscription from "../Plans/useSubscription";
 import { Utensils, CalendarDays, ArrowRight } from "lucide-react";
+import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
 
 export const CustomerOverview = () => {
   const navigate = useNavigate();
@@ -45,14 +46,19 @@ export const CustomerOverview = () => {
               <Utensils className="w-5 h-5" />
             </div>
             <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">Meals Left</p>
-            <p className="text-lg font-bold text-gray-900">Lunch: {lunchLeft} &middot; Dinner: {dinnerLeft}</p>
+            <p className="flex flex-wrap gap-2 items-center text-lg font-bold text-gray-900">
+              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchLeft}</span>
+              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerLeft}</span>
+            </p>
           </div>
 
           <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
             <p className="text-xs font-semibold tracking-wide uppercase text-theme-color-1">Next Delivery</p>
             {nextDelivery ? (
               <>
-                <p className="text-lg font-bold text-gray-900">{nextDelivery.meal}</p>
+                <p className="flex gap-1.5 items-center text-lg font-bold text-gray-900">
+                  <MealSlotIcon slot={nextDelivery.meal.toLowerCase()} />{nextDelivery.meal}
+                </p>
                 <p className="text-sm text-gray-600">
                   {nextDelivery.date.toLocaleDateString(undefined, { day: "numeric", month: "short" })}
                 </p>
