@@ -34,7 +34,7 @@
     "userOnly": true
   },
   {
-    "name": "Plans",
+    "name": "Subscription Plans",
     "icon": "ClipboardList",
     "path": "/dashboard/plans",
     "requiresSubscription": false,
