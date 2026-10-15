@@ -26,6 +26,7 @@ import { DietaryStockReport } from "./pages/Admin/Dietary-Stock-Report";
 import { Expenses } from "./pages/Admin/Expenses";
 import { ManageSubscriptions } from "./pages/Admin/Manage-Subscriptions";
 import { FinanceDashboard } from "./pages/Admin/Finance-Dashboard";
+import { AuditLog } from "./pages/Admin/Audit-Log";
 export const routes = [
   {
     path: "/",
@@ -175,6 +176,11 @@ export const routes = [
   {
     path: "/dashboard/finance-dashboard",
     component: FinanceDashboard,
+    exact: true,
+  },
+  {
+    path: "/dashboard/audit-log",
+    component: AuditLog,
     exact: true,
   }
 ];

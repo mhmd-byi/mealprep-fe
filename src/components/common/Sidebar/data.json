@@ -158,5 +158,12 @@
     "path": "/dashboard/finance-dashboard",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Audit Log",
+    "icon": "History",
+    "path": "/dashboard/audit-log",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

@@ -6,6 +6,7 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { AuditLogTable } from "../../../components/common/AuditLogTable/AuditLogTable";
 import { useManageSubscriptions } from "./useManageSubscriptions";
 import { FieldLabel } from "./FieldLabel";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
@@ -34,17 +35,6 @@ const formatDate = (dateValue) => {
 const toInputDate = (dateValue) => {
   if (!dateValue) return "";
   return new Date(dateValue).toISOString().split("T")[0];
-};
-
-const formatDateTime = (dateValue) => {
-  if (!dateValue) return "—";
-  return new Date(dateValue).toLocaleString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 };
 
 // end date only exists once a plan stops delivering — updatedAt is when that happened
@@ -1259,63 +1249,6 @@ export const ManageSubscriptions = () => {
         ]}
       />
     </DashboardLayoutComponent>
-  );
-};
-
-const AuditLogTable = ({ logs, isLoading, scopeLabel }) => {
-  if (isLoading) return <p className="text-gray-500 py-4">Loading audit log...</p>;
-  if (!logs || logs.length === 0) {
-    return <p className="py-4 text-center text-gray-500">No logged actions for {scopeLabel} yet.</p>;
-  }
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">When</th>
-            <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Admin</th>
-            <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Action</th>
-            <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Reason</th>
-            <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Changes</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {logs.map((log) => (
-            <tr key={log._id} className="align-top">
-              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{formatDateTime(log.createdAt)}</td>
-              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{log.adminName}</td>
-              <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
-                <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                  {capitalize(log.action)}
-                </span>
-              </td>
-              <td className="px-4 py-4 text-sm text-left text-gray-700 max-w-xs">{log.reason}</td>
-              <td className="px-4 py-4 text-xs text-left text-gray-500 max-w-sm">
-                <FieldDiff before={log.before} after={log.after} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-const FieldDiff = ({ before, after }) => {
-  if (!before) {
-    return <span>Created as {after?.status}, {after?.totalMeals} meals ({after?.plan})</span>;
-  }
-  if (!after) return null;
-  const changedKeys = Object.keys(after).filter((key) => JSON.stringify(after[key]) !== JSON.stringify(before[key]));
-  if (changedKeys.length === 0) return <span>—</span>;
-  return (
-    <ul className="space-y-0.5">
-      {changedKeys.map((key) => (
-        <li key={key}>
-          <span className="font-medium">{key}:</span> {String(before[key])} → {String(after[key])}
-        </li>
-      ))}
-    </ul>
   );
 };
 
