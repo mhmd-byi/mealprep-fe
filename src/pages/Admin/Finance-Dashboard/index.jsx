@@ -306,7 +306,7 @@ export const FinanceDashboardContent = () => {
           <>
             <div className="flex flex-col items-start justify-between gap-2 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center">
               <div>
-                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">Today&apos;s Sales</p>
+                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">Today&apos;s Revenue</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{formatINR(data?.todaySales?.revenue)}</p>
               </div>
               <p className="text-sm text-gray-500">
