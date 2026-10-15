@@ -63,6 +63,7 @@ export const FinanceOverview = () => {
   const knownPlanBreakdown = (data.planBreakdown || []).filter((p) => Boolean(PLAN_COLORS[p.plan]));
 
   const activeSubscribersNow = (data.planBreakdown || []).reduce((sum, p) => sum + p.count, 0);
+  const newUsersInWindow = series.reduce((sum, row) => sum + (row.newUsers || 0), 0);
 
   return (
     <section className="px-4 mb-8 space-y-4">
@@ -142,6 +143,21 @@ export const FinanceOverview = () => {
           <p className="mb-3 text-base font-bold text-gray-900">Revenue by Plan</p>
           <PieChart data={revenueByPlanData} title="Revenue by plan" valueFormatter={formatINR} />
         </div>
+      </div>
+
+      <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex justify-between items-center mb-3">
+          <p className="text-base font-bold text-gray-900">User Growth</p>
+          <span className="px-3 py-1 text-xs font-bold text-theme-color-1 bg-green-50 rounded-full whitespace-nowrap">
+            +{formatCount(newUsersInWindow)} new users
+          </span>
+        </div>
+        <LineChart
+          data={series}
+          seriesKeys={[{ key: "newUsers", label: "New Users", color: "#1baf7a" }]}
+          title="New registered users per period"
+          valueFormatter={formatCount}
+        />
       </div>
 
       <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
