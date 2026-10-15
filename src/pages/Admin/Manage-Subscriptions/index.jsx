@@ -114,7 +114,10 @@ export const ManageSubscriptions = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("subscriptions"); // 'subscriptions' | 'auditLog'
 
-  const [isNewUserOpen, setIsNewUserOpen] = useState(false);
+  // Arriving here from "All Registered Users" → "+ Add New User" with
+  // openNewUser in router state — skip straight to the New User modal instead
+  // of landing on the plain search screen.
+  const [isNewUserOpen, setIsNewUserOpen] = useState(() => Boolean(location.state?.openNewUser));
   const [newUserForm, setNewUserForm] = useState(emptyNewUserForm);
   const [newUserError, setNewUserError] = useState(null);
   const [isSavingNewUser, setIsSavingNewUser] = useState(false);

@@ -362,7 +362,7 @@ export const AllRegisteredUsers = () => {
               </div>
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/manage-subscriptions")}
+                onClick={() => navigate("/dashboard/manage-subscriptions", { state: { openNewUser: true } })}
                 className="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black"
               >
                 + Add New User
