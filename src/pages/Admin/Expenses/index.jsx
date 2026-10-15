@@ -459,7 +459,7 @@ export const Expenses = () => {
                           className="flex gap-3 items-center py-1.5 w-full text-left rounded-lg hover:bg-gray-50"
                         >
                           <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                          <span className="flex-shrink-0 w-28 text-sm text-gray-600 truncate">{item.category}</span>
+                          <span className="flex-shrink-0 w-28 text-sm text-gray-600 truncate" title={item.category}>{item.category}</span>
                           <div className="overflow-hidden flex-1 h-2.5 bg-gray-100 rounded-full">
                             <div
                               className="h-full rounded-full transition-all duration-500 ease-out"
@@ -480,7 +480,7 @@ export const Expenses = () => {
                           <div className="pb-2 pl-8 space-y-1">
                             {subtotals.map((sub) => (
                               <div key={sub.subcategory} className="flex gap-3 items-center text-xs">
-                                <span className="flex-1 text-gray-500 truncate">{sub.subcategory}</span>
+                                <span className="flex-1 text-gray-500 truncate" title={sub.subcategory}>{sub.subcategory}</span>
                                 <span className="font-semibold text-gray-700">{formatCurrency(sub.amount)}</span>
                               </div>
                             ))}

@@ -43,7 +43,7 @@ const SubcategoryRow = ({ categoryId, subcategory, onRename, onDelete }) => {
         onChange={(e) => setName(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-        className="text-xs w-24 bg-transparent focus:outline-none"
+        className="text-xs w-24 bg-transparent focus:outline-none overflow-hidden text-ellipsis"
       />
       <button
         type="button"
