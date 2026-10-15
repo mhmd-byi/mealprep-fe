@@ -71,7 +71,7 @@ const CATEGORIES = [
   { key: "customisation", label: "Customisation", icon: SlidersHorizontal, tone: "bg-orange-100 text-orange-600" },
   { key: "profile", label: "Profile Update", icon: UserCog, tone: "bg-blue-100 text-blue-600" },
   { key: "diet", label: "Meal Preference", icon: Utensils, tone: "bg-amber-100 text-amber-600" },
-  { key: "meal_count", label: "Meal Delivery Update", icon: ClipboardList, tone: "bg-teal-100 text-teal-600" },
+  { key: "meal_count", label: "Meal Logs / Meal Delivery", icon: ClipboardList, tone: "bg-teal-100 text-teal-600" },
   { key: "other", label: "Other", icon: Bell, tone: "bg-gray-100 text-gray-500" },
 ];
 
