@@ -19,6 +19,8 @@ import {
   Download,
   Printer,
   CalendarDays,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 const emptyForm = { date: "", category: "", subcategory: "", amount: "", description: "", paymentMethod: "" };
@@ -100,6 +102,7 @@ export const Expenses = () => {
   const [formError, setFormError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState(null);
   const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -196,6 +199,22 @@ export const Expenses = () => {
   );
   const subcategoriesFor = (categoryName) =>
     categories.find((c) => c.name === categoryName)?.subcategories || [];
+
+  // Tallies every expense under a category by its subcategory, so repeated
+  // entries (e.g. several "Dairy" purchases under Groceries) collapse into
+  // one total an admin can check against receipts.
+  const subcategoryTotalsFor = (categoryName) => {
+    const totals = {};
+    expenses
+      .filter((e) => e.category === categoryName)
+      .forEach((e) => {
+        const key = e.subcategory || "Uncategorized";
+        totals[key] = (totals[key] || 0) + Number(e.amount || 0);
+      });
+    return Object.entries(totals)
+      .map(([subcategory, amount]) => ({ subcategory, amount }))
+      .sort((a, b) => b.amount - a.amount);
+  };
 
   const openAddModal = () => {
     setEditingId(null);
@@ -428,23 +447,48 @@ export const Expenses = () => {
                 <span className="px-3 py-1 text-xs font-semibold text-gray-500 bg-gray-100 rounded-full">{periodLabel}</span>
               </div>
               {summary?.breakdown?.length > 0 ? (
-                <div className="space-y-3">
-                  {summary.breakdown.map((item) => (
-                    <div key={item.category} className="flex gap-3 items-center">
-                      <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="flex-shrink-0 w-28 text-sm text-gray-600 truncate">{item.category}</span>
-                      <div className="overflow-hidden flex-1 h-2.5 bg-gray-100 rounded-full">
-                        <div
-                          className="h-full rounded-full transition-all duration-500 ease-out"
-                          style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
-                        />
+                <div className="space-y-1">
+                  {summary.breakdown.map((item) => {
+                    const subtotals = subcategoryTotalsFor(item.category);
+                    const isExpanded = expandedCategory === item.category;
+                    return (
+                      <div key={item.category}>
+                        <button
+                          type="button"
+                          onClick={() => setExpandedCategory(isExpanded ? null : item.category)}
+                          className="flex gap-3 items-center py-1.5 w-full text-left rounded-lg hover:bg-gray-50"
+                        >
+                          <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                          <span className="flex-shrink-0 w-28 text-sm text-gray-600 truncate">{item.category}</span>
+                          <div className="overflow-hidden flex-1 h-2.5 bg-gray-100 rounded-full">
+                            <div
+                              className="h-full rounded-full transition-all duration-500 ease-out"
+                              style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
+                            />
+                          </div>
+                          <span className="flex-shrink-0 w-20 text-sm font-semibold text-right text-gray-900">
+                            {formatCurrency(item.amount)}
+                          </span>
+                          <span className="flex-shrink-0 w-10 text-xs text-right text-gray-500">{item.percentage}%</span>
+                          {subtotals.length > 0 ? (
+                            isExpanded ? <ChevronUp className="flex-shrink-0 w-4 h-4 text-gray-400" /> : <ChevronDown className="flex-shrink-0 w-4 h-4 text-gray-400" />
+                          ) : (
+                            <span className="flex-shrink-0 w-4" />
+                          )}
+                        </button>
+                        {isExpanded && subtotals.length > 0 && (
+                          <div className="pb-2 pl-8 space-y-1">
+                            {subtotals.map((sub) => (
+                              <div key={sub.subcategory} className="flex gap-3 items-center text-xs">
+                                <span className="flex-1 text-gray-500 truncate">{sub.subcategory}</span>
+                                <span className="font-semibold text-gray-700">{formatCurrency(sub.amount)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <span className="flex-shrink-0 w-20 text-sm font-semibold text-right text-gray-900">
-                        {formatCurrency(item.amount)}
-                      </span>
-                      <span className="flex-shrink-0 w-10 text-xs text-right text-gray-500">{item.percentage}%</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="py-10 text-sm text-center text-gray-400">No expenses in this period.</p>
