@@ -627,8 +627,8 @@ export const AllRegisteredUsers = () => {
                                   </button>
                                   <button
                                     type="button"
-                                    title="Manage subscription"
-                                    onClick={() => navigate("/dashboard/manage-subscriptions")}
+                                    title="Edit subscription"
+                                    onClick={() => navigate("/dashboard/manage-subscriptions", { state: { userId: user._id } })}
                                     className="p-2 text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-100"
                                   >
                                     <Pencil className="w-4 h-4" />
@@ -924,7 +924,7 @@ export const AllRegisteredUsers = () => {
             <>
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/manage-subscriptions")}
+                onClick={() => navigate("/dashboard/manage-subscriptions", { state: { userId: selectedUser._id } })}
                 className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50"
               >
                 <Pencil className="w-4 h-4" />

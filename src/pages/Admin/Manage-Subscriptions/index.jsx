@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { CalendarDays, Utensils, SlidersHorizontal, CreditCard, Minus, Plus } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
@@ -104,6 +105,20 @@ export const ManageSubscriptions = () => {
     updateSubscription,
     closeAccount,
   } = useManageSubscriptions();
+
+  // Arriving here from another page's "Edit User"/"Edit Subscription" link
+  // (e.g. All Registered Users) with a userId in router state — select that
+  // user and jump straight into editing their subscription, skipping the
+  // manual search-then-click-Edit steps.
+  const location = useLocation();
+  const pendingAutoEditUserId = useRef(location.state?.userId || null);
+
+  useEffect(() => {
+    if (pendingAutoEditUserId.current) {
+      selectUser(pendingAutoEditUserId.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("subscriptions"); // 'subscriptions' | 'auditLog'
@@ -367,6 +382,16 @@ export const ManageSubscriptions = () => {
     setEditingSub(null);
     setEditError(null);
   };
+
+  useEffect(() => {
+    if (!pendingAutoEditUserId.current) return;
+    if (!selectedUser || selectedUser._id !== pendingAutoEditUserId.current) return;
+    const subs = selectedUser.subscriptions || [];
+    const defaultSub = subs.find((s) => s.status === "active") || subs[subs.length - 1];
+    if (defaultSub) openEditModal(defaultSub);
+    pendingAutoEditUserId.current = null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser]);
 
   const handleEditSave = async () => {
     if (!editReason.trim()) {
