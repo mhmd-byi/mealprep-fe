@@ -28,6 +28,9 @@ import {
   XCircle,
   Settings2,
   Receipt,
+  Mail,
+  Phone,
+  MapPin,
 } from "lucide-react";
 
 const TABS = [
@@ -354,6 +357,9 @@ export const MealTracking = () => {
                       <CalendarDays className="w-3.5 h-3.5 flex-shrink-0" />
                       Member since {formatDisplayDate(userDetail.createdAt)} · {latestSub?.plan || "No plan"}
                     </p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500 truncate"><Mail className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.email || "No email on file"}</p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500"><Phone className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.mobile || "No mobile on file"}</p>
+                    <p className="flex gap-1.5 items-center text-sm text-gray-500 truncate"><MapPin className="w-3.5 h-3.5 flex-shrink-0" />{userDetail.postalAddress || "No address on file"}</p>
                   </div>
                 </div>
 
