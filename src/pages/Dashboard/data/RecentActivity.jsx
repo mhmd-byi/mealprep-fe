@@ -146,6 +146,12 @@ const AccordionSection = ({ category, items }) => {
 
       {isOpen && (
         <div className="pb-2">
+          {category.key === "meal_count" && (
+            <p className="px-4 pb-3 text-xs text-gray-400">
+              The time shown here is when the kitchen's cutoff closed and the meal was logged — not when it reached the
+              customer. Actual delivery is between 12:30–2:30 PM for lunch and 6:30–8:30 PM for dinner.
+            </p>
+          )}
           {items.length === 0 ? (
             <p className="py-6 text-sm text-center text-gray-500">No {category.label.toLowerCase()} activity in the last 24 hours.</p>
           ) : (
