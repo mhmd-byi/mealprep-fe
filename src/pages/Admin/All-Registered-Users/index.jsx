@@ -73,7 +73,12 @@ const isNewThisMonth = (user) => {
 const STATUS_TABS = [
   { key: "all", label: "All Users", match: () => true },
   { key: "active", label: "Active", match: (u) => getStatus(u) === "Active" },
-  { key: "queued", label: "Queued", match: (u) => getStatus(u) === "Queued" },
+  // Checked directly against the raw subscriptions, not getStatus(u) — a
+  // queued plan normally coexists with an active one (queuing only happens
+  // when there's already an overlapping active plan), and getStatus()
+  // collapses that pair down to just "Active", so this tab needs its own
+  // independent check to ever show anyone.
+  { key: "queued", label: "Queued", match: (u) => (u.subscriptions || []).some((s) => s.status === "queued") },
   { key: "inactive", label: "Completed / Inactive", match: (u) => isInactive(getStatus(u)) },
   { key: "new", label: "New This Month", match: isNewThisMonth },
 ];
