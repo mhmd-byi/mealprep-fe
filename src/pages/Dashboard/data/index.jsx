@@ -14,12 +14,12 @@ const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight,
     <Wrapper
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={`flex items-center gap-3 p-4 text-left w-full ${highlight ? "bg-red-50" : ""} ${onClick ? "hover:bg-gray-50" : ""}`}
+      className={`flex items-start gap-3 p-4 text-left w-full ${highlight ? "bg-red-50" : ""} ${onClick ? "hover:bg-gray-50" : ""}`}
     >
       <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <div className="min-w-0">
+      <div className="flex-1 min-w-0">
         <p className={`text-xs font-medium ${highlight ? "text-red-500" : "text-gray-500"}`}>{label}</p>
         {loading ? <Spinner /> : <div className={`text-xl font-bold ${valueClassName}`}>{value}</div>}
       </div>
@@ -73,11 +73,20 @@ export const Data = () => {
           label="Delivery Count"
           loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
           value={
-            <>
-              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {mealDeliveryListCountLunch}</span>
-              <br />
-              <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {mealDeliveryListCountDinner}</span>
-            </>
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-center w-full">
+                <span className="flex gap-1 items-center text-xs font-medium text-gray-500">
+                  <MealSlotIcon slot="lunch" />Lunch:
+                </span>
+                <span>{mealDeliveryListCountLunch}</span>
+              </div>
+              <div className="flex justify-between items-center w-full">
+                <span className="flex gap-1 items-center text-xs font-medium text-gray-500">
+                  <MealSlotIcon slot="dinner" />Dinner:
+                </span>
+                <span>{mealDeliveryListCountDinner}</span>
+              </div>
+            </div>
           }
         />
 
@@ -97,29 +106,31 @@ export const Data = () => {
           loading={loadingStates.cancelled}
         />
 
-        <div className="p-4">
-          <p className="flex gap-1.5 items-center mb-1.5 text-xs font-medium text-gray-500">
-            <Crown className="flex-shrink-0 w-3.5 h-3.5 text-purple-600" />
-            Active Subscriptions
-          </p>
-          {loadingStates.subscriptions ? (
-            <Spinner />
-          ) : (
-            <div className="space-y-0.5">
-              <button type="button" onClick={() => handlePlanClick("Weekly")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
-                <span className="text-gray-500">Weekly:</span>
-                <span className="font-bold text-gray-900">{weeklyCount}</span>
-              </button>
-              <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
-                <span className="text-gray-500">Monthly:</span>
-                <span className="font-bold text-gray-900">{monthlyCount}</span>
-              </button>
-              <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-sm text-left hover:text-theme-color-1">
-                <span className="text-gray-500">Trial:</span>
-                <span className="font-bold text-gray-900">{trialCount}</span>
-              </button>
-            </div>
-          )}
+        <div className="flex items-start gap-3 p-4 w-full text-left">
+          <div className="flex flex-shrink-0 justify-center items-center w-10 h-10 bg-purple-50 rounded-xl">
+            <Crown className="w-5 h-5 text-purple-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="mb-1.5 text-xs font-medium text-gray-500">Active Subscriptions</p>
+            {loadingStates.subscriptions ? (
+              <Spinner />
+            ) : (
+              <div className="space-y-0.5">
+                <button type="button" onClick={() => handlePlanClick("Weekly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
+                  <span className="text-xs font-medium text-gray-500">Weekly:</span>
+                  <span className="text-xl font-bold text-gray-900">{weeklyCount}</span>
+                </button>
+                <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
+                  <span className="text-xs font-medium text-gray-500">Monthly:</span>
+                  <span className="text-xl font-bold text-gray-900">{monthlyCount}</span>
+                </button>
+                <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
+                  <span className="text-xs font-medium text-gray-500">Trial:</span>
+                  <span className="text-xl font-bold text-gray-900">{trialCount}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <StatCell
