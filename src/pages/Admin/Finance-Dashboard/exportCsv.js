@@ -20,13 +20,14 @@ export const buildFinanceReportCSV = (data) => {
   lines.push("");
 
   lines.push(row(["Summary"]));
-  lines.push(row(["Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Subscriptions", "New Subscribers", "Recurring Subscribers"]));
+  lines.push(row(["Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Actual Profit", "Subscriptions", "New Subscribers", "Recurring Subscribers"]));
   lines.push(
     row([
       data.totals?.revenue ?? 0,
       data.totals?.actualSale ?? 0,
       data.totals?.expenses ?? 0,
       data.totals?.profit ?? 0,
+      data.totals?.actualProfit ?? 0,
       data.totals?.subscriptionCount ?? 0,
       data.totals?.newCount ?? 0,
       data.totals?.recurringCount ?? 0,
@@ -35,16 +36,16 @@ export const buildFinanceReportCSV = (data) => {
   lines.push("");
 
   lines.push(row(["Revenue, Expenses & Profit Over Time"]));
-  lines.push(row(["Period", "Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Subscriptions", "New", "Recurring"]));
+  lines.push(row(["Period", "Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Actual Profit", "Subscriptions", "New", "Recurring"]));
   (data.series || []).forEach((r) => {
-    lines.push(row([r.label, r.revenue, r.actualSale, r.expenses, r.profit, r.subscriptionCount, r.newCount, r.recurringCount]));
+    lines.push(row([r.label, r.revenue, r.actualSale, r.expenses, r.profit, r.actualProfit, r.subscriptionCount, r.newCount, r.recurringCount]));
   });
   lines.push("");
 
   lines.push(row(["Revenue & Subscriptions by Plan"]));
-  lines.push(row(["Plan", "Subscription Count", "Revenue"]));
+  lines.push(row(["Plan", "Subscription Count", "Revenue (Collected)", "Actual Sale (Delivered)"]));
   (data.planBreakdown || []).forEach((p) => {
-    lines.push(row([p.plan, p.count, p.revenue]));
+    lines.push(row([p.plan, p.count, p.revenue, p.actualSale]));
   });
   lines.push("");
 

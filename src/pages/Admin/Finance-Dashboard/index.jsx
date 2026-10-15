@@ -147,18 +147,22 @@ export const FinanceDashboardContent = () => {
   // response stays a plain fact table.
   let cumRevenue = 0;
   let cumExpenses = 0;
+  let cumActualSale = 0;
   const cumulativeSeries = series.map((row) => {
     cumRevenue += row.revenue;
     cumExpenses += row.expenses;
-    return { ...row, cumulativeRevenue: cumRevenue, cumulativeExpenses: cumExpenses };
+    cumActualSale += row.actualSale;
+    return { ...row, cumulativeRevenue: cumRevenue, cumulativeExpenses: cumExpenses, cumulativeActualSale: cumActualSale };
   });
 
   const marginSeries = series.map((row) => ({
     ...row,
     profitMargin: row.revenue > 0 ? Math.round((row.profit / row.revenue) * 1000) / 10 : 0,
+    actualProfitMargin: row.actualSale > 0 ? Math.round((row.actualProfit / row.actualSale) * 1000) / 10 : 0,
   }));
 
   const planRevenueData = planBreakdown.map((p) => ({ label: p.plan, value: p.revenue, color: getPlanColor(p.plan) }));
+  const planActualSaleData = planBreakdown.map((p) => ({ label: p.plan, value: p.actualSale, color: getPlanColor(p.plan) }));
   const planCountData = planBreakdown.map((p) => ({ label: p.plan, value: p.count, color: getPlanColor(p.plan) }));
   const paymentMethodData = paymentMethodBreakdown.map((p) => ({
     label: p.method,
@@ -418,6 +422,47 @@ export const FinanceDashboardContent = () => {
               </ChartCard>
               <ChartCard title="Subscriptions by Plan" subtitle="By count, not revenue" badge="All Time">
                 <PieChart data={planCountData} title="Subscriptions by plan" valueFormatter={formatCount} />
+              </ChartCard>
+            </div>
+
+            {/* ── Actual Sale (based on meals delivered, not purchase date) vs Expenses ── */}
+            <SectionHeading>Actual Sale (Based on Meals Delivered) vs Expenses</SectionHeading>
+            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
+              <ChartCard title="Actual Sale, Expenses & Actual Profit" subtitle="Each meal delivered × its subscription's per-meal rate" badge={granularityLabel}>
+                <GroupedBarChart
+                  data={series}
+                  seriesKeys={[
+                    { key: "actualSale", label: "Actual Sale (Delivered)", color: "#4aa3d6" },
+                    { key: "expenses", label: "Expenses", color: "#eb6834" },
+                    { key: "actualProfit", label: "Actual Profit", color: "#1baf7a" },
+                  ]}
+                  title="Actual sale, expenses and actual profit over time"
+                />
+              </ChartCard>
+              <ChartCard title="Cumulative Actual Sale vs Expenses" subtitle="Running total over the selected range" badge="All Time">
+                <LineChart
+                  data={cumulativeSeries}
+                  seriesKeys={[
+                    { key: "cumulativeActualSale", label: "Cumulative Actual Sale", color: "#4aa3d6" },
+                    { key: "cumulativeExpenses", label: "Cumulative Expenses", color: "#eb6834" },
+                  ]}
+                  title="Cumulative actual sale vs expenses"
+                  valueFormatter={formatCompactINR}
+                />
+              </ChartCard>
+            </div>
+            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
+              <ChartCard title="Actual Profit Margin %" subtitle="Actual profit as a share of actual sale" badge={granularityLabel}>
+                <LineChart
+                  data={marginSeries}
+                  seriesKeys={[{ key: "actualProfitMargin", label: "Actual Profit Margin", color: "#1baf7a" }]}
+                  title="Actual profit margin percent over time"
+                  valueFormatter={formatPercent}
+                  allowNegative
+                />
+              </ChartCard>
+              <ChartCard title="Actual Sale by Plan" subtitle="By meals delivered, not purchase date" badge="All Time">
+                <PieChart data={planActualSaleData} title="Actual sale by plan" valueFormatter={formatINR} />
               </ChartCard>
             </div>
 
