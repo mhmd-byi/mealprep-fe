@@ -3,12 +3,14 @@ import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { Button, Input } from "../../../components";
 import { FileDownload } from "@mui/icons-material";
+import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 export const UserListWithCustomisationRequest = () => {
   const [customisationRequests, setCustomisationRequests] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ date: new Date().toISOString().split("T")[0] });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -73,19 +75,64 @@ export const UserListWithCustomisationRequest = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const formatDateTime = (dateString) =>
+    dateString ? new Date(dateString).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "N/A";
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRequests = [...customisationRequests].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    let aValue, bValue;
+    if (sortConfig.key === "name") {
+      aValue = `${a.user?.firstName || ""} ${a.user?.lastName || ""}`.toLowerCase();
+      bValue = `${b.user?.firstName || ""} ${b.user?.lastName || ""}`.toLowerCase();
+    } else if (sortConfig.key === "date") {
+      aValue = new Date(a.date).getTime();
+      bValue = new Date(b.date).getTime();
+    } else if (sortConfig.key === "mealType") {
+      aValue = (a.mealType || "").toLowerCase();
+      bValue = (b.mealType || "").toLowerCase();
+    } else if (sortConfig.key === "requestTime") {
+      aValue = new Date(a.createdAt).getTime();
+      bValue = new Date(b.createdAt).getTime();
+    }
+
+    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    ) : (
+      <ChevronDown className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    );
+  };
+
   const exportToCSV = () => {
-    const headers = ["User Id", "User Name", "Meal Type", "Item Name", "Item Weight/Count", "Exclude"]; // , "Start Date", "End Date"
+    const headers = ["User Id", "User Name", "Date", "Meal Type", "Item Name", "Item Weight/Count", "Exclude", "Request Time"];
 
     // Convert data to CSV format
-    const csvData = customisationRequests.reduce((fArr, meal) => {
+    const csvData = sortedRequests.reduce((fArr, meal) => {
       const upItems = meal.items.map((item) => {
         return [
           meal.userId || "",
           (meal.user.firstName || "") + " " + (meal.user.lastName || ""),
-          "", // mealType
+          formatDate(meal.date),
+          meal.mealType || "",
           item.name || "",
           item.weight || "",
           item.exclude || "",
+          formatDateTime(meal.createdAt),
         ]
       });
 
@@ -191,25 +238,41 @@ export const UserListWithCustomisationRequest = () => {
 
               {/* Responsive Table Container */}
               <div className="overflow-x-auto">
-                {customisationRequests.length > 0 ? (
+                {sortedRequests.length > 0 ? (
                   <table className="w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        {[
-                          "Name",
-                          "Items",
-                        ].map((header) => (
-                          <th
-                            key={header}
-                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell"
-                          >
-                            {header}
-                          </th>
-                        ))}
+                        <th
+                          onClick={() => handleSort("name")}
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell cursor-pointer hover:text-theme-color-1"
+                        >
+                          Name <SortIcon columnKey="name" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("date")}
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell cursor-pointer hover:text-theme-color-1"
+                        >
+                          Date <SortIcon columnKey="date" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("mealType")}
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell cursor-pointer hover:text-theme-color-1"
+                        >
+                          Meal Type <SortIcon columnKey="mealType" />
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell">
+                          Items
+                        </th>
+                        <th
+                          onClick={() => handleSort("requestTime")}
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell print:table-cell cursor-pointer hover:text-theme-color-1"
+                        >
+                          Request Time <SortIcon columnKey="requestTime" />
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {customisationRequests.map((request, index) => (
+                      {sortedRequests.map((request, index) => (
                         <tr
                           key={index}
                           className="hover:bg-gray-100 border-b md:border-none flex flex-col md:table-row"
@@ -221,7 +284,14 @@ export const UserListWithCustomisationRequest = () => {
                                 <span className="font-medium">Name:</span>
                                 <span>{request.user.firstName} {request.user.lastName}</span>
                               </div>
-                              
+                              <div className="flex justify-between">
+                                <span className="font-medium">Date:</span>
+                                <span>{formatDate(request.date)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Meal Type:</span>
+                                <span className="capitalize">{request.mealType}</span>
+                              </div>
                               <div className="flex justify-start">
                                 <span className="font-medium">Items:</span>
                                 <span className="capitalize" style={{ textDecorationLine: request.items.exclude ? "line-through" : undefined }}>
@@ -231,12 +301,22 @@ export const UserListWithCustomisationRequest = () => {
                                   Weight/Count: {request.items.weight}
                                 </span>
                               </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Requested:</span>
+                                <span>{formatDateTime(request.createdAt)}</span>
+                              </div>
                             </div>
                           </td>
 
                           {/* Desktop View */}
                           <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left hidden md:table-cell print:table-cell">
                             {request.user.firstName} {request.user.lastName}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-left hidden md:table-cell print:table-cell">
+                            {formatDate(request.date)}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-left hidden md:table-cell print:table-cell">
+                            {request.mealType}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 capitalize text-left hidden md:table-cell print:table-cell">
                             {request.items.map((item) => (
@@ -246,6 +326,9 @@ export const UserListWithCustomisationRequest = () => {
                                 </tr>
                               </>
                             ))}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-left hidden md:table-cell print:table-cell">
+                            {formatDateTime(request.createdAt)}
                           </td>
                         </tr>
                       ))}

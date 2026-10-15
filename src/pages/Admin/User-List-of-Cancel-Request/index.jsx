@@ -13,6 +13,9 @@ import {
   Download,
   Printer,
   RotateCcw,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
 } from "lucide-react";
 
 const getLocalDateKey = (date = new Date()) => {
@@ -72,6 +75,7 @@ export const UserListWithCancelRequest = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [previousWeekMeals, setPreviousWeekMeals] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   // Printing should include every filtered row, not just the current page.
   useEffect(() => {
@@ -150,7 +154,17 @@ export const UserListWithCancelRequest = () => {
     setMealTypeFilter("All");
     setUserFilter("All");
     setSearchQuery("");
+    setSortConfig({ key: null, direction: "asc" });
     fetchCancelledMeals(today);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+    setCurrentPage(1);
   };
 
   const userOptions = [...new Map(cancelledMeals.map((m) => [String(m.userId), m.name])).entries()];
@@ -168,6 +182,35 @@ export const UserListWithCancelRequest = () => {
 
   const filteredMeals = cancelledMeals.filter(matchesFilters);
   const previousFilteredMeals = previousWeekMeals.filter(matchesFilters);
+
+  const sortedMeals = [...filteredMeals].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    let aValue, bValue;
+    if (sortConfig.key === "name") {
+      aValue = (a.name || "").toLowerCase();
+      bValue = (b.name || "").toLowerCase();
+    } else if (sortConfig.key === "startDate") {
+      aValue = new Date(a.startDate).getTime();
+      bValue = new Date(b.startDate).getTime();
+    } else if (sortConfig.key === "endDate") {
+      aValue = new Date(a.endDate).getTime();
+      bValue = new Date(b.endDate).getTime();
+    } else if (sortConfig.key === "daysOff") {
+      aValue = calculateDaysOff(a.startDate, a.endDate);
+      bValue = calculateDaysOff(b.startDate, b.endDate);
+    } else if (sortConfig.key === "mealType") {
+      aValue = (a.mealType || "").toLowerCase();
+      bValue = (b.mealType || "").toLowerCase();
+    } else if (sortConfig.key === "requestTime") {
+      aValue = new Date(a.createdAt).getTime();
+      bValue = new Date(b.createdAt).getTime();
+    }
+
+    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
 
   const total = filteredMeals.length;
   const uniqueUsers = new Set(filteredMeals.map((m) => String(m.userId))).size;
@@ -200,12 +243,21 @@ export const UserListWithCancelRequest = () => {
   ];
 
   const pageRows = isPrinting
-    ? filteredMeals
-    : filteredMeals.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    ? sortedMeals
+    : sortedMeals.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    ) : (
+      <ChevronDown className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+    );
+  };
 
   const exportToCSV = () => {
     const headers = ["User Id", "Name", "Start Date", "End Date", "Days Off", "Meal Type", "Request Time"];
-    const rows = filteredMeals.map((meal) => [
+    const rows = sortedMeals.map((meal) => [
       generateCustomUserId(meal.name, meal.mobile),
       meal.name,
       formatDate(meal.startDate),
@@ -356,11 +408,44 @@ export const UserListWithCancelRequest = () => {
                   <table className="w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        {["User ID", "Name", "Start Date", "End Date", "Days Off", "Meal Type", "Request Time", "Status"].map((header) => (
-                          <th key={header} className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap">
-                            {header}
-                          </th>
-                        ))}
+                        <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap">User ID</th>
+                        <th
+                          onClick={() => handleSort("name")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          Name <SortIcon columnKey="name" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("startDate")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          Start Date <SortIcon columnKey="startDate" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("endDate")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          End Date <SortIcon columnKey="endDate" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("daysOff")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          Days Off <SortIcon columnKey="daysOff" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("mealType")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          Meal Type <SortIcon columnKey="mealType" />
+                        </th>
+                        <th
+                          onClick={() => handleSort("requestTime")}
+                          className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:text-theme-color-1"
+                        >
+                          Request Time <SortIcon columnKey="requestTime" />
+                        </th>
+                        <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase whitespace-nowrap">Status</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-100">
