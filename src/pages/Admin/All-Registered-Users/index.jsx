@@ -204,10 +204,10 @@ export const AllRegisteredUsers = () => {
   );
 
   const statCards = [
-    { label: "Total Users", value: allRegisteredUsers.length, icon: Users },
-    { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck },
-    { label: "Completed / Inactive", value: tabCounts.inactive, icon: PauseCircle },
-    { label: "New This Month", value: tabCounts.new, icon: UserPlus },
+    { label: "Total Users", value: allRegisteredUsers.length, icon: Users, tabKey: "all" },
+    { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck, tabKey: "active" },
+    { label: "Completed / Inactive", value: tabCounts.inactive, icon: PauseCircle, tabKey: "inactive" },
+    { label: "New This Month", value: tabCounts.new, icon: UserPlus, tabKey: "new" },
   ];
 
   const activeTab = STATUS_TABS.find((tab) => tab.key === statusTab);
@@ -355,7 +355,14 @@ export const AllRegisteredUsers = () => {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 print:hidden">
               {statCards.map((card) => (
-                <div key={card.label} className="flex gap-4 items-center p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <button
+                  key={card.label}
+                  type="button"
+                  onClick={() => { setStatusTab(card.tabKey); setCurrentPage(1); }}
+                  className={`flex gap-4 items-center p-5 text-left bg-white rounded-2xl border shadow-sm transition-colors hover:border-theme-color-1 ${
+                    statusTab === card.tabKey ? "border-theme-color-1 ring-1 ring-theme-color-1" : "border-gray-100"
+                  }`}
+                >
                   <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 bg-green-50 rounded-xl text-theme-color-1">
                     <card.icon className="w-6 h-6" />
                   </div>
@@ -363,7 +370,7 @@ export const AllRegisteredUsers = () => {
                     <p className="text-2xl font-bold text-gray-900">{card.value.toLocaleString()}</p>
                     <p className="text-sm text-gray-500">{card.label}</p>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
 
