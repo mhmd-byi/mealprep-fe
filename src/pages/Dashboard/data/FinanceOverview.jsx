@@ -5,7 +5,8 @@ import { GroupedBarChart } from "../../Admin/Finance-Dashboard/GroupedBarChart";
 import { LineChart } from "../../Admin/Finance-Dashboard/LineChart";
 import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
-import { getPlanColor, CARB_TYPE_LABELS, getCarbTypeColor } from "../../Admin/Finance-Dashboard/index";
+import { getPlanColor } from "../../Admin/Finance-Dashboard/index";
+import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
 
 const percentChange = (current, previous) => {
   if (!previous) return current ? null : 0;
@@ -112,7 +113,7 @@ export const FinanceOverview = () => {
 
         <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <p className="mb-3 text-base font-bold text-gray-900">Meals by Category</p>
-          <PieChart data={carbData} title="Meals by category" valueFormatter={formatCount} />
+          <PieChart data={carbData} title="Meals by category" valueFormatter={formatCount} otherThresholdPct={0} />
         </div>
       </div>
 

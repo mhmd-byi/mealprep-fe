@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import Popup from "../Popup/Popup";
 import { VegNonVegIcon } from "../VegNonVegIcon/VegNonVegIcon";
+import { formatCarbType } from "../../../carbTypeDisplay";
 import { CalendarDays, CreditCard, Droplets, Utensils, History, Sun, Pencil, Package } from "lucide-react";
 
 const STATUS_STYLES = {
@@ -36,9 +37,6 @@ const getSubscriptionEndLabel = (sub) => {
   if (sub.status === "active") return "Ongoing";
   return "Not started";
 };
-
-const capitalizeWords = (value) =>
-  value ? value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("-") : "—";
 
 const DetailRow = ({ label, children }) => (
   <div>
@@ -231,7 +229,7 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                       </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
-                      {capitalizeWords(latestSub?.carbType)}
+                      {formatCarbType(latestSub?.carbType)}
                     </SubscriptionField>
                   </div>
                 </div>
@@ -290,7 +288,7 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                               <VegNonVegIcon value={sub.mealType} />
                             </span>
                           </div>
-                          <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
+                          <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}

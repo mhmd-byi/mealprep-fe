@@ -2,6 +2,7 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import useSubscription from "../Plans/useSubscription";
 import { useMealSchedule } from "./useMealSchedule";
 import { formatNutritionLine } from "../../nutritionInfo";
+import { formatCarbType } from "../../carbTypeDisplay";
 import { CreditCard, Clock, Utensils, Sun, Moon, Lock, Info } from "lucide-react";
 
 const formatDayLabel = (dateStr) => {
@@ -119,8 +120,8 @@ export const MyPlan = () => {
                           {(plan?.dinnerMeals || 0) + (plan?.nextDayDinnerMeals || 0)} Meals
                         </td>
                         <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{plan?.mealType}</td>
-                        <td className="px-4 py-3 text-gray-700 capitalize whitespace-nowrap">
-                          {plan?.carbType || "—"}
+                        <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                          {formatCarbType(plan?.carbType)}
                           {formatNutritionLine(plan?.carbType) && (
                             <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(plan?.carbType)}</p>
                           )}
@@ -243,8 +244,8 @@ export const MyPlan = () => {
                       <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{nextPlan?.plan}</td>
                       <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.totalMeals} Meals</td>
                       <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{nextPlan?.mealType}</td>
-                      <td className="px-4 py-3 text-gray-700 capitalize whitespace-nowrap">
-                        {nextPlan?.carbType || "—"}
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                        {formatCarbType(nextPlan?.carbType)}
                         {formatNutritionLine(nextPlan?.carbType) && (
                           <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(nextPlan?.carbType)}</p>
                         )}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import Pagination from "../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { formatCarbType } from "../../carbTypeDisplay";
 import { useMealTracking } from "./useMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../activityCategories";
 import { calculateSubEndDate, holidayDateKeysFrom } from "../../subscriptionUtils";
@@ -82,9 +83,6 @@ const getSubscriptionEndLabel = (sub) => {
   if (sub.status === "active") return "Ongoing";
   return "Not started";
 };
-
-const capitalizeWords = (value) =>
-  value ? value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("-") : "—";
 
 const dateKey = (value) => {
   const d = new Date(value);
@@ -559,7 +557,7 @@ export const MealTracking = () => {
                           <SubscriptionField icon={CalendarDays} label="Start Date">
                             {latestSub?.subscriptionStartDate ? formatDisplayDate(latestSub.subscriptionStartDate) : "N/A"}
                           </SubscriptionField>
-                          <SubscriptionField icon={Wheat} label="Carb Type">{capitalizeWords(latestSub?.carbType)}</SubscriptionField>
+                          <SubscriptionField icon={Wheat} label="Carb Type">{formatCarbType(latestSub?.carbType)}</SubscriptionField>
                           <SubscriptionField icon={AlertTriangle} label="Allergy">{latestSub?.allergy || "None"}</SubscriptionField>
                         </div>
 
@@ -579,7 +577,7 @@ export const MealTracking = () => {
                                     </div>
                                     <div><span className="text-gray-500">Start Date:</span> {formatDisplayDate(sub.subscriptionStartDate)}</div>
                                     <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                                    <div><span className="text-gray-500">Carbs:</span> {capitalizeWords(sub.carbType)}</div>
+                                    <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
                                     {sub.allergy && (
                                       <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                                     )}
@@ -669,7 +667,7 @@ export const MealTracking = () => {
                     {latestSub ? (
                       <div className="flex flex-wrap gap-2">
                         <DietChip icon={latestSub.mealType === "veg" ? Leaf : Beef} label={MEAL_TYPE_LABELS[latestSub.mealType] || latestSub.mealType} tone="bg-green-50 text-green-700" />
-                        <DietChip icon={Wheat} label={capitalizeWords(latestSub.carbType)} tone="bg-amber-50 text-amber-700" />
+                        <DietChip icon={Wheat} label={formatCarbType(latestSub.carbType)} tone="bg-amber-50 text-amber-700" />
                         {latestSub.allergy && <DietChip icon={AlertTriangle} label={latestSub.allergy} tone="bg-red-50 text-red-700" />}
                       </div>
                     ) : (

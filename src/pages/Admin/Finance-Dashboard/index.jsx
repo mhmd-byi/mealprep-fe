@@ -9,6 +9,9 @@ import { PieChart } from "./PieChart";
 import { RecentTransactions } from "./RecentTransactions";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
+import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
+
+export { CARB_TYPE_LABELS, getCarbTypeColor };
 
 // Same categorical palette used across the app's other charts (Expenses
 // module) — assign fixed slots to the 3 known plans, fall back to the
@@ -29,22 +32,6 @@ const PAYMENT_METHOD_COLORS = {
   "No Charge": "#898781",
 };
 const getPaymentMethodColor = (method) => PAYMENT_METHOD_COLORS[method] || "#898781";
-
-export const CARB_TYPE_LABELS = {
-  "low-carb-high-protein": "Low Carb High Protein (LCHP)",
-  "high-carb-high-protein": "High Carb High Protein (HCHP)",
-  "keto-meal": "Keto Meal",
-  "balanced-meal": "Balanced Meal",
-  "zero-carb": "Zero Carb Meal",
-};
-export const CARB_TYPE_COLORS = {
-  "balanced-meal": "#2a78d6",
-  "low-carb-high-protein": "#1baf7a",
-  "high-carb-high-protein": "#eb6834",
-  "keto-meal": "#4a3aa7",
-  "zero-carb": "#e87ba4",
-};
-export const getCarbTypeColor = (carbType) => CARB_TYPE_COLORS[carbType] || "#898781";
 
 const ChangeBadge = ({ percent, invert = false }) => {
   if (percent === null || percent === undefined) return null;
@@ -438,7 +425,7 @@ export const FinanceDashboardContent = () => {
                 <PieChart data={paymentMethodData} title="Payment method split" valueFormatter={formatCount} />
               </ChartCard>
               <ChartCard title="Meals by Category" subtitle="Meals sold by carb type, from subscriptions bought in this range">
-                <PieChart data={carbMealsData} title="Meals by category" valueFormatter={formatCount} />
+                <PieChart data={carbMealsData} title="Meals by category" valueFormatter={formatCount} otherThresholdPct={0} />
               </ChartCard>
               <ChartCard title="Expense Category Trend" subtitle="Top categories by spend; rest folded into Other">
                 <StackedBarChart

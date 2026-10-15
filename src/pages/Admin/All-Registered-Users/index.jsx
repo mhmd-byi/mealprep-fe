@@ -7,6 +7,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { formatCarbType } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
   ChevronDown,
@@ -124,9 +125,6 @@ const DayBalanceCard = ({ icon: Icon, tone, label, lunch, dinner }) => (
 );
 
 const MEAL_TYPE_LABELS = { veg: "Veg", "non-veg": "Non-Veg", both: "Both (Flexible)" };
-
-const capitalizeWords = (value) =>
-  value ? value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("-") : "—";
 
 export const AllRegisteredUsers = () => {
   const navigate = useNavigate();
@@ -844,7 +842,7 @@ export const AllRegisteredUsers = () => {
                       </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
-                      {capitalizeWords(detailLatestSub?.carbType)}
+                      {formatCarbType(detailLatestSub?.carbType)}
                     </SubscriptionField>
                   </div>
                 </div>
@@ -902,7 +900,7 @@ export const AllRegisteredUsers = () => {
                               <VegNonVegIcon value={sub.mealType} />
                             </span>
                           </div>
-                          <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
+                          <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}
