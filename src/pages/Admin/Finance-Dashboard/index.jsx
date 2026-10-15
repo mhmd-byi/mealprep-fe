@@ -366,8 +366,19 @@ export const FinanceDashboardContent = () => {
             </div>
 
             {/* ── Revenue & Profit ── */}
-            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
-              <ChartCard title="Revenue, Expenses & Profit" subtitle="Revenue = collected at purchase; Actual Sale = value of meals actually delivered" badge={granularityLabel}>
+            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3">
+              <ChartCard title="Revenue vs Actual Sale" subtitle="Collected at purchase vs. value of meals actually delivered" badge={granularityLabel}>
+                <LineChart
+                  data={series}
+                  seriesKeys={[
+                    { key: "revenue", label: "Revenue (Collected)", color: "#2a78d6" },
+                    { key: "actualSale", label: "Actual Sale (Delivered)", color: "#4aa3d6" },
+                  ]}
+                  title="Revenue vs actual sale over time"
+                  valueFormatter={formatCompactINR}
+                />
+              </ChartCard>
+              <ChartCard title="Revenue, Expenses & Profit" badge={granularityLabel}>
                 <GroupedBarChart
                   data={series}
                   seriesKeys={[
