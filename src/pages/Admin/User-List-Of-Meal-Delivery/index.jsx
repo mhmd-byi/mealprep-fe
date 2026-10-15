@@ -8,6 +8,7 @@ import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { DeliveredMealLog } from "./DeliveredMealLog";
 import {
   ChevronUp,
   ChevronDown,
@@ -43,7 +44,7 @@ const StatTile = ({ icon: Icon, tone, label, value, highlight }) => (
   </div>
 );
 
-export const UserListOfMealDelivery = () => {
+const ScheduledMealDeliveryList = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -315,13 +316,12 @@ export const UserListOfMealDelivery = () => {
 
   return (
     <>
-      <DashboardLayoutComponent>
-        <div className="p-4 w-full text-left sm:p-6 md:p-8">
-          <div className="mx-auto space-y-6 w-full">
-            <div className="flex flex-wrap gap-3 justify-between items-start print:hidden">
-              <div>
-                <p className="text-sm text-gray-500">Dashboard &rsaquo; Meal Delivery List</p>
-                <h2 className="text-2xl font-bold text-gray-900">Meal Delivery List</h2>
+      <div className="p-4 w-full text-left sm:p-6 md:p-8">
+        <div className="mx-auto space-y-6 w-full">
+          <div className="flex flex-wrap gap-3 justify-between items-start print:hidden">
+            <div>
+              <p className="text-sm text-gray-500">Dashboard &rsaquo; Meal Delivery List</p>
+              <h2 className="text-2xl font-bold text-gray-900">Meal Delivery List</h2>
                 <p className="text-sm text-gray-500">
                   Pick a date and meal type to see exactly who's getting delivered to, and what to pack.
                 </p>
@@ -653,12 +653,11 @@ export const UserListOfMealDelivery = () => {
               </>
             )}
 
-            {!isLoading && mealDeliveryList.length === 0 && !error && (
-              <p className="py-10 text-center text-gray-500">Pick a date and meal type, then load the list.</p>
-            )}
-          </div>
+          {!isLoading && mealDeliveryList.length === 0 && !error && (
+            <p className="py-10 text-center text-gray-500">Pick a date and meal type, then load the list.</p>
+          )}
         </div>
-      </DashboardLayoutComponent>
+      </div>
 
       <FilterPopup
         isOpen={showFilterPopup}
@@ -753,5 +752,38 @@ export const UserListOfMealDelivery = () => {
         ]}
       />
     </>
+  );
+};
+
+const DELIVERY_TABS = [
+  { key: "scheduled", label: "Scheduled" },
+  { key: "delivered", label: "Delivered" },
+];
+
+export const UserListOfMealDelivery = () => {
+  const [activeTab, setActiveTab] = useState("scheduled");
+
+  return (
+    <DashboardLayoutComponent>
+      <div className="px-4 pt-4 w-full text-left sm:px-6 md:px-8 print:hidden">
+        <div className="flex gap-1.5">
+          {DELIVERY_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg ${
+                activeTab === tab.key
+                  ? "bg-theme-color-1 text-white"
+                  : "bg-white text-gray-700 border border-gray-200 hover:border-theme-color-1"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {activeTab === "scheduled" ? <ScheduledMealDeliveryList /> : <DeliveredMealLog />}
+    </DashboardLayoutComponent>
   );
 };
