@@ -838,7 +838,10 @@ export const AllRegisteredUsers = () => {
                       {detailLatestSub ? getSubscriptionEndLabel(detailLatestSub) : "—"}
                     </SubscriptionField>
                     <SubscriptionField icon={Utensils} label="Meal Type">
-                      {MEAL_TYPE_LABELS[detailLatestSub?.mealType] || "—"}
+                      <span className="flex gap-2 items-center">
+                        {MEAL_TYPE_LABELS[detailLatestSub?.mealType] || "—"}
+                        {detailLatestSub && <VegNonVegIcon value={detailLatestSub.mealType} />}
+                      </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
                       {capitalizeWords(detailLatestSub?.carbType)}
