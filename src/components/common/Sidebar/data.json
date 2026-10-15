@@ -13,7 +13,7 @@
     "userOnly": true
   },
   {
-    "name": "Meal Cancel Request",
+    "name": "Cancel Meal Request",
     "icon": "XCircle",
     "path": "/dashboard/cancel-request",
     "requiresSubscription": true,

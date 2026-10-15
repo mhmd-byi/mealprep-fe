@@ -16,7 +16,7 @@ import { useRecentActivity } from "./useRecentActivity";
 const RECENT_ACTIVITY_META = {
   subscription: { label: "New Subscription", icon: CreditCard, tone: "bg-teal-100 text-teal-600" },
   account: { label: "Account Created", icon: UserPlus, tone: "bg-purple-100 text-purple-600" },
-  cancellation: { label: "Meal Cancel Request", icon: CalendarX, tone: "bg-red-100 text-red-600" },
+  cancellation: { label: "Cancel Meal Request", icon: CalendarX, tone: "bg-red-100 text-red-600" },
   customisation: { label: "Customisation Request", icon: SlidersHorizontal, tone: "bg-orange-100 text-orange-600" },
   diet: { label: "Diet Preference Updated", icon: Utensils, tone: "bg-amber-100 text-amber-600" },
   profile: { label: "Profile Updated", icon: UserCog, tone: "bg-blue-100 text-blue-600" },
@@ -87,7 +87,7 @@ export const RecentActivity = () => {
       <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <div className="flex gap-3 items-center">
-            <div className="flex justify-center items-center w-9 h-9 rounded-full bg-green-50 text-theme-color-1">
+            <div className="flex justify-center items-center w-9 h-9 bg-green-50 rounded-full text-theme-color-1">
               <Bell className="w-4 h-4" />
             </div>
             <div>
