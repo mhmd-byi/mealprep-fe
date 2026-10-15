@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ShieldCheck, Wallet, TrendingUp, TrendingDown, Users, Download, ChevronDown, RefreshCw } from "lucide-react";
+import { ShieldCheck, Wallet, TrendingUp, TrendingDown, Users, Truck, Download, ChevronDown, RefreshCw } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useFinanceDashboard, PRESET_OPTIONS } from "./useFinanceDashboard";
 import { GroupedBarChart } from "./GroupedBarChart";
@@ -305,10 +305,16 @@ export const FinanceDashboardContent = () => {
           <p className="py-8 text-center text-gray-500">Loading dashboard...</p>
         ) : (
           <>
-            <div className="flex flex-col items-start justify-between gap-2 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-4 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">Today&apos;s Revenue</p>
+                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">Today&apos;s Revenue (Collected)</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{formatINR(data?.todaySales?.revenue)}</p>
+                <p className="mt-0.5 text-xs text-gray-400">Cash collected from subscriptions bought today</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">Today&apos;s Actual Sale (Delivered)</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900">{formatINR(data?.todaySales?.actualSale)}</p>
+                <p className="mt-0.5 text-xs text-gray-400">Estimated value of meals actually delivered today</p>
               </div>
               <p className="text-sm text-gray-500">
                 {formatCount(data?.todaySales?.subscriptionCount)} subscription(s) bought today
@@ -320,13 +326,20 @@ export const FinanceDashboardContent = () => {
             </div>
 
             {/* ── KPI cards ── */}
-            <div className="grid grid-cols-2 gap-4 mb-4 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 mb-4 lg:grid-cols-5">
               <KpiCard
                 icon={ShieldCheck}
                 tone="bg-emerald-50 text-emerald-600"
-                label="Total Revenue"
+                label="Total Revenue (Collected)"
                 value={formatINR(totals?.revenue)}
                 changePercent={changePercent?.revenue}
+              />
+              <KpiCard
+                icon={Truck}
+                tone="bg-sky-50 text-sky-600"
+                label="Actual Sale (Delivered)"
+                value={formatINR(totals?.actualSale)}
+                changePercent={changePercent?.actualSale}
               />
               <KpiCard
                 icon={Wallet}
@@ -354,11 +367,12 @@ export const FinanceDashboardContent = () => {
 
             {/* ── Revenue & Profit ── */}
             <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
-              <ChartCard title="Revenue, Expenses & Profit" badge={granularityLabel}>
+              <ChartCard title="Revenue, Expenses & Profit" subtitle="Revenue = collected at purchase; Actual Sale = value of meals actually delivered" badge={granularityLabel}>
                 <GroupedBarChart
                   data={series}
                   seriesKeys={[
-                    { key: "revenue", label: "Revenue", color: "#2a78d6" },
+                    { key: "revenue", label: "Revenue (Collected)", color: "#2a78d6" },
+                    { key: "actualSale", label: "Actual Sale (Delivered)", color: "#4aa3d6" },
                     { key: "expenses", label: "Expenses", color: "#eb6834" },
                     { key: "profit", label: "Profit", color: "#1baf7a" },
                   ]}

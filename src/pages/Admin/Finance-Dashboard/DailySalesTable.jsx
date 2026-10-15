@@ -27,7 +27,7 @@ export const DailySalesTable = () => {
       <div className="flex flex-wrap gap-3 justify-between items-center mb-4">
         <div>
           <p className="text-base font-bold text-gray-900">Daily Sales</p>
-          <p className="text-sm text-gray-500">Every day's sale amount, plus actual meals delivered that day and their estimated value.</p>
+          <p className="text-sm text-gray-500">Revenue collected each day vs. the actual sale value of meals delivered that day.</p>
         </div>
         <div className="flex gap-2">
           <select
@@ -61,10 +61,10 @@ export const DailySalesTable = () => {
             <thead className="bg-gray-50 sticky top-0">
               <tr>
                 <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">Date</th>
-                <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Sale Amount</th>
+                <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Revenue Collected</th>
                 <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Subs Sold</th>
                 <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Meals Delivered</th>
-                <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Meals Amount (est.)</th>
+                <th className="px-3 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase whitespace-nowrap">Actual Sale (Delivered)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -95,7 +95,7 @@ export const DailySalesTable = () => {
         <p className="py-8 text-sm text-center text-gray-400">No data for this month.</p>
       )}
       <p className="mt-3 text-xs text-gray-400">
-        "Meals Amount (est.)" values each delivered meal at that subscription's price ÷ its total meals — an estimate, not a separate real transaction. Free/complimentary and refunded plans count as ₹0.
+        "Revenue Collected" is cash collected when a subscription was bought, all at once. "Actual Sale (Delivered)" values each meal actually delivered that day at that subscription's price ÷ its total meals — an estimate, not a separate real transaction. Free/complimentary and refunded plans count as ₹0.
       </p>
     </div>
   );

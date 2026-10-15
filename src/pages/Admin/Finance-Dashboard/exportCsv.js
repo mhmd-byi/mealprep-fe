@@ -20,10 +20,11 @@ export const buildFinanceReportCSV = (data) => {
   lines.push("");
 
   lines.push(row(["Summary"]));
-  lines.push(row(["Revenue", "Expenses", "Profit", "Subscriptions", "New Subscribers", "Recurring Subscribers"]));
+  lines.push(row(["Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Subscriptions", "New Subscribers", "Recurring Subscribers"]));
   lines.push(
     row([
       data.totals?.revenue ?? 0,
+      data.totals?.actualSale ?? 0,
       data.totals?.expenses ?? 0,
       data.totals?.profit ?? 0,
       data.totals?.subscriptionCount ?? 0,
@@ -34,9 +35,9 @@ export const buildFinanceReportCSV = (data) => {
   lines.push("");
 
   lines.push(row(["Revenue, Expenses & Profit Over Time"]));
-  lines.push(row(["Period", "Revenue", "Expenses", "Profit", "Subscriptions", "New", "Recurring"]));
+  lines.push(row(["Period", "Revenue (Collected)", "Actual Sale (Delivered)", "Expenses", "Profit", "Subscriptions", "New", "Recurring"]));
   (data.series || []).forEach((r) => {
-    lines.push(row([r.label, r.revenue, r.expenses, r.profit, r.subscriptionCount, r.newCount, r.recurringCount]));
+    lines.push(row([r.label, r.revenue, r.actualSale, r.expenses, r.profit, r.subscriptionCount, r.newCount, r.recurringCount]));
   });
   lines.push("");
 
