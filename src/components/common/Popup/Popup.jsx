@@ -13,7 +13,7 @@ const Popup = ({ isOpen, onClose, title, content, buttons, maxWidthClass = "max-
           transition={{ duration: 0.15 }}
         >
           <motion.div
-            className={`bg-white rounded-lg shadow-xl p-6 w-full ${maxWidthClass} h-fit max-h-[90vh] flex flex-col my-auto`}
+            className={`bg-white rounded-lg shadow-xl p-6 w-full ${maxWidthClass} h-fit max-h-[90vh] flex flex-col my-auto text-left`}
             initial={{ opacity: 0, scale: 0.95, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}

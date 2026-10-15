@@ -887,7 +887,7 @@ export const AllRegisteredUsers = () => {
                             <span className={`${
                               sub.status === "active" || sub.status === "Active" ? "text-green-600" :
                               sub.status === "queued" ? "text-amber-600" :
-                              sub.status === "cancelled" ? "text-red-600" :
+                              sub.status === "cancelled" || sub.status === "completed" ? "text-red-600" :
                               "text-gray-600"
                             } font-bold`}>
                               {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
@@ -895,7 +895,13 @@ export const AllRegisteredUsers = () => {
                           </div>
                           <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
                           <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                          <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
+                          <div>
+                            <span className="text-gray-500">Meals:</span>{" "}
+                            <span className="inline-flex gap-1.5 items-center align-middle">
+                              {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}
+                              <VegNonVegIcon value={sub.mealType} />
+                            </span>
+                          </div>
                           <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
