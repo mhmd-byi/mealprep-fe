@@ -5,7 +5,7 @@ import { GroupedBarChart } from "../../Admin/Finance-Dashboard/GroupedBarChart";
 import { LineChart } from "../../Admin/Finance-Dashboard/LineChart";
 import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
-import { getPlanColor } from "../../Admin/Finance-Dashboard/index";
+import { getPlanColor, PLAN_COLORS } from "../../Admin/Finance-Dashboard/index";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
 
 const percentChange = (current, previous) => {
@@ -56,6 +56,11 @@ export const FinanceOverview = () => {
     value: p.revenue,
     color: getPlanColor(p.plan),
   }));
+
+  // The performance table below is meant to read as "the 3 plans we sell" —
+  // stray/legacy plan names (e.g. an old renamed or test value) stay out of
+  // it rather than showing up as an unstyled gray row with 0 revenue.
+  const knownPlanBreakdown = (data.planBreakdown || []).filter((p) => Boolean(PLAN_COLORS[p.plan]));
 
   const activeSubscribersNow = (data.planBreakdown || []).reduce((sum, p) => sum + p.count, 0);
 
@@ -143,25 +148,27 @@ export const FinanceOverview = () => {
         <div className="p-4 border-b border-gray-100">
           <p className="text-base font-bold text-gray-900">Subscription Plan Performance</p>
         </div>
-        {data.planBreakdown?.length > 0 ? (
+        {knownPlanBreakdown.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {["Plan", "Subscribers", "Revenue"].map((h) => (
-                    <th key={h} className="px-4 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">{h}</th>
-                  ))}
+                  <th className="px-4 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Plan</th>
+                  <th className="px-4 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">Subscribers</th>
+                  <th className="px-4 py-2 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">Revenue</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {data.planBreakdown.map((p) => (
+                {knownPlanBreakdown.map((p) => (
                   <tr key={p.plan}>
-                    <td className="flex gap-2 items-center px-4 py-3 font-semibold text-gray-900">
-                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: getPlanColor(p.plan) }} />
-                      {p.plan}
+                    <td className="px-4 py-3 text-left font-semibold text-gray-900">
+                      <span className="inline-flex gap-2 items-center">
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: getPlanColor(p.plan) }} />
+                        {p.plan}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{formatCount(p.count)}</td>
-                    <td className="px-4 py-3 text-gray-700">{formatINR(p.revenue)}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{formatCount(p.count)}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{formatINR(p.revenue)}</td>
                   </tr>
                 ))}
               </tbody>
