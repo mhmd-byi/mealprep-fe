@@ -72,6 +72,7 @@ export const Data = () => {
           tone="bg-blue-50 text-blue-600"
           label="Delivery Count"
           loading={loadingStates.deliveryLunch || loadingStates.deliveryDinner}
+          onClick={() => navigate("/dashboard/meal-delivery-list")}
           value={
             <div className="space-y-0.5">
               <div className="flex justify-between items-center w-full">
@@ -96,6 +97,7 @@ export const Data = () => {
           label="Customised Request"
           value={customisationRequestCount}
           loading={loadingStates.customisation}
+          onClick={() => navigate("/dashboard/get-list-of-customisation-request")}
         />
 
         <StatCell
@@ -104,6 +106,7 @@ export const Data = () => {
           label="Cancelled Request"
           value={cancelledMealsCount}
           loading={loadingStates.cancelled}
+          onClick={() => navigate("/dashboard/user-cancel-request-list")}
         />
 
         <div className="flex items-start gap-3 p-4 w-full text-left">
