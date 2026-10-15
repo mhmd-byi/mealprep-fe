@@ -138,6 +138,7 @@ export const AllRegisteredUsers = () => {
   const [statusTab, setStatusTab] = useState("all");
   const [dietFilter, setDietFilter] = useState("All");
   const [allergyFilter, setAllergyFilter] = useState("All");
+  const [coverageFilter, setCoverageFilter] = useState("All");
   const [filterCriteria, setFilterCriteria] = useState({
     mealCount: "",
     operator: ">",
@@ -199,6 +200,7 @@ export const AllRegisteredUsers = () => {
     setStatusTab("all");
     setDietFilter("All");
     setAllergyFilter("All");
+    setCoverageFilter("All");
     setShowZeroMeals(false);
     setFilterCriteria({ mealCount: "", operator: ">", planType: "All", endDateOperator: "", endDate: "" });
     setCurrentPage(1);
@@ -249,6 +251,16 @@ export const AllRegisteredUsers = () => {
       allergyFilter === "All" ||
       (allergyFilter === "Has" ? Boolean(latestSub?.allergy) : !latestSub?.allergy);
 
+    // Coverage isn't a stored field — a subscription's lunch/dinner split only
+    // exists as remaining meal counts, so "lunch plan" / "dinner plan" / "both"
+    // is derived from which side currently still has meals left.
+    const lunchLeft = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
+    const dinnerLeft = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
+    let coverageMatch = true;
+    if (coverageFilter === "lunch") coverageMatch = lunchLeft > 0 && dinnerLeft === 0;
+    else if (coverageFilter === "dinner") coverageMatch = dinnerLeft > 0 && lunchLeft === 0;
+    else if (coverageFilter === "both") coverageMatch = lunchLeft > 0 && dinnerLeft > 0;
+
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== "") {
       const targetCount = parseInt(filterCriteria.mealCount);
@@ -274,7 +286,7 @@ export const AllRegisteredUsers = () => {
       }
     }
 
-    return searchMatch && mealCountMatch && presenceMatch && planMatch && endDateMatch && statusMatch && dietMatch && allergyMatch;
+    return searchMatch && mealCountMatch && presenceMatch && planMatch && endDateMatch && statusMatch && dietMatch && allergyMatch && coverageMatch;
   });
 
   const latestSubscriptionTime = (user) => {
@@ -447,6 +459,16 @@ export const AllRegisteredUsers = () => {
                   <option value="All">Allergy: All</option>
                   <option value="None">No allergy</option>
                   <option value="Has">Has allergy</option>
+                </select>
+                <select
+                  value={coverageFilter}
+                  onChange={(e) => { setCoverageFilter(e.target.value); setCurrentPage(1); }}
+                  className={selectClass}
+                >
+                  <option value="All">Coverage: All</option>
+                  <option value="lunch">Lunch Only</option>
+                  <option value="dinner">Dinner Only</option>
+                  <option value="both">Both</option>
                 </select>
                 {/*
                 <label className="flex gap-2 items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer select-none">
