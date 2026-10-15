@@ -9,7 +9,7 @@ const FEATURES = [
 ];
 
 export const AuthLayout = ({ heading, subheading, maxWidthClass = "max-w-sm", children }) => (
-  <div className="flex min-h-screen bg-white">
+  <div className="flex min-h-screen bg-green-50">
     <div
       className="relative items-center justify-center flex-1 hidden bg-center bg-cover lg:flex bg-theme-color-1"
       style={{ backgroundImage: `url(${authBg})` }}
@@ -30,8 +30,10 @@ export const AuthLayout = ({ heading, subheading, maxWidthClass = "max-w-sm", ch
         </div>
       </div>
     </div>
-    <div className="flex flex-1 items-center justify-center px-6 py-12 overflow-y-auto sm:px-10">
-      <div className={`w-full ${maxWidthClass}`}>{children}</div>
+    <div className="flex flex-1 items-center justify-center px-4 py-12 overflow-y-auto sm:px-10 lg:bg-white">
+      <div className={`w-full ${maxWidthClass} bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:bg-transparent lg:shadow-none lg:p-0`}>
+        {children}
+      </div>
     </div>
   </div>
 );
