@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import Pagination from "../../../components/common/Pagination/Pagination";
+import { UserDetailsPopup } from "../../../components/common/UserDetailsPopup/UserDetailsPopup";
 import {
   CalendarDays,
   Search,
@@ -70,6 +71,7 @@ export const UserListWithCancelRequest = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isPrinting, setIsPrinting] = useState(false);
   const [previousWeekMeals, setPreviousWeekMeals] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   // Printing should include every filtered row, not just the current page.
   useEffect(() => {
@@ -223,6 +225,7 @@ export const UserListWithCancelRequest = () => {
   };
 
   return (
+    <>
     <DashboardLayoutComponent>
       <div className="p-4 w-full text-left sm:p-6 md:p-8">
         <div className="mx-auto w-full space-y-6">
@@ -364,7 +367,15 @@ export const UserListWithCancelRequest = () => {
                       {pageRows.map((meal, index) => (
                         <tr key={`${meal.userId}-${meal.startDate}-${index}`} className="hover:bg-gray-50">
                           <td className="px-4 py-4 font-mono text-sm text-gray-900 whitespace-nowrap">{generateCustomUserId(meal.name, meal.mobile)}</td>
-                          <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{meal.name}</td>
+                          <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedUserId(meal.userId)}
+                              className="text-theme-color-1 hover:underline"
+                            >
+                              {meal.name}
+                            </button>
+                          </td>
                           <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDate(meal.startDate)}</td>
                           <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDate(meal.endDate)}</td>
                           <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{calculateDaysOff(meal.startDate, meal.endDate)}</td>
@@ -383,7 +394,13 @@ export const UserListWithCancelRequest = () => {
                   {pageRows.map((meal, index) => (
                     <div key={`${meal.userId}-${meal.startDate}-${index}`} className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm space-y-2">
                       <div className="flex justify-between">
-                        <span className="font-semibold text-gray-900">{meal.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedUserId(meal.userId)}
+                          className="font-semibold text-theme-color-1 hover:underline"
+                        >
+                          {meal.name}
+                        </button>
                         <span className="px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">Cancelled</span>
                       </div>
                       <div className="flex justify-between text-sm"><span className="text-gray-500">User ID</span><span className="font-mono">{generateCustomUserId(meal.name, meal.mobile)}</span></div>
@@ -414,5 +431,12 @@ export const UserListWithCancelRequest = () => {
         </div>
       </div>
     </DashboardLayoutComponent>
+
+    <UserDetailsPopup
+      userId={selectedUserId}
+      isOpen={!!selectedUserId}
+      onClose={() => setSelectedUserId(null)}
+    />
+    </>
   );
 };
