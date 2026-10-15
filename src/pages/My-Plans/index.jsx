@@ -145,9 +145,9 @@ export const MyPlan = () => {
                 Meal Schedule
               </p>
               <p className="mb-4 text-sm text-gray-500">
-                Choose Veg or Non-Veg for each upcoming day. Days within the next 3 days are locked
-                because we've already planned stock against them — anything further out can be
-                changed any time.
+                Choose Veg or Non-Veg for each upcoming day — any future day can be changed any
+                time. Today locks per meal once its cutoff passes (10:30 AM for lunch, 4:00 PM for
+                dinner), same as cancellations.
               </p>
 
               {scheduleError && <p className="mb-3 text-sm text-red-600">{scheduleError}</p>}
@@ -181,7 +181,7 @@ export const MyPlan = () => {
                               {day.lunch ? (
                                 <DietToggle
                                   value={day.lunch}
-                                  locked={day.locked}
+                                  locked={day.lunchLocked}
                                   isSaving={savingKey === `${day.date}_lunch`}
                                   onSelect={(pref) => updatePreference(day.date, "lunch", pref)}
                                 />
@@ -195,7 +195,7 @@ export const MyPlan = () => {
                               {day.dinner ? (
                                 <DietToggle
                                   value={day.dinner}
-                                  locked={day.locked}
+                                  locked={day.dinnerLocked}
                                   isSaving={savingKey === `${day.date}_dinner`}
                                   onSelect={(pref) => updatePreference(day.date, "dinner", pref)}
                                 />

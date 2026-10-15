@@ -99,11 +99,12 @@ export const DietaryStockReport = () => {
               </div>
               <p className="mb-1 text-sm text-gray-500">
                 Veg / non-veg counts projected across the next {days} delivery day{days === 1 ? "" : "s"}.
-                Days marked <span className="font-semibold text-green-700">Confirmed</span> are locked and
-                already committed — safe to buy raw materials against. Days marked{" "}
-                <span className="font-semibold text-amber-700">Projected</span> are still outside the lock
-                window, so a customer could still cancel, change their diet preference, or run out of meals
-                before then — treat those as an estimate, not a purchase order.
+                Lunch and dinner each lock independently, same as cancellations: a meal is marked{" "}
+                <span className="font-semibold text-green-700">Confirmed</span> only once that day's
+                cutoff has passed for it (10:30 AM lunch, 4:00 PM dinner) — safe to buy raw materials
+                against. Everything else is <span className="font-semibold text-amber-700">Projected</span>,
+                since a customer could still cancel or change their diet preference before its cutoff —
+                treat those as an estimate, not a purchase order.
               </p>
               {lastUpdated && (
                 <p className="mb-6 text-xs text-gray-400">
@@ -144,13 +145,22 @@ export const DietaryStockReport = () => {
                               {formatDayLabel(day.date)}
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
-                              <span
-                                className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                                  day.locked ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                                }`}
-                              >
-                                {day.locked ? "Confirmed" : "Projected"}
-                              </span>
+                              <div className="flex flex-col gap-1">
+                                <span
+                                  className={`px-2 py-1 text-xs font-semibold rounded-full w-fit ${
+                                    day.lunchLocked ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                                  }`}
+                                >
+                                  Lunch: {day.lunchLocked ? "Confirmed" : "Projected"}
+                                </span>
+                                <span
+                                  className={`px-2 py-1 text-xs font-semibold rounded-full w-fit ${
+                                    day.dinnerLocked ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                                  }`}
+                                >
+                                  Dinner: {day.dinnerLocked ? "Confirmed" : "Projected"}
+                                </span>
+                              </div>
                             </td>
                             <td className="px-4 py-4 text-sm text-gray-900">{day.lunch?.veg || 0}</td>
                             <td className="px-4 py-4 text-sm text-gray-900">{day.lunch?.nonVeg || 0}</td>
