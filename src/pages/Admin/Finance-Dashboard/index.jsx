@@ -7,6 +7,7 @@ import { LineChart } from "./LineChart";
 import { StackedBarChart } from "./StackedBarChart";
 import { PieChart } from "./PieChart";
 import { RecentTransactions } from "./RecentTransactions";
+import { DailySalesTable } from "./DailySalesTable";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
@@ -312,6 +313,10 @@ export const FinanceDashboardContent = () => {
               <p className="text-sm text-gray-500">
                 {formatCount(data?.todaySales?.subscriptionCount)} subscription(s) bought today
               </p>
+            </div>
+
+            <div className="mb-4">
+              <DailySalesTable />
             </div>
 
             {/* ── KPI cards ── */}
