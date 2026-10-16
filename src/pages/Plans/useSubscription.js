@@ -58,6 +58,11 @@ export const useSubscription = () => {
       const userId = sessionStorage.getItem("userId");
       const token = sessionStorage.getItem("token");
 
+      if (!userId || !token) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
