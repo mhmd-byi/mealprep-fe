@@ -12,6 +12,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useRecentActivity } from "./useRecentActivity";
+import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 
 // A deterministic function of (category, description) — not a stored field —
 // since most activity types here are one-time events with no real ongoing
@@ -121,6 +122,25 @@ const ActivityTable = ({ rows }) => (
   </div>
 );
 
+const AccordionSkeletonRow = () => (
+  <div className="flex items-center justify-between gap-3 p-4 border-b border-gray-100 last:border-b-0">
+    <span className="flex items-center gap-3">
+      <Skeleton className="w-9 h-9 rounded-full" />
+      <Skeleton className="w-32 h-4" />
+      <Skeleton className="w-6 h-4 rounded-full" />
+    </span>
+    <Skeleton className="w-4 h-4" />
+  </div>
+);
+
+const RecentActivitySkeleton = () => (
+  <div>
+    {CATEGORIES.map((category) => (
+      <AccordionSkeletonRow key={category.key} />
+    ))}
+  </div>
+);
+
 const AccordionSection = ({ category, items }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -193,7 +213,7 @@ export const RecentActivity = () => {
         </div>
 
         {isLoading ? (
-          <p className="py-10 text-center text-gray-500">Loading recent activity...</p>
+          <RecentActivitySkeleton />
         ) : (
           <div>
             {CATEGORIES.map((category) => (

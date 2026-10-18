@@ -11,6 +11,7 @@ import { DailySalesTable } from "./DailySalesTable";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
+import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 
 export { CARB_TYPE_LABELS, getCarbTypeColor };
 
@@ -86,6 +87,51 @@ const ChartCard = ({ title, subtitle, badge, children }) => (
 
 const SectionHeading = ({ children }) => (
   <h3 className="text-base font-bold text-gray-800 mt-8 mb-3 first:mt-0 print:break-after-avoid">{children}</h3>
+);
+
+const KpiCardSkeleton = () => (
+  <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <Skeleton className="w-10 h-10 mb-3 rounded-xl" />
+    <Skeleton className="w-24 h-3.5 mb-2" />
+    <Skeleton className="w-20 h-6" />
+  </div>
+);
+
+const ChartCardSkeleton = ({ height = "h-56" }) => (
+  <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <Skeleton className="w-40 h-4 mb-4" />
+    <Skeleton className={`w-full ${height}`} />
+  </div>
+);
+
+const FinanceDashboardSkeleton = () => (
+  <div>
+    <div className="flex flex-col gap-4 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <Skeleton className="w-40 h-3.5 mb-2" />
+        <Skeleton className="w-28 h-6" />
+      </div>
+      <div>
+        <Skeleton className="w-40 h-3.5 mb-2" />
+        <Skeleton className="w-28 h-6" />
+      </div>
+    </div>
+    <div className="grid grid-cols-2 gap-4 mb-4 lg:grid-cols-5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <KpiCardSkeleton key={i} />
+      ))}
+    </div>
+    <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <ChartCardSkeleton key={i} />
+      ))}
+    </div>
+    <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <ChartCardSkeleton key={i} />
+      ))}
+    </div>
+  </div>
 );
 
 // Parses "YYYY-MM-DD" as local date parts, not via `new Date(isoString)` —
@@ -306,7 +352,7 @@ export const FinanceDashboardContent = () => {
         {error && <p className="mb-4 text-red-500">{error}</p>}
 
         {isLoading && !data ? (
-          <p className="py-8 text-center text-gray-500">Loading dashboard...</p>
+          <FinanceDashboardSkeleton />
         ) : (
           <>
             <div className="flex flex-col gap-4 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center sm:justify-between">

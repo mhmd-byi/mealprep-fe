@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 
 const authHeaders = () => ({
@@ -8,10 +8,15 @@ const authHeaders = () => ({
 export const useRecentActivity = (hours = 24) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const hasLoadedOnce = useRef(false);
 
   const fetchActivities = useCallback(async () => {
+    const isFirstLoad = !hasLoadedOnce.current;
+    // Only the very first load should show a loading state — a background
+    // refresh (every 60s below) swaps the data in place once it arrives,
+    // instead of hiding and re-showing the whole widget every minute.
+    if (isFirstLoad) setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await axios.get(`${process.env.REACT_APP_API_URL}activity/recent`, {
         ...authHeaders(),
         params: { hours },
@@ -19,8 +24,12 @@ export const useRecentActivity = (hours = 24) => {
       setActivities(response.data.activities || []);
     } catch (err) {
       console.error("Error fetching recent activity:", err);
-      setActivities([]);
+      // A background refresh failing shouldn't wipe out the last known-good
+      // list — only clear it if this was the first load and there's nothing
+      // to fall back to.
+      if (isFirstLoad) setActivities([]);
     } finally {
+      hasLoadedOnce.current = true;
       setIsLoading(false);
     }
   }, [hours]);

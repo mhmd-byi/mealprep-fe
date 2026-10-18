@@ -7,6 +7,42 @@ import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
 import { getPlanColor, PLAN_COLORS } from "../../Admin/Finance-Dashboard/index";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
+import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
+
+const ChartCardSkeleton = () => (
+  <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <Skeleton className="w-40 h-4 mb-4" />
+    <Skeleton className="w-full h-48" />
+  </div>
+);
+
+const FinanceOverviewSkeleton = () => (
+  <section className="px-4 mb-8 space-y-4">
+    <div className="flex justify-between items-center">
+      <Skeleton className="w-40 h-5" />
+      <Skeleton className="w-32 h-4" />
+    </div>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <ChartCardSkeleton />
+      <ChartCardSkeleton />
+    </div>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <ChartCardSkeleton />
+      <ChartCardSkeleton />
+    </div>
+    <ChartCardSkeleton />
+    <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="p-4 border-b border-gray-100">
+        <Skeleton className="w-48 h-4" />
+      </div>
+      <div className="p-4 space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="w-full h-5" />
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 const percentChange = (current, previous) => {
   if (!previous) return current ? null : 0;
@@ -30,11 +66,7 @@ export const FinanceOverview = () => {
   const { data, isLoading } = useFinanceDashboard();
 
   if (isLoading && !data) {
-    return (
-      <section className="px-4 mb-8">
-        <p className="py-10 text-center text-gray-500">Loading business overview...</p>
-      </section>
-    );
+    return <FinanceOverviewSkeleton />;
   }
   if (!data) return null;
 

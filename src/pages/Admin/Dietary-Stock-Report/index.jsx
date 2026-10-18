@@ -4,9 +4,26 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button } from "../../../components";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 
 const DAY_OPTIONS = [3, 7, 14, 30];
 const AUTO_REFRESH_MS = 60 * 1000;
+
+const ReportSkeletonRow = () => (
+  <tr>
+    <td className="px-4 py-4"><Skeleton className="w-32 h-4" /></td>
+    <td className="px-4 py-4">
+      <div className="flex flex-col gap-1">
+        <Skeleton className="w-24 h-5 rounded-full" />
+        <Skeleton className="w-24 h-5 rounded-full" />
+      </div>
+    </td>
+    <td className="px-4 py-4"><Skeleton className="w-8 h-4" /></td>
+    <td className="px-4 py-4"><Skeleton className="w-8 h-4" /></td>
+    <td className="px-4 py-4"><Skeleton className="w-8 h-4" /></td>
+    <td className="px-4 py-4"><Skeleton className="w-8 h-4" /></td>
+  </tr>
+);
 
 export const DietaryStockReport = () => {
   const [report, setReport] = useState([]);
@@ -116,7 +133,33 @@ export const DietaryStockReport = () => {
               {error && <p className="mb-4 text-red-500">{error}</p>}
 
               {isLoading && report.length === 0 ? (
-                <p className="text-gray-500">Loading report...</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          <span className="flex items-center gap-1.5"><MealSlotIcon slot="lunch" />Lunch — Veg <VegNonVegIcon value="veg" /></span>
+                        </th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          <span className="flex items-center gap-1.5"><MealSlotIcon slot="lunch" />Lunch — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                        </th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          <span className="flex items-center gap-1.5"><MealSlotIcon slot="dinner" />Dinner — Veg <VegNonVegIcon value="veg" /></span>
+                        </th>
+                        <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          <span className="flex items-center gap-1.5"><MealSlotIcon slot="dinner" />Dinner — Non-Veg <VegNonVegIcon value="non-veg" /></span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {Array.from({ length: 7 }).map((_, i) => (
+                        <ReportSkeletonRow key={i} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : report.length > 0 ? (
                 <>
                   <div className="overflow-x-auto">
