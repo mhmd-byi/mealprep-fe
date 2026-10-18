@@ -23,13 +23,19 @@ const Signup = () => {
     handleOtpChange,
     sendOtp,
     verifyOtp,
+    emailOtpSent,
+    emailOtpVerified,
+    emailOtp,
+    handleEmailOtpChange,
+    sendEmailOtp,
+    verifyEmailOtp,
   } = useSignup();
 
   const formRef = useRef(null);
   const { ValidationMessage } = usePasswordValidation(formRef, "newPassword", "confirmNewPassword");
   const { PincodeValidationMessage, pincodeValid } = usePincodeValidation(formRef);
 
-  const isSubmitDisabled = !pincodeValid || !otpVerified || String(errMsg) !== "";
+  const isSubmitDisabled = !pincodeValid || !otpVerified || !emailOtpVerified || String(errMsg) !== "";
 
   return (
     <AuthLayout
@@ -107,15 +113,58 @@ const Signup = () => {
           </div>
         )}
 
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          required
-          placeholder="Email Address"
-          onChange={handleChange}
-          disabled={!otpVerified}
-        />
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="Email Address"
+              onChange={handleChange}
+              disabled={!otpVerified || emailOtpVerified}
+            />
+          </div>
+          {otpVerified && !emailOtpVerified && (
+            <Button type="button" onClick={sendEmailOtp} disabled={emailOtpSent}>
+              {emailOtpSent ? "Code Sent" : "Send Code"}
+            </Button>
+          )}
+        </div>
+
+        {otpVerified && emailOtpSent && !emailOtpVerified && (
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                id="emailOtp"
+                name="emailOtp"
+                type="text"
+                required
+                placeholder="Enter Email Code"
+                value={emailOtp}
+                onChange={handleEmailOtpChange}
+                maxLength={6}
+              />
+            </div>
+            <Button type="button" onClick={verifyEmailOtp}>
+              Verify Code
+            </Button>
+          </div>
+        )}
+
+        {otpVerified && (
+          emailOtpVerified ? (
+            <div className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-green-700 border border-green-200 rounded-lg bg-green-50">
+              <ShieldCheck className="flex-shrink-0 w-4 h-4" />
+              Email verified — fill in the rest of your details below.
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-amber-800 border border-amber-300 rounded-lg bg-amber-50">
+              <AlertTriangle className="flex-shrink-0 w-4 h-4" />
+              Verify your email above to unlock the rest of the form.
+            </div>
+          )
+        )}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <Input
@@ -125,7 +174,7 @@ const Signup = () => {
             required
             placeholder="Enter Password"
             onChange={handleChange}
-            disabled={!otpVerified}
+            disabled={!otpVerified || !emailOtpVerified}
           />
           <div>
             <Input
@@ -135,7 +184,7 @@ const Signup = () => {
               required
               placeholder="Confirm Password"
               onChange={handleChange}
-              disabled={!otpVerified}
+              disabled={!otpVerified || !emailOtpVerified}
             />
             <ValidationMessage />
           </div>
@@ -149,7 +198,7 @@ const Signup = () => {
             required
             placeholder="Enter area pincode"
             onChange={handleChange}
-            disabled={!otpVerified}
+            disabled={!otpVerified || !emailOtpVerified}
           />
           <div className="flex items-center">
             <PincodeValidationMessage />
@@ -163,7 +212,7 @@ const Signup = () => {
           type="text"
           placeholder="Address"
           onChange={handleChange}
-          disabled={!otpVerified}
+          disabled={!otpVerified || !emailOtpVerified}
         />
 
         {errMsg.length > 1 && (

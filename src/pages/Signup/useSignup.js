@@ -10,6 +10,9 @@ export const useSignup = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailOtpVerified, setEmailOtpVerified] = useState(false);
+  const [emailOtp, setEmailOtp] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -87,6 +90,58 @@ export const useSignup = () => {
     }
   };
 
+  const handleEmailOtpChange = (e) => {
+    setEmailOtp(e.target.value);
+  };
+
+  const sendEmailOtp = async () => {
+    if (!isValidEmail(formData.email)) {
+      setErrMsg("Please enter a valid email address");
+      return;
+    }
+    setLoaderState(true);
+    try {
+      await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/send-email-otp`,
+        data: {
+          email: formData.email,
+          name: formData.firstName,
+        },
+      });
+      setEmailOtpSent(true);
+      setErrMsg("");
+    } catch (err) {
+      setErrMsg(err.response?.data?.message || "Failed to send email OTP");
+    } finally {
+      setLoaderState(false);
+    }
+  };
+
+  const verifyEmailOtp = async () => {
+    if (!emailOtp) {
+      setErrMsg("Please enter the email OTP");
+      return;
+    }
+    setLoaderState(true);
+    try {
+      await axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_API_URL}activity/verify-email-otp`,
+        data: {
+          email: formData.email,
+          otp: emailOtp,
+        },
+      });
+      setEmailOtpVerified(true);
+      setErrMsg("");
+    } catch (err) {
+      setErrMsg(err.response?.data?.message || "Invalid email OTP");
+    } finally {
+      setLoaderState(false);
+    }
+  };
+
   const activityEntry = async (userId) => {
     try {
       const res = await axios({
@@ -112,6 +167,10 @@ export const useSignup = () => {
     }
     if (!isValidEmail(formData.email)) {
       setErrMsg("Please enter a valid email address");
+      return;
+    }
+    if (!emailOtpVerified) {
+      setErrMsg("Please verify your email address with the code sent to it");
       return;
     }
     setLoaderState(true);
@@ -165,5 +224,11 @@ export const useSignup = () => {
     handleOtpChange,
     sendOtp,
     verifyOtp,
+    emailOtpSent,
+    emailOtpVerified,
+    emailOtp,
+    handleEmailOtpChange,
+    sendEmailOtp,
+    verifyEmailOtp,
   };
 };
