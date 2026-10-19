@@ -64,8 +64,6 @@ const getStatus = (user) => {
   return "No Plan";
 };
 
-const isInactive = (status) => ["Cancelled", "Completed", "No Plan"].includes(status);
-
 const isNewThisMonth = (user) => {
   const created = new Date(user.createdAt || user.created_date);
   const now = new Date();
@@ -81,7 +79,11 @@ const STATUS_TABS = [
   // collapses that pair down to just "Active", so this tab needs its own
   // independent check to ever show anyone.
   { key: "queued", label: "Queued", match: (u) => (u.subscriptions || []).some((s) => s.status === "queued") },
-  { key: "inactive", label: "Completed / Inactive", match: (u) => isInactive(getStatus(u)) },
+  // Never subscribed to any plan at all (empty subscriptions array) — distinct
+  // from "completed" below, which did subscribe at some point but isn't
+  // continuing.
+  { key: "inactive", label: "Inactive", match: (u) => getStatus(u) === "No Plan" },
+  { key: "completed", label: "Completed", match: (u) => ["Cancelled", "Completed"].includes(getStatus(u)) },
   { key: "new", label: "New This Month", match: isNewThisMonth },
 ];
 
@@ -212,7 +214,8 @@ export const AllRegisteredUsers = () => {
   const statCards = [
     { label: "Total Users", value: allRegisteredUsers.length, icon: Users, tabKey: "all" },
     { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck, tabKey: "active" },
-    { label: "Completed / Inactive", value: tabCounts.inactive, icon: PauseCircle, tabKey: "inactive" },
+    { label: "Inactive", value: tabCounts.inactive, icon: PauseCircle, tabKey: "inactive" },
+    { label: "Completed", value: tabCounts.completed, icon: History, tabKey: "completed" },
     { label: "New This Month", value: tabCounts.new, icon: UserPlus, tabKey: "new" },
   ];
 
@@ -227,14 +230,15 @@ export const AllRegisteredUsers = () => {
                       (user.mealCounts?.dinnerMeals || 0) +
                       (user.mealCounts?.nextDayDinnerMeals || 0);
 
-    // Zero-meals hiding only makes sense on the "All"/"Active" views — it's meant
-    // to cut noise from users who nominally look active but have run dry. On the
-    // Queued/Inactive/New-this-month tabs a user having 0 current meals is the
+    // Zero-meals hiding only makes sense on the "Active" view — it's meant to
+    // cut noise from users who nominally look active but have run dry. "All
+    // Users" should mean literally everyone, and on the Queued/Inactive/
+    // Completed/New-this-month tabs a user having 0 current meals is the
     // expected, normal case (queued plans haven't activated yet, cancelled/
-    // completed plans don't carry meals, a brand-new signup may not have
-    // subscribed yet), so applying it there would hide almost everyone those
-    // tabs exist to show.
-    const presenceFilterApplies = statusTab === "all" || statusTab === "active";
+    // completed plans don't carry meals, a never-subscribed or brand-new
+    // signup has none yet), so applying it there would hide almost everyone
+    // those tabs exist to show.
+    const presenceFilterApplies = statusTab === "active";
     const presenceMatch = !presenceFilterApplies || showZeroMeals ? true : totalMeals > 0;
 
     const latestSub = getLatestSub(user);
@@ -369,7 +373,7 @@ export const AllRegisteredUsers = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 print:hidden">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 print:hidden">
               {statCards.map((card) => (
                 <button
                   key={card.label}
