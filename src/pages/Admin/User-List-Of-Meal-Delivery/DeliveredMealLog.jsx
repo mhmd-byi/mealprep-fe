@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Users, XCircle, Search } from "lucide-react";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { useDeliveredMealLog } from "./useDeliveredMealLog";
 
 const inputClass =
@@ -42,14 +43,16 @@ const NameList = ({ rows, emptyLabel }) => {
         <thead className="bg-gray-50">
           <tr>
             <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Name</th>
-            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Mobile</th>
+            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Type</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {rows.map((row, i) => (
             <tr key={`${row.userId}-${i}`}>
               <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{row.name}</td>
-              <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{row.mobile || "—"}</td>
+              <td className="px-3 py-2 whitespace-nowrap">
+                <VegNonVegIcon value={row.dietaryType} />
+              </td>
             </tr>
           ))}
         </tbody>
