@@ -796,7 +796,12 @@ export const UserMealTracking = () => {
                       <InfoRow label="Plan Name">{latestSub?.plan || "—"}</InfoRow>
                       <InfoRow label="Start Date">{latestSub?.subscriptionStartDate ? formatDisplayDate(latestSub.subscriptionStartDate) : "N/A"}</InfoRow>
                       <InfoRow label="Est. End Date">{subEnd?.formattedDate || subEnd?.status || "—"}</InfoRow>
-                      <InfoRow label="Meals / Day">Lunch {userDetail.mealCounts.lunchMeals}, Dinner {userDetail.mealCounts.dinnerMeals}</InfoRow>
+                      <InfoRow label="Meals / Day">
+                        <span className="flex flex-wrap gap-2 items-center justify-end">
+                          <span className="flex gap-1 items-center"><Sun className="w-3.5 h-3.5 text-amber-500" />Lunch: {userDetail.mealCounts.lunchMeals}</span>
+                          <span className="flex gap-1 items-center"><Moon className="w-3.5 h-3.5 text-indigo-500" />Dinner: {userDetail.mealCounts.dinnerMeals}</span>
+                        </span>
+                      </InfoRow>
                       <InfoRow label="Status"><span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${USER_STATUS_STYLES[userStatus]}`}>{userStatus}</span></InfoRow>
                     </div>
                   </div>
