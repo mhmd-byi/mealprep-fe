@@ -781,7 +781,7 @@ export const UserMealTracking = () => {
                     <div className="grid grid-cols-1 gap-2">
                       <QuickAction icon={CalendarPlus} label="Add Holiday" onClick={() => navigate("/dashboard/add-holiday")} />
                       <QuickAction icon={X} label="View Cancellations" onClick={() => navigate("/dashboard/user-cancel-request-list")} />
-                      <QuickAction icon={Pencil} label="Edit Plan" onClick={() => navigate("/dashboard/manage-subscriptions")} />
+                      <QuickAction icon={Pencil} label="Edit Plan" onClick={() => navigate("/dashboard/manage-subscriptions", { state: { userId: userDetail._id } })} />
                     </div>
                   </div>
 
