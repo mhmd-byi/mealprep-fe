@@ -20,7 +20,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
   const containerRef = useRef(null);
 
   if (!data || data.length === 0) {
-    return <p className="text-sm text-gray-500 py-8 text-center">No data for this range.</p>;
+    return <p className="py-8 text-sm text-center text-gray-500">No data for this range.</p>;
   }
 
   const totals = data.map((row) => seriesKeys.reduce((s, k) => s + (row[k.key] || 0), 0));
@@ -35,8 +35,8 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex flex-wrap items-center gap-4">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-wrap gap-4 items-center">
           {seriesKeys.map((s) => (
             <span key={s.key} className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
               <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }} />
@@ -47,7 +47,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
         <button
           type="button"
           onClick={() => setShowTable((v) => !v)}
-          className="text-sm font-bold text-theme-color-1 hover:underline whitespace-nowrap print:hidden"
+          className="text-sm font-bold whitespace-nowrap text-theme-color-1 hover:underline print:hidden"
         >
           {showTable ? "View as chart" : "View as table"}
         </button>
@@ -58,13 +58,13 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
           <table className="w-full text-base divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-3 py-2 text-left text-sm font-bold text-gray-700 uppercase">Month</th>
+                <th className="px-3 py-2 text-sm font-bold text-left text-gray-700 uppercase">Month</th>
                 {seriesKeys.map((s) => (
-                  <th key={s.key} className="px-3 py-2 text-right text-sm font-bold text-gray-700 uppercase">
+                  <th key={s.key} className="px-3 py-2 text-sm font-bold text-right text-gray-700 uppercase">
                     {s.label}
                   </th>
                 ))}
-                <th className="px-3 py-2 text-right text-sm font-bold text-gray-700 uppercase">Total</th>
+                <th className="px-3 py-2 text-sm font-bold text-right text-gray-700 uppercase">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -72,11 +72,11 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
                 <tr key={row.month || row.label}>
                   <td className="px-3 py-2 font-semibold text-gray-900">{row.label}</td>
                   {seriesKeys.map((s) => (
-                    <td key={s.key} className="px-3 py-2 text-right font-semibold text-gray-700">
+                    <td key={s.key} className="px-3 py-2 font-semibold text-right text-gray-700">
                       {valueFormatter(row[s.key] || 0)}
                     </td>
                   ))}
-                  <td className="px-3 py-2 text-right font-bold text-gray-900">{valueFormatter(totals[i])}</td>
+                  <td className="px-3 py-2 font-bold text-right text-gray-900">{valueFormatter(totals[i])}</td>
                 </tr>
               ))}
             </tbody>
@@ -84,7 +84,7 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
         </div>
       ) : (
         <div className="relative" ref={containerRef}>
-          <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-auto" role="img" aria-label={title}>
+          <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-[220px]" role="img" aria-label={title}>
             <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
               {yTicks.map((tick) => (
                 <g key={tick}>
