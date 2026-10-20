@@ -6,7 +6,7 @@ import { VegNonVegIcon } from "../../components/common/VegNonVegIcon/VegNonVegIc
 import { formatCarbType } from "../../carbTypeDisplay";
 import { useMealTracking } from "./useMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../activityCategories";
-import { calculateSubEndDate, holidayDateKeysFrom } from "../../subscriptionUtils";
+import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities } from "../../subscriptionUtils";
 import {
   CalendarDays,
   Download,
@@ -214,18 +214,21 @@ export const MealTracking = () => {
   const completionRate =
     latestSub?.totalMeals > 0 ? Math.round((planDeliveredCount / latestSub.totalMeals) * 100) : null;
 
-  const nextDelivery = (() => {
-    const mc = userDetail?.mealCounts;
-    if (!mc) return null;
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-    if (mc.lunchMeals > 0) return { meal: "Lunch", date: today };
-    if (mc.dinnerMeals > 0) return { meal: "Dinner", date: today };
-    if (mc.nextDayLunchMeals > 0) return { meal: "Lunch", date: tomorrow };
-    if (mc.nextDayDinnerMeals > 0) return { meal: "Dinner", date: tomorrow };
-    return null;
-  })();
+  const combinedCancellations = useMemo(() => {
+    const fromUser = userDetail?.cancellations || [];
+    const fromActivities = parseCancellationsFromActivities(activityRecords);
+    return [...fromUser, ...fromActivities];
+  }, [userDetail?.cancellations, activityRecords]);
+
+  const nextDelivery = useMemo(() => {
+    if (!userDetail?.mealCounts) return null;
+    return calculateNextDelivery({
+      mealCounts: userDetail.mealCounts,
+      cancellations: combinedCancellations,
+      holidayDateKeys,
+      startDate: latestSub?.mealStartDate || latestSub?.subscriptionStartDate
+    });
+  }, [userDetail?.mealCounts, combinedCancellations, holidayDateKeys, latestSub]);
 
   const filteredHistory = activityRecords
     .filter((record) => {

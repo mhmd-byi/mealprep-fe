@@ -3,6 +3,8 @@ import axios from "axios";
 import { sendEmail } from "../../utils";
 import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../emailTemplates";
 
+import { parseCancellationsFromActivities } from "../../subscriptionUtils";
+
 // Mirrors the backend's purchaseOverlapsActiveSubs (subscriptionController.js) —
 // a purchase only needs to queue if it shares a meal-type track with an
 // already-active plan (e.g. buying dinner while only lunch is active does NOT
@@ -28,6 +30,8 @@ export const useSubscription = () => {
   const [currentPlans, setCurrentPlans] = useState([]);
   const [nextPlan, setNextPlan] = useState(null);
   const [hasQueuedPlan, setHasQueuedPlan] = useState(false);
+  const [cancellations, setCancellations] = useState([]);
+  const [holidays, setHolidays] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const getCurrentDate = () => {
@@ -64,14 +68,23 @@ export const useSubscription = () => {
       }
 
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const [response, holidaysRes, activitiesRes] = await Promise.all([
+          axios.get(
+            `${process.env.REACT_APP_API_URL}subscription/${userId}/subscription`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          ),
+          axios.get(`${process.env.REACT_APP_API_URL}holiday/get-holidays`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }).catch(() => ({ data: { holidays: [] } })),
+          axios.get(`${process.env.REACT_APP_API_URL}activity/get-activities?userId=${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }).catch(() => ({ data: [] })),
+        ]);
+
         setIsSubscribed(response.data.isSubscribed);
         if (response.data.isSubscribed) {
           // Prefer the explicit currentPlan key; fall back to legacy 'subscription' key
@@ -87,6 +100,11 @@ export const useSubscription = () => {
           setNextPlan(null);
           setHasQueuedPlan(false);
         }
+
+        const rawCancellations = response.data.cancellations || [];
+        const activityCancellations = parseCancellationsFromActivities(activitiesRes.data || []);
+        setCancellations([...rawCancellations, ...activityCancellations]);
+        setHolidays(holidaysRes.data?.holidays || response.data.holidays || []);
       } catch (error) {
         console.error("Error fetching subscription status:", error);
       } finally {
@@ -286,6 +304,8 @@ Please update the system accordingly.`);
     currentPlans,
     nextPlan,
     hasQueuedPlan,
+    cancellations,
+    holidays,
     isLoading,
   };
 };

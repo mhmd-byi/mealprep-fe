@@ -1,28 +1,30 @@
+import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import useSubscription from "../Plans/useSubscription";
 import { Utensils, CalendarDays, ArrowRight } from "lucide-react";
 import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
+import { calculateNextDelivery, holidayDateKeysFrom } from "../../subscriptionUtils";
 
 export const CustomerOverview = () => {
   const navigate = useNavigate();
   const { userDetails } = useDashboard();
-  const { isSubscribed, currentPlan, isLoading } = useSubscription();
+  const { isSubscribed, currentPlan, cancellations, holidays, isLoading } = useSubscription();
+
+  const holidayDateKeys = useMemo(() => holidayDateKeysFrom(holidays), [holidays]);
 
   const lunchLeft = (currentPlan?.lunchMeals || 0) + (currentPlan?.nextDayLunchMeals || 0);
   const dinnerLeft = (currentPlan?.dinnerMeals || 0) + (currentPlan?.nextDayDinnerMeals || 0);
 
-  const nextDelivery = (() => {
+  const nextDelivery = useMemo(() => {
     if (!currentPlan) return null;
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-    if (currentPlan.lunchMeals > 0) return { meal: "Lunch", date: today };
-    if (currentPlan.dinnerMeals > 0) return { meal: "Dinner", date: today };
-    if (currentPlan.nextDayLunchMeals > 0) return { meal: "Lunch", date: tomorrow };
-    if (currentPlan.nextDayDinnerMeals > 0) return { meal: "Dinner", date: tomorrow };
-    return null;
-  })();
+    return calculateNextDelivery({
+      mealCounts: currentPlan,
+      cancellations,
+      holidayDateKeys,
+      startDate: currentPlan.mealStartDate || currentPlan.subscriptionStartDate
+    });
+  }, [currentPlan, cancellations, holidayDateKeys]);
 
   if (isLoading) {
     return (
