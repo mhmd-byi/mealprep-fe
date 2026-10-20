@@ -139,65 +139,77 @@ const AllHolidays = () => {
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {allHolidays.map((holiday, index) => (
-                                <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                                    <div className="break-words">
-                                      {formatDate(holiday.date)}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <div className="break-words">
-                                      {holiday.description}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-900">
-                                    <button
-                                      onClick={() => handleDeleteHoliday(holiday._id, holiday.date)}
-                                      className="text-red-600 hover:text-red-900 transition-colors duration-200"
-                                      title="Delete holiday"
-                                    >
-                                      <Delete />
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
+                              {allHolidays.map((holiday, index) => {
+                                const toLocalDateStr = (d) => { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; };
+                                const isUpcoming = toLocalDateStr(holiday.date) > toLocalDateStr(new Date());
+                                return (
+                                  <tr key={index} className="hover:bg-gray-100">
+                                    <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                                      <div className="break-words">{formatDate(holiday.date)}</div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900">
+                                      <div className="break-words">{holiday.description}</div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-900">
+                                      {isUpcoming ? (
+                                        <button
+                                          onClick={() => handleDeleteHoliday(holiday._id, holiday.date)}
+                                          className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                                          title="Delete holiday"
+                                        >
+                                          <Delete />
+                                        </button>
+                                      ) : (
+                                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-400">Past</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>
 
                         {/* Mobile View */}
                         <div className="md:hidden space-y-4">
-                          {allHolidays.map((holiday, index) => (
-                            <div
-                              key={index}
-                              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
-                            >
-                              <div className="space-y-2">
-                                <div className="flex justify-between border-b pb-2">
-                                  <span className="font-medium text-gray-500">Date:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {formatDate(holiday.date)}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between border-b pb-2">
-                                  <span className="font-medium text-gray-500">Description:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {holiday.description}
-                                  </span>
-                                </div>
-                                <div className="flex justify-end pt-2">
-                                  <button
-                                    onClick={() => handleDeleteHoliday(holiday._id, holiday.date)}
-                                    className="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center gap-1"
-                                  >
-                                    <Delete />
-                                    <span>Delete</span>
-                                  </button>
+                          {allHolidays.map((holiday, index) => {
+                            const toLocalDateStr = (d) => { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; };
+                            const isUpcoming = toLocalDateStr(holiday.date) > toLocalDateStr(new Date());
+                            return (
+                              <div
+                                key={index}
+                                className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+                              >
+                                <div className="space-y-2">
+                                  <div className="flex justify-between border-b pb-2">
+                                    <span className="font-medium text-gray-500">Date:</span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {formatDate(holiday.date)}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between border-b pb-2">
+                                    <span className="font-medium text-gray-500">Description:</span>
+                                    <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                      {holiday.description}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-end pt-2">
+                                    {isUpcoming ? (
+                                      <button
+                                        onClick={() => handleDeleteHoliday(holiday._id, holiday.date)}
+                                        className="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center gap-1"
+                                      >
+                                        <Delete />
+                                        <span>Delete</span>
+                                      </button>
+                                    ) : (
+                                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-400">Past</span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     ) : (
