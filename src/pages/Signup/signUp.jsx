@@ -26,10 +26,16 @@ const Signup = () => {
   } = useSignup();
 
   const formRef = useRef(null);
-  const { ValidationMessage } = usePasswordValidation(formRef, "newPassword", "confirmNewPassword");
-  const { PincodeValidationMessage, pincodeValid } = usePincodeValidation(formRef);
+  const { ValidationMessage } = usePasswordValidation(
+    formRef,
+    "newPassword",
+    "confirmNewPassword",
+  );
+  const { PincodeValidationMessage, pincodeValid } =
+    usePincodeValidation(formRef);
 
-  const isSubmitDisabled = !pincodeValid || !otpVerified || String(errMsg) !== "";
+  const isSubmitDisabled =
+    !pincodeValid || !otpVerified || String(errMsg) !== "";
 
   return (
     <AuthLayout
@@ -40,18 +46,37 @@ const Signup = () => {
       <div className="flex flex-col items-center mb-8 lg:hidden">
         <MealprepLogo classes="max-w-40" />
       </div>
-      <h2 className="text-2xl font-bold text-center text-gray-900 lg:text-left">Create your account</h2>
-      <p className="mt-1 text-sm text-center text-gray-500 lg:text-left">
+      <h2 className="text-2xl font-bold text-center text-gray-900">
+        Create your account
+      </h2>
+      <p className="mt-1 text-sm text-center text-gray-500">
         Already have an account?{" "}
-        <a onClick={navigateToSignin} className="font-semibold cursor-pointer text-theme-color-1 hover:underline">
+        <a
+          onClick={navigateToSignin}
+          className="font-semibold cursor-pointer text-theme-color-1 hover:underline"
+        >
           Log in
         </a>
       </p>
 
       <form className="mt-8 space-y-5" onSubmit={handleSubmit} ref={formRef}>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <Input id="firstName" name="firstName" type="text" placeholder="First Name" required onChange={handleChange} />
-          <Input id="lastName" name="lastName" type="text" placeholder="Last Name" required onChange={handleChange} />
+          <Input
+            id="firstName"
+            name="firstName"
+            type="text"
+            placeholder="First Name"
+            required
+            onChange={handleChange}
+          />
+          <Input
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Last Name"
+            required
+            onChange={handleChange}
+          />
         </div>
 
         <div className="flex gap-2">
@@ -101,7 +126,7 @@ const Signup = () => {
             Phone number verified — fill in the rest of your details below.
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-amber-800 border border-amber-300 rounded-lg bg-amber-50">
+          <div className="flex gap-2 items-center px-4 py-3 text-sm font-medium text-amber-800 bg-amber-50 rounded-lg border border-amber-300">
             <AlertTriangle className="flex-shrink-0 w-4 h-4" />
             Verify your phone number above to unlock the rest of the form.
           </div>
@@ -155,22 +180,29 @@ const Signup = () => {
             <PincodeValidationMessage />
           </div>
         </div>
-
-        <Input
-          required
-          id="address"
-          name="postalAddress"
-          type="text"
-          placeholder="Address"
-          onChange={handleChange}
-          disabled={!otpVerified}
-        />
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-1">
+          <Input
+            required
+            id="address"
+            name="postalAddress"
+            type="text"
+            placeholder="Address"
+            onChange={handleChange}
+            disabled={!otpVerified}
+          />
+        </div>
 
         {errMsg.length > 1 && (
-          <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">{errMsg}</div>
+          <div className="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
+            {errMsg}
+          </div>
         )}
 
-        <Button type="submit" classes="w-full justify-center" disabled={isSubmitDisabled}>
+        <Button
+          type="submit"
+          classes="w-full justify-center"
+          disabled={isSubmitDisabled}
+        >
           {loaderState ? "Creating account..." : "Submit"}
         </Button>
       </form>
