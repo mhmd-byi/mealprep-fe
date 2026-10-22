@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
 import { niceMax } from "./format";
 import { ChartTooltip } from "./ChartTooltip";
+import { useChartWidth } from "./useChartWidth";
 
-const VIEW_W = 900;
-const VIEW_H = 340;
+const VIEW_H = 220;
 const MARGIN = { top: 16, right: 16, bottom: 44, left: 64 };
-const INNER_W = VIEW_W - MARGIN.left - MARGIN.right;
 const INNER_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 const MAX_BAR_THICKNESS = 40;
 const SEGMENT_GAP = 2;
@@ -18,6 +17,8 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
   const [hoverIndex, setHoverIndex] = useState(null);
   const [showTable, setShowTable] = useState(false);
   const containerRef = useRef(null);
+  const viewW = useChartWidth(containerRef);
+  const innerW = viewW - MARGIN.left - MARGIN.right;
 
   if (!data || data.length === 0) {
     return <p className="py-8 text-sm text-center text-gray-500">No data for this range.</p>;
@@ -27,11 +28,16 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
   const maxValue = niceMax(Math.max(1, ...totals));
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(maxValue * f));
 
-  const groupWidth = INNER_W / data.length;
+  const groupWidth = innerW / data.length;
   const barThickness = Math.min(MAX_BAR_THICKNESS, groupWidth * 0.6);
 
   const yFor = (value) => INNER_H - (Math.max(0, value) / maxValue) * INNER_H;
   const rotateLabels = data.length > 8;
+  // With more than ~8 points, labels are wider than the space between them even
+  // rotated — thin them out instead of letting them overlap/clip, always keeping
+  // the most recent point's label.
+  const labelStep = data.length > 8 ? Math.ceil(data.length / 8) : 1;
+  const showLabel = (i) => i % labelStep === 0 || i === data.length - 1;
 
   return (
     <div>
@@ -84,17 +90,17 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
         </div>
       ) : (
         <div className="relative" ref={containerRef}>
-          <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-[220px]" role="img" aria-label={title}>
+          <svg viewBox={`0 0 ${viewW} ${VIEW_H}`} width={viewW} height={VIEW_H} className="w-full h-[220px] overflow-visible" role="img" aria-label={title}>
             <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
               {yTicks.map((tick) => (
                 <g key={tick}>
-                  <line x1={0} x2={INNER_W} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
+                  <line x1={0} x2={innerW} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
                   <text x={-8} y={yFor(tick)} textAnchor="end" dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#52514e">
                     {valueFormatter(tick)}
                   </text>
                 </g>
               ))}
-              <line x1={0} x2={INNER_W} y1={INNER_H} y2={INNER_H} stroke="#c3c2b7" strokeWidth={1} />
+              <line x1={0} x2={innerW} y1={INNER_H} y2={INNER_H} stroke="#c3c2b7" strokeWidth={1} />
 
               {data.map((row, i) => {
                 const x = i * groupWidth + (groupWidth - barThickness) / 2;
@@ -156,17 +162,19 @@ export const StackedBarChart = ({ data, seriesKeys, title, valueFormatter = (v) 
                         />
                       );
                     })}
-                    <text
-                      x={i * groupWidth + groupWidth / 2}
-                      y={INNER_H + 18}
-                      textAnchor={rotateLabels ? "end" : "middle"}
-                      fontSize={13}
-                      fontWeight={700}
-                      fill="#3a3934"
-                      transform={rotateLabels ? `rotate(-35 ${i * groupWidth + groupWidth / 2} ${INNER_H + 18})` : undefined}
-                    >
-                      {row.label}
-                    </text>
+                    {showLabel(i) && (
+                      <text
+                        x={i * groupWidth + groupWidth / 2}
+                        y={INNER_H + 18}
+                        textAnchor={rotateLabels ? "end" : "middle"}
+                        fontSize={13}
+                        fontWeight={700}
+                        fill="#3a3934"
+                        transform={rotateLabels ? `rotate(-35 ${i * groupWidth + groupWidth / 2} ${INNER_H + 18})` : undefined}
+                      >
+                        {row.label}
+                      </text>
+                    )}
                   </g>
                 );
               })}
