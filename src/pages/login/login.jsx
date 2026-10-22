@@ -35,8 +35,8 @@ const Login = () => {
       <div className="flex flex-col items-center mb-8 lg:hidden">
         <MealprepLogo classes="max-w-40" />
       </div>
-      <h2 className="text-2xl font-bold text-center text-gray-900 lg:text-left">Welcome back</h2>
-      <p className="mt-1 text-sm text-center text-gray-500 lg:text-left">Log in to your Mealprep account to continue.</p>
+      <h2 className="text-2xl font-bold text-center text-gray-900">Welcome back</h2>
+      <p className="mt-1 text-sm text-center text-gray-500">Log in to your Mealprep account to continue.</p>
 
       <div className="flex p-1 mt-8 bg-gray-100 rounded-lg">
         <button
@@ -87,7 +87,7 @@ const Login = () => {
           </div>
 
           {errMsg.length > 1 && (
-            <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">{errMsg}</div>
+            <div className="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">{errMsg}</div>
           )}
 
           <Button type="submit" id="login" classes="w-full justify-center">
@@ -145,7 +145,7 @@ const Login = () => {
           )}
 
           {errMsg.length > 1 && (
-            <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">{errMsg}</div>
+            <div className="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">{errMsg}</div>
           )}
 
           <Button type="submit" id="login" disabled={!otpVerified} classes="w-full justify-center">

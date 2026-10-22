@@ -11,17 +11,17 @@ const FEATURES = [
 export const AuthLayout = ({ heading, subheading, maxWidthClass = "max-w-sm", children }) => (
   <div className="flex min-h-screen bg-green-50">
     <div
-      className="relative items-center justify-center flex-1 hidden bg-center bg-cover lg:flex bg-theme-color-1"
+      className="hidden relative flex-1 justify-center items-center bg-center bg-cover lg:flex bg-theme-color-1"
       style={{ backgroundImage: `url(${authBg})` }}
     >
-      <div className="relative z-10 max-w-md px-10 text-white">
-        <img src={whiteLogo} alt="Mealprep" className="mb-10 w-40" />
+      <div className="relative z-10 px-10 max-w-md text-white">
+        <img src={whiteLogo} alt="Mealprep" className="mx-auto mb-10 w-40" />
         <h1 className="text-3xl font-bold leading-tight">{heading}</h1>
         <p className="mt-3 text-green-50">{subheading}</p>
         <div className="mt-10 space-y-5">
           {FEATURES.map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-3">
-              <div className="flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-lg bg-white/15">
+            <div key={text} className="flex gap-3 items-center">
+              <div className="flex flex-shrink-0 justify-center items-center w-9 h-9 rounded-lg bg-white/15">
                 <Icon className="w-5 h-5" />
               </div>
               <p className="text-sm font-medium text-green-50">{text}</p>
@@ -30,8 +30,8 @@ export const AuthLayout = ({ heading, subheading, maxWidthClass = "max-w-sm", ch
         </div>
       </div>
     </div>
-    <div className="flex flex-1 items-center justify-center px-4 py-12 overflow-y-auto sm:px-10 lg:bg-white">
-      <div className={`w-full ${maxWidthClass} bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:bg-transparent lg:shadow-none lg:p-0`}>
+    <div className="flex overflow-y-auto flex-1 justify-center items-center px-4 py-12 sm:px-10 lg:bg-white">
+      <div className={`p-6 w-full bg-white rounded-2xl shadow-sm ${maxWidthClass} sm:p-8 lg:bg-transparent lg:shadow-none lg:p-0`}>
         {children}
       </div>
     </div>
