@@ -32,6 +32,21 @@ import {
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
+const getInitials = (name) =>
+  (name || "")
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+const InitialsAvatar = ({ name, className = "w-9 h-9" }) => (
+  <div className={`flex flex-shrink-0 justify-center items-center text-xs font-bold text-green-800 bg-green-100 rounded-full ${className}`}>
+    {getInitials(name)}
+  </div>
+);
+
 const StatTile = ({ icon: Icon, tone, label, value, highlight }) => (
   <div className={`flex gap-3 items-center p-4 rounded-xl border ${highlight ? "bg-red-50 border-red-100" : "bg-gray-50 border-gray-100"}`}>
     <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
@@ -527,13 +542,18 @@ const ScheduledMealDeliveryList = () => {
                               return (
                                 <tr key={index} className={`hover:bg-gray-50 ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
                                   <td className="px-4 py-4 text-sm font-medium max-w-[250px]">
-                                    <div
-                                      className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
-                                      onClick={() => fetchUserDetails(meal.userId)}
-                                    >
-                                      {meal.name}
+                                    <div className="flex gap-3 items-center">
+                                      <InitialsAvatar name={meal.name} />
+                                      <div className="min-w-0">
+                                        <div
+                                          className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
+                                          onClick={() => fetchUserDetails(meal.userId)}
+                                        >
+                                          {meal.name}
+                                        </div>
+                                        <div className="text-xs text-gray-500 break-all">{meal.email}</div>
+                                      </div>
                                     </div>
-                                    <div className="text-xs text-gray-500 break-all">{meal.email}</div>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <div className="break-words">{meal.mobile}</div>
@@ -580,13 +600,14 @@ const ScheduledMealDeliveryList = () => {
                           return (
                             <div key={index} className={`p-4 rounded-xl border border-gray-100 shadow-sm ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
                               <div className="space-y-2">
-                                <div className="flex justify-between pb-2 border-b">
+                                <div className="flex justify-between items-center pb-2 border-b">
                                   <span className="font-medium text-gray-500">Name:</span>
                                   <span
-                                    className="font-bold text-right cursor-pointer text-theme-color-1 hover:underline"
+                                    className="flex gap-2 items-center font-bold text-right cursor-pointer text-theme-color-1 hover:underline"
                                     onClick={() => fetchUserDetails(meal.userId)}
                                   >
                                     {meal.name}
+                                    <InitialsAvatar name={meal.name} className="w-7 h-7" />
                                   </span>
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">

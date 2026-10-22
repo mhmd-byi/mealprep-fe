@@ -33,6 +33,24 @@ const formatDisplayDate = (dateStr) => {
 const formatDateTime = (value) =>
   value ? new Date(value).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—";
 
+const getInitials = (name) =>
+  (name || "")
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+const NameCell = ({ name }) => (
+  <div className="flex gap-2 items-center">
+    <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 text-xs font-bold text-green-800 bg-green-100 rounded-full">
+      {getInitials(name)}
+    </div>
+    <span className="font-medium text-gray-900 whitespace-nowrap">{name}</span>
+  </div>
+);
+
 const NameList = ({ rows, emptyLabel }) => {
   if (rows.length === 0) {
     return <p className="py-6 text-sm text-center text-gray-400">{emptyLabel}</p>;
@@ -49,7 +67,9 @@ const NameList = ({ rows, emptyLabel }) => {
         <tbody className="divide-y divide-gray-100">
           {rows.map((row, i) => (
             <tr key={`${row.userId}-${i}`}>
-              <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{row.name}</td>
+              <td className="px-3 py-2">
+                <NameCell name={row.name} />
+              </td>
               <td className="px-3 py-2 whitespace-nowrap">
                 <VegNonVegIcon value={row.dietaryType} />
               </td>
@@ -168,7 +188,9 @@ export const DeliveredMealLog = () => {
                   <tbody className="divide-y divide-gray-100">
                     {endedRows.map((row, i) => (
                       <tr key={`${row.userId}-${i}`}>
-                        <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{row.name}</td>
+                        <td className="px-3 py-2">
+                          <NameCell name={row.name} />
+                        </td>
                         <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{row.mobile || "—"}</td>
                         <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{row.plan}</td>
                         <td className="px-3 py-2 whitespace-nowrap">
