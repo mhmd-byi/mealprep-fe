@@ -4,6 +4,7 @@ import { useFinanceDashboard } from "../../Admin/Finance-Dashboard/useFinanceDas
 import { GroupedBarChart } from "../../Admin/Finance-Dashboard/GroupedBarChart";
 import { LineChart } from "../../Admin/Finance-Dashboard/LineChart";
 import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
+import { RecentTransactions } from "../../Admin/Finance-Dashboard/RecentTransactions";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
 import { getPlanColor, PLAN_COLORS } from "../../Admin/Finance-Dashboard/index";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
@@ -31,6 +32,16 @@ const FinanceOverviewSkeleton = () => (
       <ChartCardSkeleton />
     </div>
     <ChartCardSkeleton />
+    <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="p-4 border-b border-gray-100">
+        <Skeleton className="w-48 h-4" />
+      </div>
+      <div className="p-4 space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="w-full h-5" />
+        ))}
+      </div>
+    </div>
     <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
       <div className="p-4 border-b border-gray-100">
         <Skeleton className="w-48 h-4" />
@@ -226,6 +237,8 @@ export const FinanceOverview = () => {
           <p className="py-10 text-center text-gray-500">No subscriptions in this range.</p>
         )}
       </div>
+
+      <RecentTransactions />
     </section>
   );
 };
