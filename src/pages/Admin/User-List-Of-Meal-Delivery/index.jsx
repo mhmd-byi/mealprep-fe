@@ -34,6 +34,12 @@ import {
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
+// Same look as inputClass, minus w-full — for filter-row dropdowns that
+// should size to their own content instead of stretching, so the search
+// field (the one that should grow) can claim the leftover space.
+const compactSelectClass =
+  "px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
+
 const getInitials = (name) =>
   (name || "")
     .split(" ")
@@ -501,12 +507,13 @@ const ScheduledMealDeliveryList = () => {
                 </div>
 
                 <div className="p-5 space-y-4 bg-white rounded-2xl border border-gray-100 shadow-sm print:hidden">
-                  <div className="flex flex-col gap-3 items-end sm:flex-row sm:flex-wrap">
-                    <div className="flex-1 min-w-[200px] w-full sm:w-auto">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                    <div className="flex-1 min-w-[220px]">
                       <SearchBar
                         value={searchQuery}
                         onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
                         placeholder="Search name or email..."
+                        maxWidthClass="max-w-none"
                       />
                     </div>
                     <Input
@@ -518,7 +525,7 @@ const ScheduledMealDeliveryList = () => {
                         { value: 'veg', label: 'Veg' },
                         { value: 'non-veg', label: 'Non-Veg' },
                       ]}
-                      classes={inputClass}
+                      classes={compactSelectClass}
                     />
                     <Input
                       type="select"
@@ -530,7 +537,7 @@ const ScheduledMealDeliveryList = () => {
                         { value: 'Weekly', label: 'Weekly Plan' },
                         { value: 'Monthly', label: 'Monthly Plan' },
                       ]}
-                      classes={inputClass}
+                      classes={compactSelectClass}
                     />
                     <button
                       type="button"
