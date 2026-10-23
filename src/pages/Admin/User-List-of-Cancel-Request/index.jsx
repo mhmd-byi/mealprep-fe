@@ -303,6 +303,8 @@ export const UserListWithCancelRequest = () => {
 
   const previousTotal = previousFilteredMeals.length;
   const previousUniqueUsers = new Set(previousFilteredMeals.map((m) => String(m.userId))).size;
+  const previousLunchCount = previousFilteredMeals.filter((m) => m.mealType === "lunch" || m.mealType === "both").length;
+  const previousDinnerCount = previousFilteredMeals.filter((m) => m.mealType === "dinner" || m.mealType === "both").length;
 
   const statCards = [
     {
@@ -321,8 +323,26 @@ export const UserListWithCancelRequest = () => {
       change: percentChange(uniqueUsers, previousUniqueUsers),
       goodWhenUp: true,
     },
-    { label: "Lunch Cancelled", value: lunchCount, icon: Sun, tone: "bg-amber-50 text-amber-600", share: sharePercent(lunchCount), bar: "bg-amber-500" },
-    { label: "Dinner Cancelled", value: dinnerCount, icon: Moon, tone: "bg-purple-50 text-purple-600", share: sharePercent(dinnerCount), bar: "bg-purple-500" },
+    {
+      label: "Lunch Cancelled",
+      value: lunchCount,
+      icon: Sun,
+      tone: "bg-amber-50 text-amber-600",
+      share: sharePercent(lunchCount),
+      bar: "bg-amber-500",
+      change: percentChange(lunchCount, previousLunchCount),
+      goodWhenUp: false,
+    },
+    {
+      label: "Dinner Cancelled",
+      value: dinnerCount,
+      icon: Moon,
+      tone: "bg-purple-50 text-purple-600",
+      share: sharePercent(dinnerCount),
+      bar: "bg-purple-500",
+      change: percentChange(dinnerCount, previousDinnerCount),
+      goodWhenUp: false,
+    },
   ];
 
   const pageRows = isPrinting

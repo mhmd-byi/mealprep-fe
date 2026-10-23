@@ -9,6 +9,7 @@ import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { DeliveredMealLog } from "./DeliveredMealLog";
+import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { formatCarbType, getCarbTypeColor } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
@@ -60,7 +61,7 @@ const InitialsAvatar = ({ name, className = "w-9 h-9" }) => (
   </div>
 );
 
-const StatTile = ({ icon: Icon, tone, label, value, highlight }) => (
+const StatTile = ({ icon: Icon, tone, label, value, highlight, change }) => (
   <div className={`flex gap-3 items-center p-4 rounded-xl border ${highlight ? "bg-red-50 border-red-100" : "bg-gray-50 border-gray-100"}`}>
     <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
       <Icon className="w-5 h-5" />
@@ -68,12 +69,18 @@ const StatTile = ({ icon: Icon, tone, label, value, highlight }) => (
     <div>
       <p className={`text-xs font-medium ${highlight ? "text-red-500" : "text-gray-500"}`}>{label}</p>
       <p className={`text-xl font-bold ${highlight ? "text-red-600" : "text-gray-900"}`}>{value}</p>
+      {change !== undefined && <ChangeBadge change={change} suffix="vs last week" />}
     </div>
   </div>
 );
 
 const ScheduledMealDeliveryList = () => {
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
+  // What actually went out the same day last week (real MealDelivery records,
+  // via the Delivered Meal Log's own endpoint) — the honest comparison point
+  // for this list, since the list itself is a forward projection from today's
+  // live meal balances and can't answer "what was scheduled a week ago."
+  const [previousSummary, setPreviousSummary] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -283,6 +290,29 @@ const ScheduledMealDeliveryList = () => {
     } finally {
       setIsLoading(false);
     }
+
+    // Best-effort trend comparison — failing to load last week's actuals
+    // should never block or error out the main scheduled list above.
+    try {
+      const lastWeek = new Date(`${formData.date}T00:00:00`);
+      lastWeek.setDate(lastWeek.getDate() - 7);
+      const lastWeekDateStr = lastWeek.toISOString().split("T")[0];
+
+      const deliveredResponse = await axios.get(
+        `${process.env.REACT_APP_API_URL}subscription/delivered-meals?date=${lastWeekDateStr}`,
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
+      );
+      const bucket = deliveredResponse.data?.[formData.mealType];
+      const deliveries = bucket?.deliveries || [];
+      setPreviousSummary({
+        total: bucket?.count ?? deliveries.length,
+        veg: deliveries.filter((d) => d.dietaryType === "veg").length,
+        nonVeg: deliveries.filter((d) => d.dietaryType === "non-veg").length,
+      });
+    } catch (err) {
+      console.error("Error fetching last week's delivered meals for comparison:", err);
+      setPreviousSummary(null);
+    }
   };
 
   const resetFilters = () => {
@@ -446,9 +476,27 @@ const ScheduledMealDeliveryList = () => {
             {!isLoading && mealDeliveryList.length > 0 && (
               <>
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 print:hidden">
-                  <StatTile icon={Users} tone="bg-blue-50 text-blue-600" label="Total Customers" value={filteredMeals.length} />
-                  <StatTile icon={Leaf} tone="bg-green-50 text-theme-color-1" label="Veg" value={summary.veg} />
-                  <StatTile icon={Beef} tone="bg-orange-50 text-orange-600" label="Non-Veg" value={summary.nonVeg} />
+                  <StatTile
+                    icon={Users}
+                    tone="bg-blue-50 text-blue-600"
+                    label="Total Customers"
+                    value={filteredMeals.length}
+                    change={previousSummary ? percentChange(filteredMeals.length, previousSummary.total) : undefined}
+                  />
+                  <StatTile
+                    icon={Leaf}
+                    tone="bg-green-50 text-theme-color-1"
+                    label="Veg"
+                    value={summary.veg}
+                    change={previousSummary ? percentChange(summary.veg, previousSummary.veg) : undefined}
+                  />
+                  <StatTile
+                    icon={Beef}
+                    tone="bg-orange-50 text-orange-600"
+                    label="Non-Veg"
+                    value={summary.nonVeg}
+                    change={previousSummary ? percentChange(summary.nonVeg, previousSummary.nonVeg) : undefined}
+                  />
                   <StatTile icon={AlertTriangle} tone="bg-red-100 text-red-600" label="Zero Meals Left" value={summary.zeroMeals} highlight={summary.zeroMeals > 0} />
                 </div>
 

@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Users, XCircle, Search } from "lucide-react";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
+import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { useDeliveredMealLog } from "./useDeliveredMealLog";
 
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
-const StatTile = ({ icon, tone, label, value }) => (
+const StatTile = ({ icon, tone, label, value, change, goodWhenUp }) => (
   <div className="flex gap-3 items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
     <div className={`flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-xl ${tone}`}>
       {icon}
@@ -15,6 +16,7 @@ const StatTile = ({ icon, tone, label, value }) => (
     <div>
       <p className="text-xs font-medium text-gray-500">{label}</p>
       <p className="text-xl font-bold text-gray-900">{value}</p>
+      {change !== undefined && <ChangeBadge change={change} goodWhenUp={goodWhenUp} suffix="vs last week" />}
     </div>
   </div>
 );
@@ -82,7 +84,7 @@ const NameList = ({ rows, emptyLabel }) => {
 };
 
 export const DeliveredMealLog = () => {
-  const { date, setDate, data, isLoading, error, todayDateString } = useDeliveredMealLog();
+  const { date, setDate, data, previousData, isLoading, error, todayDateString } = useDeliveredMealLog();
   const [searchQuery, setSearchQuery] = useState("");
 
   const query = searchQuery.trim().toLowerCase();
@@ -138,9 +140,30 @@ export const DeliveredMealLog = () => {
             <>
               <p className="text-sm font-semibold text-gray-700">{formatDisplayDate(date)}</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <StatTile icon={<MealSlotIcon slot="lunch" className="w-5 h-5" />} tone="bg-amber-50 text-amber-600" label="Lunch Delivered" value={data?.lunch?.count ?? 0} />
-                <StatTile icon={<MealSlotIcon slot="dinner" className="w-5 h-5" />} tone="bg-indigo-50 text-indigo-600" label="Dinner Delivered" value={data?.dinner?.count ?? 0} />
-                <StatTile icon={<XCircle className="w-5 h-5" />} tone="bg-red-50 text-red-600" label="Subscriptions Ended" value={data?.endedSubscriptions?.length ?? 0} />
+                <StatTile
+                  icon={<MealSlotIcon slot="lunch" className="w-5 h-5" />}
+                  tone="bg-amber-50 text-amber-600"
+                  label="Lunch Delivered"
+                  value={data?.lunch?.count ?? 0}
+                  change={previousData ? percentChange(data?.lunch?.count ?? 0, previousData?.lunch?.count ?? 0) : undefined}
+                  goodWhenUp
+                />
+                <StatTile
+                  icon={<MealSlotIcon slot="dinner" className="w-5 h-5" />}
+                  tone="bg-indigo-50 text-indigo-600"
+                  label="Dinner Delivered"
+                  value={data?.dinner?.count ?? 0}
+                  change={previousData ? percentChange(data?.dinner?.count ?? 0, previousData?.dinner?.count ?? 0) : undefined}
+                  goodWhenUp
+                />
+                <StatTile
+                  icon={<XCircle className="w-5 h-5" />}
+                  tone="bg-red-50 text-red-600"
+                  label="Subscriptions Ended"
+                  value={data?.endedSubscriptions?.length ?? 0}
+                  change={previousData ? percentChange(data?.endedSubscriptions?.length ?? 0, previousData?.endedSubscriptions?.length ?? 0) : undefined}
+                  goodWhenUp={false}
+                />
               </div>
             </>
           )}

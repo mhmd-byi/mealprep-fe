@@ -8,6 +8,7 @@ import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { formatCarbType } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
@@ -211,12 +212,45 @@ export const AllRegisteredUsers = () => {
     STATUS_TABS.map((tab) => [tab.key, allRegisteredUsers.filter((u) => tab.match(u)).length])
   );
 
+  // Registration dates are immutable, so both of these can be reconstructed
+  // exactly from createdAt. Active/Inactive/Completed can't get the same
+  // treatment — subscription status is overwritten in place with no history,
+  // so "how many were active 30 days ago" isn't answerable without a new
+  // daily-snapshot job.
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const usersThirtyDaysAgoCount = allRegisteredUsers.filter((u) => {
+    const created = new Date(u.createdAt || u.created_date);
+    return !Number.isNaN(created.getTime()) && created <= thirtyDaysAgo;
+  }).length;
+
+  const now = new Date();
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const newLastMonthCount = allRegisteredUsers.filter((u) => {
+    const created = new Date(u.createdAt || u.created_date);
+    return !Number.isNaN(created.getTime()) && created.getMonth() === lastMonthDate.getMonth() && created.getFullYear() === lastMonthDate.getFullYear();
+  }).length;
+
   const statCards = [
-    { label: "Total Users", value: allRegisteredUsers.length, icon: Users, tabKey: "all" },
+    {
+      label: "Total Users",
+      value: allRegisteredUsers.length,
+      icon: Users,
+      tabKey: "all",
+      change: percentChange(allRegisteredUsers.length, usersThirtyDaysAgoCount),
+      changeSuffix: "vs last month",
+    },
     { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck, tabKey: "active" },
     { label: "Inactive", value: tabCounts.inactive, icon: PauseCircle, tabKey: "inactive" },
     { label: "Completed", value: tabCounts.completed, icon: History, tabKey: "completed" },
-    { label: "New This Month", value: tabCounts.new, icon: UserPlus, tabKey: "new" },
+    {
+      label: "New This Month",
+      value: tabCounts.new,
+      icon: UserPlus,
+      tabKey: "new",
+      change: percentChange(tabCounts.new, newLastMonthCount),
+      changeSuffix: "vs last month",
+    },
   ];
 
   const activeTab = STATUS_TABS.find((tab) => tab.key === statusTab);
@@ -389,6 +423,7 @@ export const AllRegisteredUsers = () => {
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{card.value.toLocaleString()}</p>
                     <p className="text-sm text-gray-500">{card.label}</p>
+                    {card.change !== undefined && <ChangeBadge change={card.change} suffix={card.changeSuffix} />}
                   </div>
                 </button>
               ))}

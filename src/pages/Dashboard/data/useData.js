@@ -3,6 +3,7 @@ import axios from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionUtils";
 import { listenForUsersChanged } from "../../../utils/crossTabSync";
+import { percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 
 export const useData = () => {
   const token = sessionStorage.getItem("token");
@@ -25,6 +26,17 @@ export const useData = () => {
     return today.toISOString().split("T")[0];
   };
   const currentDate = getCurrentDate();
+
+  // Same day last week, not literally "yesterday" — Sundays have zero meal
+  // activity (no deliveries at all), so a plain day-over-day comparison would
+  // show a misleading spike every single Monday. Matches the comparison
+  // period already used on the Cancelled Meals and Delivered Meal Log pages.
+  const getSameDayLastWeek = () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return d.toISOString().split("T")[0];
+  };
+  const lastWeekDate = getSameDayLastWeek();
 
   // 1. Users & Ending Soon Query (Fetch only active users for ending soon check)
   const usersQuery = useQuery({
@@ -88,34 +100,66 @@ export const useData = () => {
         const created = new Date(u.createdAt);
         return !Number.isNaN(created.getTime()) && created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
       }).length;
-      return { count: users.length, newThisMonth };
+      // Registration dates are immutable, so "count of users who existed 30
+      // days ago" can be reconstructed exactly from createdAt — unlike
+      // subscription status (active/inactive), which has no history to replay.
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const countThirtyDaysAgo = users.filter((u) => {
+        const created = new Date(u.createdAt);
+        return !Number.isNaN(created.getTime()) && created <= thirtyDaysAgo;
+      }).length;
+      return { count: users.length, newThisMonth, countThirtyDaysAgo };
     },
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   });
 
-  // 2. Cancelled Requests Query
-  const cancelledQuery = useQuery({
-    queryKey: ['cancelledMeals', currentDate],
-    queryFn: async () => {
+  // getCancelledMeals responds 404 (not an empty array) when a date has no
+  // cancellations, so that case has to be caught here rather than just read.
+  const fetchCancelledCount = async (dateStr) => {
+    try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}subscription/cancelled-meals?date=${currentDate}`,
+        `${process.env.REACT_APP_API_URL}subscription/cancelled-meals?date=${dateStr}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data.length;
+    } catch (err) {
+      if (err.response?.status === 404) return 0;
+      throw err;
+    }
+  };
+
+  // 2. Cancelled Requests Query — today vs. the same weekday last week
+  const cancelledQuery = useQuery({
+    queryKey: ['cancelledMeals', currentDate],
+    queryFn: async () => {
+      const [count, previousCount] = await Promise.all([
+        fetchCancelledCount(currentDate),
+        fetchCancelledCount(lastWeekDate),
+      ]);
+      return { count, previousCount };
     },
     enabled: !!token,
   });
 
-  // 3. Delivery Counts Queries
+  const fetchDeliveryCount = async (dateStr, mealType) => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${dateStr}&mealType=${mealType}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data.length;
+  };
+
+  // 3. Delivery Counts Queries — today vs. the same weekday last week
   const deliveryLunchQuery = useQuery({
     queryKey: ['deliveryCount', 'lunch', currentDate],
     queryFn: async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${currentDate}&mealType=lunch`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data.length;
+      const [count, previousCount] = await Promise.all([
+        fetchDeliveryCount(currentDate, 'lunch'),
+        fetchDeliveryCount(lastWeekDate, 'lunch'),
+      ]);
+      return { count, previousCount };
     },
     enabled: !!token,
   });
@@ -123,24 +167,24 @@ export const useData = () => {
   const deliveryDinnerQuery = useQuery({
     queryKey: ['deliveryCount', 'dinner', currentDate],
     queryFn: async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}subscription/get-meal-delivery-details?date=${currentDate}&mealType=dinner`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data.length;
+      const [count, previousCount] = await Promise.all([
+        fetchDeliveryCount(currentDate, 'dinner'),
+        fetchDeliveryCount(lastWeekDate, 'dinner'),
+      ]);
+      return { count, previousCount };
     },
     enabled: !!token,
   });
 
-  // 4. Customisation Requests Query
+  // 4. Customisation Requests Query — today vs. the same weekday last week
   const customisationQuery = useQuery({
     queryKey: ['customisationRequests', currentDate],
     queryFn: async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}meal/get-customisation-requests?date=${currentDate}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data.length;
+      const [current, previous] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_URL}meal/get-customisation-requests?date=${currentDate}`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${process.env.REACT_APP_API_URL}meal/get-customisation-requests?date=${lastWeekDate}`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      return { count: current.data.length, previousCount: previous.data.length };
     },
     enabled: !!token,
   });
@@ -164,13 +208,28 @@ export const useData = () => {
 
   return {
     allRegisteredUsersCount: totalUsersQuery.data?.count || 0,
+    allRegisteredUsersChange: totalUsersQuery.data
+      ? percentChange(totalUsersQuery.data.count, totalUsersQuery.data.countThirtyDaysAgo)
+      : undefined,
     newUsersThisMonth: totalUsersQuery.data?.newThisMonth || 0,
     endingSoonCount: usersQuery.data?.endingSoonCount || 0,
     endingSoonUsers: usersQuery.data?.endingSoonUsers || [],
-    cancelledMealsCount: cancelledQuery.data || 0,
-    mealDeliveryListCountLunch: deliveryLunchQuery.data || 0,
-    mealDeliveryListCountDinner: deliveryDinnerQuery.data || 0,
-    customisationRequestCount: customisationQuery.data || 0,
+    cancelledMealsCount: cancelledQuery.data?.count || 0,
+    cancelledMealsChange: cancelledQuery.data
+      ? percentChange(cancelledQuery.data.count, cancelledQuery.data.previousCount)
+      : undefined,
+    mealDeliveryListCountLunch: deliveryLunchQuery.data?.count || 0,
+    mealDeliveryListCountLunchChange: deliveryLunchQuery.data
+      ? percentChange(deliveryLunchQuery.data.count, deliveryLunchQuery.data.previousCount)
+      : undefined,
+    mealDeliveryListCountDinner: deliveryDinnerQuery.data?.count || 0,
+    mealDeliveryListCountDinnerChange: deliveryDinnerQuery.data
+      ? percentChange(deliveryDinnerQuery.data.count, deliveryDinnerQuery.data.previousCount)
+      : undefined,
+    customisationRequestCount: customisationQuery.data?.count || 0,
+    customisationRequestChange: customisationQuery.data
+      ? percentChange(customisationQuery.data.count, customisationQuery.data.previousCount)
+      : undefined,
     weeklyCount: subscriptionsQuery.data?.weekly || 0,
     monthlyCount: subscriptionsQuery.data?.monthly || 0,
     trialCount: subscriptionsQuery.data?.trial || 0,

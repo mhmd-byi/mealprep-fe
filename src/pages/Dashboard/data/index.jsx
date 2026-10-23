@@ -5,10 +5,25 @@ import { Users, Settings2, XCircle, Clock, Truck, Crown } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { ChangeBadge } from "../../../components/common/ChangeBadge/ChangeBadge";
 
 const Spinner = () => <div className="w-4 h-4 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent" />;
 
-const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight, valueClassName = "text-gray-900" }) => {
+// Compact inline variant for cards that pack two numbers (Lunch/Dinner) into
+// one cell — ChangeBadge's own paragraph layout is too tall to stack twice there.
+const MiniTrend = ({ change, goodWhenUp = true }) => {
+  if (change === null || change === undefined) return null;
+  if (change === 0) return <span className="text-[10px] font-semibold text-gray-400">0%</span>;
+  const up = change > 0;
+  const good = up === goodWhenUp;
+  return (
+    <span className={`text-[10px] font-bold ${good ? "text-green-600" : "text-red-600"}`}>
+      {up ? "↑" : "↓"}{Math.abs(change)}%
+    </span>
+  );
+};
+
+const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight, valueClassName = "text-gray-900", change, goodWhenUp = true, changeSuffix = "vs last week" }) => {
   const Wrapper = onClick ? "button" : "div";
   return (
     <Wrapper
@@ -21,7 +36,14 @@ const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight,
       </div>
       <div className="flex-1 min-w-0">
         <p className={`text-xs font-medium ${highlight ? "text-red-500" : "text-gray-500"}`}>{label}</p>
-        {loading ? <Spinner /> : <div className={`text-xl font-bold ${valueClassName}`}>{value}</div>}
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <div className={`text-xl font-bold ${valueClassName}`}>{value}</div>
+            {change !== undefined && <ChangeBadge change={change} goodWhenUp={goodWhenUp} suffix={changeSuffix} />}
+          </>
+        )}
       </div>
     </Wrapper>
   );
@@ -30,11 +52,16 @@ const StatCell = ({ icon: Icon, tone, label, value, loading, onClick, highlight,
 export const Data = () => {
   const {
     allRegisteredUsersCount,
+    allRegisteredUsersChange,
     newUsersThisMonth,
     cancelledMealsCount,
+    cancelledMealsChange,
     mealDeliveryListCountDinner,
+    mealDeliveryListCountDinnerChange,
     mealDeliveryListCountLunch,
+    mealDeliveryListCountLunchChange,
     customisationRequestCount,
+    customisationRequestChange,
     endingSoonCount,
     endingSoonUsers,
     weeklyCount,
@@ -65,6 +92,8 @@ export const Data = () => {
           value={allRegisteredUsersCount}
           loading={loadingStates.users}
           onClick={() => navigate("/dashboard/all-registered-users")}
+          change={allRegisteredUsersChange}
+          changeSuffix="vs last month"
         />
 
         <StatCell
@@ -79,13 +108,19 @@ export const Data = () => {
                 <span className="flex gap-1 items-center text-xs font-medium text-gray-500">
                   <MealSlotIcon slot="lunch" />Lunch:
                 </span>
-                <span>{mealDeliveryListCountLunch}</span>
+                <span className="flex gap-1.5 items-center">
+                  {mealDeliveryListCountLunch}
+                  <MiniTrend change={mealDeliveryListCountLunchChange} />
+                </span>
               </div>
               <div className="flex justify-between items-center w-full">
                 <span className="flex gap-1 items-center text-xs font-medium text-gray-500">
                   <MealSlotIcon slot="dinner" />Dinner:
                 </span>
-                <span>{mealDeliveryListCountDinner}</span>
+                <span className="flex gap-1.5 items-center">
+                  {mealDeliveryListCountDinner}
+                  <MiniTrend change={mealDeliveryListCountDinnerChange} />
+                </span>
               </div>
             </div>
           }
@@ -98,6 +133,7 @@ export const Data = () => {
           value={customisationRequestCount}
           loading={loadingStates.customisation}
           onClick={() => navigate("/dashboard/get-list-of-customisation-request")}
+          change={customisationRequestChange}
         />
 
         <StatCell
@@ -107,6 +143,8 @@ export const Data = () => {
           value={cancelledMealsCount}
           loading={loadingStates.cancelled}
           onClick={() => navigate("/dashboard/user-cancel-request-list")}
+          change={cancelledMealsChange}
+          goodWhenUp={false}
         />
 
         <div className="flex items-start gap-3 p-4 w-full text-left">
