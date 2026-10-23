@@ -61,6 +61,25 @@ const CarbTypeBadge = ({ carbType }) => {
   );
 };
 
+// Matches All Registered Users' plan badge exactly, for visual consistency.
+const PLAN_STYLES = {
+  Weekly: "bg-green-100 text-green-800",
+  Monthly: "bg-blue-100 text-blue-800",
+  Trial: "bg-amber-100 text-amber-800",
+};
+const getPlanStyle = (plan) => {
+  const key = Object.keys(PLAN_STYLES).find((k) => plan?.includes(k));
+  return key ? PLAN_STYLES[key] : "bg-gray-100 text-gray-600";
+};
+const PlanBadge = ({ plan }) =>
+  plan ? (
+    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getPlanStyle(plan)}`}>
+      {plan}
+    </span>
+  ) : (
+    <span className="text-sm text-gray-400">—</span>
+  );
+
 const InitialsAvatar = ({ name, className = "w-9 h-9" }) => (
   <div className={`flex flex-shrink-0 justify-center items-center text-xs font-bold text-green-800 bg-green-100 rounded-full ${className}`}>
     {getInitials(name)}
@@ -639,9 +658,7 @@ const ScheduledMealDeliveryList = () => {
                                     <CarbTypeBadge carbType={meal?.carbType} />
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
-                                    <div className="break-words">
-                                      {meal?.plan}
-                                    </div>
+                                    <PlanBadge plan={meal?.plan} />
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <div className="break-words">
@@ -699,9 +716,9 @@ const ScheduledMealDeliveryList = () => {
                                   <span className="font-medium text-gray-500">Carb Type:</span>
                                   <CarbTypeBadge carbType={meal?.carbType} />
                                 </div>
-                                <div className="flex justify-between pb-2 border-b">
+                                <div className="flex justify-between items-center pb-2 border-b">
                                   <span className="font-medium text-gray-500">Selected Plan:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.plan || ""}</span>
+                                  <PlanBadge plan={meal?.plan} />
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Allergy:</span>
