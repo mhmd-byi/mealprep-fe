@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Users, XCircle, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Users, XCircle, Search, Download, Printer } from "lucide-react";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
@@ -86,6 +86,20 @@ const NameList = ({ rows, emptyLabel }) => {
 export const DeliveredMealLog = () => {
   const { date, setDate, data, previousData, isLoading, error, todayDateString } = useDeliveredMealLog();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  // Printing should include every row, not held up by anything else on the page.
+  useEffect(() => {
+    if (!isPrinting) return;
+    const timer = setTimeout(() => window.print(), 50);
+    return () => clearTimeout(timer);
+  }, [isPrinting]);
+
+  useEffect(() => {
+    const handleAfterPrint = () => setIsPrinting(false);
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => window.removeEventListener("afterprint", handleAfterPrint);
+  }, []);
 
   const query = searchQuery.trim().toLowerCase();
   const matches = (row) => !query || row.name.toLowerCase().includes(query);
@@ -94,19 +108,62 @@ export const DeliveredMealLog = () => {
   const dinnerRows = (data?.dinner?.deliveries || []).filter(matches);
   const endedRows = (data?.endedSubscriptions || []).filter(matches);
 
+  const exportToCSV = () => {
+    const headers = ["Section", "Name", "Mobile", "Dietary Type", "Plan", "Status", "Date/Time"];
+    const rows = [
+      ...lunchRows.map((r) => ["Lunch Delivered", r.name, r.mobile || "", r.dietaryType || "", "", "", formatDateTime(r.createdAt || r.date)]),
+      ...dinnerRows.map((r) => ["Dinner Delivered", r.name, r.mobile || "", r.dietaryType || "", "", "", formatDateTime(r.createdAt || r.date)]),
+      ...endedRows.map((r) => ["Subscription Ended", r.name, r.mobile || "", "", r.plan || "", r.status || "", formatDateTime(r.endedAt)]),
+    ];
+    const csvContent = [headers.join(","), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", `delivered-meal-log-${date}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-4 w-full text-left sm:p-6 md:p-8">
       <div className="mx-auto space-y-6 w-full">
-        <div>
-          <p className="text-sm text-gray-500">Dashboard &rsaquo; Meal Delivery List &rsaquo; Delivered</p>
-          <h2 className="text-2xl font-bold text-gray-900">Delivered Meal Log</h2>
-          <p className="text-sm text-gray-500">
-            What actually went out on any day — pick a date to see who got a meal delivered, and whose plan ended that day.
-          </p>
+        <div className="flex flex-wrap gap-3 justify-between items-start print:hidden">
+          <div>
+            <p className="text-sm text-gray-500">Dashboard &rsaquo; Meal Delivery List &rsaquo; Delivered</p>
+            <h2 className="text-2xl font-bold text-gray-900">Delivered Meal Log</h2>
+            <p className="text-sm text-gray-500">
+              What actually went out on any day — pick a date to see who got a meal delivered, and whose plan ended that day.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={exportToCSV}
+              className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black whitespace-nowrap"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsPrinting(true)}
+              className="flex gap-2 items-center px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+            >
+              <Printer className="w-4 h-4" />
+              Print / PDF
+            </button>
+          </div>
         </div>
 
+        {/* Screen-only title, since the interactive header above is hidden when printing */}
+        <h2 className="hidden mb-2 text-xl font-bold text-left print:block">Delivered Meal Log</h2>
+        {searchQuery && (
+          <p className="hidden mb-3 text-sm text-left text-gray-500 print:block">Search: "{searchQuery}"</p>
+        )}
+
         <div className="p-5 space-y-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 print:hidden">
             <div>
               <label className="block mb-1 text-xs font-medium text-gray-500">Date</label>
               <input
