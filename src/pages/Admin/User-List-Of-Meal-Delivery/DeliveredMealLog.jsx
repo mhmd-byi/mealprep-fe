@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, XCircle, Search, Download, Printer } from "lucide-react";
+import { Users, XCircle, Search, Download, Printer, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
@@ -53,7 +53,16 @@ const NameCell = ({ name }) => (
   </div>
 );
 
-const NameList = ({ rows, emptyLabel }) => {
+const SortIcon = ({ direction }) => {
+  if (!direction) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+  return direction === "asc" ? (
+    <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+  ) : (
+    <ChevronDown className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
+  );
+};
+
+const NameList = ({ rows, emptyLabel, nameSort, onToggleNameSort }) => {
   if (rows.length === 0) {
     return <p className="py-6 text-sm text-center text-gray-400">{emptyLabel}</p>;
   }
@@ -62,7 +71,12 @@ const NameList = ({ rows, emptyLabel }) => {
       <table className="w-full text-sm divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Name</th>
+            <th
+              className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase cursor-pointer hover:text-theme-color-1"
+              onClick={onToggleNameSort}
+            >
+              Name <SortIcon direction={nameSort} />
+            </th>
             <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Type</th>
           </tr>
         </thead>
@@ -87,6 +101,7 @@ export const DeliveredMealLog = () => {
   const { date, setDate, data, previousData, isLoading, error, todayDateString } = useDeliveredMealLog();
   const [searchQuery, setSearchQuery] = useState("");
   const [isPrinting, setIsPrinting] = useState(false);
+  const [nameSort, setNameSort] = useState(null); // null | "asc" | "desc"
 
   // Printing should include every row, not held up by anything else on the page.
   useEffect(() => {
@@ -104,9 +119,18 @@ export const DeliveredMealLog = () => {
   const query = searchQuery.trim().toLowerCase();
   const matches = (row) => !query || row.name.toLowerCase().includes(query);
 
-  const lunchRows = (data?.lunch?.deliveries || []).filter(matches);
-  const dinnerRows = (data?.dinner?.deliveries || []).filter(matches);
-  const endedRows = (data?.endedSubscriptions || []).filter(matches);
+  const toggleNameSort = () => setNameSort((prev) => (prev === "asc" ? "desc" : "asc"));
+  const sortByName = (rows) => {
+    if (!nameSort) return rows;
+    return [...rows].sort((a, b) => {
+      const cmp = (a.name || "").localeCompare(b.name || "");
+      return nameSort === "asc" ? cmp : -cmp;
+    });
+  };
+
+  const lunchRows = sortByName((data?.lunch?.deliveries || []).filter(matches));
+  const dinnerRows = sortByName((data?.dinner?.deliveries || []).filter(matches));
+  const endedRows = sortByName((data?.endedSubscriptions || []).filter(matches));
 
   const exportToCSV = () => {
     const headers = ["Section", "Name", "Mobile", "Dietary Type", "Plan", "Status", "Date/Time"];
@@ -233,14 +257,14 @@ export const DeliveredMealLog = () => {
                 <MealSlotIcon slot="lunch" />
                 <p className="font-bold text-gray-900">Lunch Deliveries ({lunchRows.length})</p>
               </div>
-              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." />
+              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." nameSort={nameSort} onToggleNameSort={toggleNameSort} />
             </div>
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
               <div className="flex gap-2 items-center p-4 border-b border-gray-100">
                 <MealSlotIcon slot="dinner" />
                 <p className="font-bold text-gray-900">Dinner Deliveries ({dinnerRows.length})</p>
               </div>
-              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." />
+              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." nameSort={nameSort} onToggleNameSort={toggleNameSort} />
             </div>
           </div>
         )}
@@ -258,7 +282,12 @@ export const DeliveredMealLog = () => {
                 <table className="w-full text-sm divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Name</th>
+                      <th
+                        className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase cursor-pointer hover:text-theme-color-1"
+                        onClick={toggleNameSort}
+                      >
+                        Name <SortIcon direction={nameSort} />
+                      </th>
                       <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Mobile</th>
                       <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Plan</th>
                       <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Status</th>
