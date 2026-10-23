@@ -795,6 +795,12 @@ const ScheduledMealDeliveryList = () => {
                     <p className="flex gap-1.5 items-center text-gray-500"><Phone className="w-3.5 h-3.5" />Mobile</p>
                     <p className="font-semibold">{selectedUser.mobile}</p>
                   </div>
+                  <div>
+                    <p className="flex gap-1.5 items-center text-gray-500"><CalendarDays className="w-3.5 h-3.5" />Registered On</p>
+                    <p className="font-semibold">
+                      {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                    </p>
+                  </div>
                   <div className="col-span-2">
                     <p className="flex gap-1.5 items-center text-gray-500"><MapPin className="w-3.5 h-3.5" />Address</p>
                     <p className="font-semibold">{selectedUser.postalAddress}</p>
