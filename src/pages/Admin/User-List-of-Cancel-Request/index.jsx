@@ -3,6 +3,7 @@ import axios from "axios";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { UserDetailsPopup } from "../../../components/common/UserDetailsPopup/UserDetailsPopup";
+import Popup from "../../../components/common/Popup/Popup";
 import {
   CalendarDays,
   Search,
@@ -16,6 +17,7 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  Plus,
 } from "lucide-react";
 
 const getLocalDateKey = (date = new Date()) => {
@@ -76,6 +78,87 @@ export const UserListWithCancelRequest = () => {
   const [previousWeekMeals, setPreviousWeekMeals] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [cancelForm, setCancelForm] = useState({ mealType: "lunch", startDate: "", endDate: "" });
+  const [cancelError, setCancelError] = useState(null);
+  const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
+
+  // Lazy-loaded — only fetched the first time the modal is actually opened.
+  useEffect(() => {
+    if (!showCreateModal || allUsers.length > 0) return;
+    const fetchUsers = async () => {
+      try {
+        setIsFetchingUsers(true);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}user`, {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+        });
+        setAllUsers(Array.isArray(response.data?.users) ? response.data.users : []);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setIsFetchingUsers(false);
+      }
+    };
+    fetchUsers();
+  }, [showCreateModal, allUsers.length]);
+
+  const customerMatches = (() => {
+    const q = customerSearch.trim().toLowerCase();
+    if (q.length < 2) return [];
+    return allUsers.filter((u) => {
+      const fullName = `${u.firstName || ""} ${u.lastName || ""}`.toLowerCase();
+      return fullName.includes(q) || (u.mobile || "").includes(q) || (u.email || "").toLowerCase().includes(q);
+    }).slice(0, 20);
+  })();
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    setCustomerSearch("");
+    setSelectedCustomer(null);
+    setCancelForm({ mealType: "lunch", startDate: "", endDate: "" });
+    setCancelError(null);
+  };
+
+  const handleCreateCancellation = async () => {
+    if (!selectedCustomer) {
+      setCancelError("Select a customer first.");
+      return;
+    }
+    if (!cancelForm.startDate || !cancelForm.endDate) {
+      setCancelError("Pick a start and end date.");
+      return;
+    }
+    setCancelError(null);
+    setIsSubmittingCancel(true);
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}subscription/cancel-request`,
+        {
+          userId: selectedCustomer._id,
+          startDate: cancelForm.startDate,
+          endDate: cancelForm.endDate,
+          mealType: cancelForm.mealType,
+        },
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
+      );
+      closeCreateModal();
+      fetchCancelledMeals(selectedDate);
+    } catch (err) {
+      const data = err.response?.data;
+      setCancelError(
+        (Array.isArray(data?.errors) ? data.errors.join(" ") : null) ||
+        data?.message ||
+        "Failed to submit cancellation."
+      );
+    } finally {
+      setIsSubmittingCancel(false);
+    }
+  };
 
   // Printing should include every filtered row, not just the current page.
   useEffect(() => {
@@ -281,9 +364,19 @@ export const UserListWithCancelRequest = () => {
     <DashboardLayoutComponent>
       <div className="p-4 w-full text-left sm:p-6 md:p-8">
         <div className="mx-auto w-full space-y-6">
-          <div className="print:hidden">
-            <h2 className="text-2xl font-bold text-gray-900">Cancelled Meals</h2>
-            <p className="text-sm text-gray-500">View and manage all cancelled meal requests</p>
+          <div className="flex flex-wrap gap-3 justify-between items-start print:hidden">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Cancelled Meals</h2>
+              <p className="text-sm text-gray-500">View and manage all cancelled meal requests</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Cancel Meals for Customer
+            </button>
           </div>
 
           <div className="p-5 space-y-4 bg-white rounded-2xl border border-gray-100 shadow-sm print:hidden">
@@ -521,6 +614,117 @@ export const UserListWithCancelRequest = () => {
       userId={selectedUserId}
       isOpen={!!selectedUserId}
       onClose={() => setSelectedUserId(null)}
+    />
+
+    <Popup
+      isOpen={showCreateModal}
+      onClose={closeCreateModal}
+      title="Cancel Meals for a Customer"
+      content={
+        <div className="space-y-4">
+          {!selectedCustomer ? (
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Find Customer</label>
+              <input
+                type="text"
+                autoFocus
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+                placeholder="Search by name, mobile or email..."
+                autoComplete="off"
+                className={inputClass}
+              />
+              {customerSearch.trim().length >= 2 && (
+                <div className="overflow-y-auto absolute z-10 mt-1 w-full max-h-64 bg-white rounded-lg border border-gray-300 shadow-xl">
+                  {isFetchingUsers ? (
+                    <div className="px-4 py-3 text-sm text-gray-500">Loading customers...</div>
+                  ) : customerMatches.length > 0 ? (
+                    <ul>
+                      {customerMatches.map((u) => (
+                        <li
+                          key={u._id}
+                          onClick={() => { setSelectedCustomer(u); setCustomerSearch(""); }}
+                          className="px-4 py-3 border-b cursor-pointer last:border-b-0 hover:bg-gray-100"
+                        >
+                          <p className="text-sm font-medium text-gray-900">{u.firstName} {u.lastName}</p>
+                          <p className="text-xs text-gray-500">{u.mobile} &middot; {u.email}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="px-4 py-3 text-sm text-gray-500">No customers found</div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{selectedCustomer.firstName} {selectedCustomer.lastName}</p>
+                <p className="text-xs text-gray-500">{selectedCustomer.mobile} &middot; {selectedCustomer.email}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedCustomer(null)}
+                className="text-xs font-semibold text-theme-color-1 hover:underline"
+              >
+                Change
+              </button>
+            </div>
+          )}
+
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Meal Type</label>
+            <select
+              value={cancelForm.mealType}
+              onChange={(e) => setCancelForm((p) => ({ ...p, mealType: e.target.value }))}
+              className={inputClass}
+            >
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Start Date</label>
+              <input
+                type="date"
+                min={getLocalDateKey()}
+                value={cancelForm.startDate}
+                onChange={(e) => setCancelForm((p) => ({ ...p, startDate: e.target.value }))}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">End Date</label>
+              <input
+                type="date"
+                min={cancelForm.startDate || getLocalDateKey()}
+                value={cancelForm.endDate}
+                onChange={(e) => setCancelForm((p) => ({ ...p, endDate: e.target.value }))}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-500">
+            Subject to the same rules as a customer cancelling their own meal — same-day lunch must be
+            cancelled before 10:30 AM, dinner before 4:00 PM, and past dates can't be cancelled.
+          </p>
+
+          {cancelError && <p className="text-sm text-red-600">{cancelError}</p>}
+        </div>
+      }
+      buttons={[
+        { label: "Cancel", onClick: closeCreateModal, className: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
+        {
+          label: isSubmittingCancel ? "Submitting..." : "Submit Cancellation",
+          onClick: handleCreateCancellation,
+          className: "bg-theme-color-1 text-white hover:bg-black"
+        }
+      ]}
     />
     </>
   );
