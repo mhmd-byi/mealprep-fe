@@ -9,6 +9,7 @@ import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { DeliveredMealLog } from "./DeliveredMealLog";
+import { formatCarbType, getCarbTypeColor } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
   ChevronDown,
@@ -40,6 +41,18 @@ const getInitials = (name) =>
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+const CarbTypeBadge = ({ carbType }) => {
+  const color = getCarbTypeColor(carbType);
+  return (
+    <span
+      className="inline-block px-2.5 py-1 text-xs font-semibold whitespace-nowrap rounded-full"
+      style={{ backgroundColor: `${color}1a`, color }}
+    >
+      {formatCarbType(carbType)}
+    </span>
+  );
+};
 
 const InitialsAvatar = ({ name, className = "w-9 h-9" }) => (
   <div className={`flex flex-shrink-0 justify-center items-center text-xs font-bold text-green-800 bg-green-100 rounded-full ${className}`}>
@@ -289,7 +302,7 @@ const ScheduledMealDeliveryList = () => {
       meal.mobile,
       meal.address,
       formatDietLabel(meal),
-      meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1),
+      formatCarbType(meal?.carbType),
       meal.allergy,
       meal.plan,
       `Lunch: ${meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: ${meal.dinnerMeals + meal.nextDayDinnerMeals}`,
@@ -568,9 +581,7 @@ const ScheduledMealDeliveryList = () => {
                                     </div>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
-                                    <div className="break-words">
-                                      {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                    </div>
+                                    <CarbTypeBadge carbType={meal?.carbType} />
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <div className="break-words">
@@ -629,11 +640,9 @@ const ScheduledMealDeliveryList = () => {
                                     <VegNonVegIcon value={meal.dietaryPreference || meal.mealType} className="ml-2" />
                                   </span>
                                 </div>
-                                <div className="flex justify-between pb-2 border-b">
+                                <div className="flex justify-between items-center pb-2 border-b">
                                   <span className="font-medium text-gray-500">Carb Type:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                    {meal?.carbType?.charAt(0).toUpperCase() + meal?.carbType?.slice(1)}
-                                  </span>
+                                  <CarbTypeBadge carbType={meal?.carbType} />
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Selected Plan:</span>
