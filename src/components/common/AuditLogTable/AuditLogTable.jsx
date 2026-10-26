@@ -1,5 +1,13 @@
 const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
+// "update" keeps the original blue look; create/cancel get their own badge color.
+const ACTION_BADGE_STYLES = {
+  create: "bg-green-100 text-green-700",
+  update: "bg-blue-100 text-blue-700",
+  cancel: "bg-red-100 text-red-700",
+};
+const getActionBadgeStyle = (action) => ACTION_BADGE_STYLES[action] || ACTION_BADGE_STYLES.update;
+
 const formatDateTime = (dateValue) => {
   if (!dateValue) return "—";
   return new Date(dateValue).toLocaleString(undefined, {
@@ -42,36 +50,38 @@ export const AuditLogTable = ({ logs, isLoading, scopeLabel, showCustomer = fals
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {logs.map((log) => (
-            <tr key={log._id} className="align-top">
-              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{formatDateTime(log.createdAt)}</td>
-              {showCustomer && (
+          {logs.map((log) => {
+            return (
+              <tr key={log._id} className="align-top">
+                <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{formatDateTime(log.createdAt)}</td>
+                {showCustomer && (
+                  <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
+                    {onCustomerClick && log.userId?._id ? (
+                      <button
+                        type="button"
+                        onClick={() => onCustomerClick(log.userId._id)}
+                        className="font-medium text-theme-color-1 hover:underline"
+                      >
+                        {customerLabel(log)}
+                      </button>
+                    ) : (
+                      customerLabel(log)
+                    )}
+                  </td>
+                )}
+                <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{log.adminName}</td>
                 <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
-                  {onCustomerClick && log.userId?._id ? (
-                    <button
-                      type="button"
-                      onClick={() => onCustomerClick(log.userId._id)}
-                      className="font-medium text-theme-color-1 hover:underline"
-                    >
-                      {customerLabel(log)}
-                    </button>
-                  ) : (
-                    customerLabel(log)
-                  )}
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getActionBadgeStyle(log.action)}`}>
+                    {capitalize(log.action)}
+                  </span>
                 </td>
-              )}
-              <td className="px-4 py-4 text-sm text-left text-gray-700 whitespace-nowrap">{log.adminName}</td>
-              <td className="px-4 py-4 text-sm text-left whitespace-nowrap">
-                <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                  {capitalize(log.action)}
-                </span>
-              </td>
-              <td className="px-4 py-4 text-sm text-left text-gray-700 max-w-xs">{log.reason}</td>
-              <td className="px-4 py-4 text-xs text-left text-gray-500 max-w-sm">
-                <FieldDiff before={log.before} after={log.after} />
-              </td>
-            </tr>
-          ))}
+                <td className="px-4 py-4 text-sm text-left text-gray-700 max-w-xs">{log.reason}</td>
+                <td className="px-4 py-4 text-xs text-left text-gray-500 max-w-sm">
+                  <FieldDiff before={log.before} after={log.after} />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
