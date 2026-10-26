@@ -89,15 +89,18 @@ export const UserListWithCancelRequest = () => {
   const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
 
   // Lazy-loaded — only fetched the first time the modal is actually opened.
+  // activeOnly=true restricts this to customers who actually have a meal
+  // balance to cancel — an inactive/completed/queued-only customer has
+  // nothing scheduled, so there's nothing for this tool to cancel for them.
   useEffect(() => {
     if (!showCreateModal || allUsers.length > 0) return;
     const fetchUsers = async () => {
       try {
         setIsFetchingUsers(true);
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}user`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}user/all?activeOnly=true`, {
           headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
         });
-        setAllUsers(Array.isArray(response.data?.users) ? response.data.users : []);
+        setAllUsers(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         console.error("Error fetching users:", err);
       } finally {
