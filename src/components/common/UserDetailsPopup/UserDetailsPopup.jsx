@@ -4,7 +4,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import Popup from "../Popup/Popup";
 import { VegNonVegIcon } from "../VegNonVegIcon/VegNonVegIcon";
-import { formatCarbType } from "../../../carbTypeDisplay";
+import { PlanBadge } from "../PlanBadge/PlanBadge";
+import { CarbTypeBadge } from "../CarbTypeBadge/CarbTypeBadge";
 import { MealSlotIcon } from "../MealSlotIcon/MealSlotIcon";
 import { CalendarDays, CreditCard, Droplets, Utensils, History, Sun, Pencil, Package } from "lucide-react";
 
@@ -12,7 +13,7 @@ const STATUS_STYLES = {
   Active: "bg-green-100 text-green-700",
   Queued: "bg-amber-100 text-amber-700",
   Cancelled: "bg-red-100 text-red-700",
-  Completed: "bg-gray-100 text-gray-700",
+  Completed: "bg-red-100 text-red-700",
   "No Plan": "bg-gray-100 text-gray-500",
 };
 
@@ -198,14 +199,14 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 mt-3 sm:grid-cols-2">
                   <div className="space-y-4">
-                    <SubscriptionField icon={Package} label="Plan">{latestSub?.plan || "No active plan"}</SubscriptionField>
+                    <SubscriptionField icon={Package} label="Plan"><PlanBadge plan={latestSub?.plan} /></SubscriptionField>
                     <SubscriptionField icon={History} label="Status">
                       {latestSub ? (
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                             latestSub.status === "active" ? "bg-green-50 text-green-700" :
                             latestSub.status === "queued" ? "bg-amber-50 text-amber-700" :
-                            latestSub.status === "cancelled" ? "bg-red-50 text-red-700" :
+                            latestSub.status === "cancelled" || latestSub.status === "completed" ? "bg-red-50 text-red-700" :
                             "bg-gray-100 text-gray-700"
                           }`}
                         >
@@ -230,7 +231,7 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                       </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
-                      {formatCarbType(latestSub?.carbType)}
+                      <CarbTypeBadge carbType={latestSub?.carbType} />
                     </SubscriptionField>
                   </div>
                 </div>
@@ -256,8 +257,8 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                   {user.subscriptions && user.subscriptions.length > 0 ? (
                     [...user.subscriptions].reverse().map((sub, i) => (
                       <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
-                        <div className="flex justify-between font-bold text-theme-color-1">
-                          <span>{sub.plan}</span>
+                        <div className="flex justify-between items-center">
+                          <PlanBadge plan={sub.plan} />
                           {sub.status === "queued" && (
                             <button
                               onClick={() => handleCancelQueuedPlan(sub._id)}
@@ -289,7 +290,7 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                               <VegNonVegIcon value={sub.mealType} />
                             </span>
                           </div>
-                          <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
+                          <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}

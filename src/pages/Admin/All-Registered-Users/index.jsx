@@ -9,7 +9,8 @@ import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
-import { formatCarbType } from "../../../carbTypeDisplay";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import {
   ChevronUp,
   ChevronDown,
@@ -37,19 +38,8 @@ const STATUS_STYLES = {
   Active: "bg-green-100 text-green-700",
   Queued: "bg-amber-100 text-amber-700",
   Cancelled: "bg-red-100 text-red-700",
-  Completed: "bg-gray-100 text-gray-700",
+  Completed: "bg-red-100 text-red-700",
   "No Plan": "bg-gray-100 text-gray-500",
-};
-
-const PLAN_STYLES = {
-  Weekly: "bg-green-100 text-green-800",
-  Monthly: "bg-blue-100 text-blue-800",
-  Trial: "bg-amber-100 text-amber-800",
-};
-
-const getPlanStyle = (plan) => {
-  const key = Object.keys(PLAN_STYLES).find((k) => plan?.includes(k));
-  return key ? PLAN_STYLES[key] : "bg-gray-100 text-gray-600";
 };
 
 const getLatestSub = (user) =>
@@ -626,9 +616,7 @@ export const AllRegisteredUsers = () => {
                               <td className="px-4 py-4 text-sm text-gray-700 max-w-[220px] break-words">{user.postalAddress}</td>
                               <td className="px-4 py-4 whitespace-nowrap">
                                 {latestSub ? (
-                                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getPlanStyle(latestSub.plan)}`}>
-                                    {latestSub.plan}
-                                  </span>
+                                  <PlanBadge plan={latestSub.plan} />
                                 ) : (
                                   <span className="text-sm text-gray-400">No active plan</span>
                                 )}
@@ -850,14 +838,14 @@ export const AllRegisteredUsers = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-y-4 gap-x-8 p-5 mt-3 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
                   <div className="space-y-4">
-                    <SubscriptionField icon={Package} label="Plan">{detailLatestSub?.plan || "No active plan"}</SubscriptionField>
+                    <SubscriptionField icon={Package} label="Plan"><PlanBadge plan={detailLatestSub?.plan} /></SubscriptionField>
                     <SubscriptionField icon={Clock} label="Status">
                       {detailLatestSub ? (
                         <span
                           className={`flex gap-1.5 items-center w-fit px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                             detailLatestSub.status === "active" ? "bg-green-50 text-green-700" :
                             detailLatestSub.status === "queued" ? "bg-amber-50 text-amber-700" :
-                            detailLatestSub.status === "cancelled" ? "bg-red-50 text-red-700" :
+                            detailLatestSub.status === "cancelled" || detailLatestSub.status === "completed" ? "bg-red-50 text-red-700" :
                             "bg-gray-100 text-gray-700"
                           }`}
                         >
@@ -883,7 +871,7 @@ export const AllRegisteredUsers = () => {
                       </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
-                      {formatCarbType(detailLatestSub?.carbType)}
+                      <CarbTypeBadge carbType={detailLatestSub?.carbType} />
                     </SubscriptionField>
                   </div>
                 </div>
@@ -909,8 +897,8 @@ export const AllRegisteredUsers = () => {
                   {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
                     [...selectedUser.subscriptions].reverse().map((sub, i) => (
                       <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
-                        <div className="flex justify-between font-bold text-theme-color-1">
-                          <span>{sub.plan}</span>
+                        <div className="flex justify-between items-center">
+                          <PlanBadge plan={sub.plan} />
                           {sub.status === "queued" && (
                             <button
                               onClick={() => handleCancelPlan(sub._id, `${selectedUser.firstName} ${selectedUser.lastName}`)}
@@ -941,7 +929,7 @@ export const AllRegisteredUsers = () => {
                               <VegNonVegIcon value={sub.mealType} />
                             </span>
                           </div>
-                          <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
+                          <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                           )}

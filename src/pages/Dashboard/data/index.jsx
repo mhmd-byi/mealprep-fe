@@ -6,6 +6,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { ChangeBadge } from "../../../components/common/ChangeBadge/ChangeBadge";
+import { getPlanDotColor } from "../../../planDisplay";
 
 const Spinner = () => <div className="w-4 h-4 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent" />;
 
@@ -158,15 +159,21 @@ export const Data = () => {
             ) : (
               <div className="space-y-0.5">
                 <button type="button" onClick={() => handlePlanClick("Weekly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="text-xs font-medium text-gray-500">Weekly:</span>
+                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
+                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Weekly")}`} />Weekly:
+                  </span>
                   <span className="text-xl font-bold text-gray-900">{weeklyCount}</span>
                 </button>
                 <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="text-xs font-medium text-gray-500">Monthly:</span>
+                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
+                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Monthly")}`} />Monthly:
+                  </span>
                   <span className="text-xl font-bold text-gray-900">{monthlyCount}</span>
                 </button>
                 <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="text-xs font-medium text-gray-500">Trial:</span>
+                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
+                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Trial")}`} />Trial:
+                  </span>
                   <span className="text-xl font-bold text-gray-900">{trialCount}</span>
                 </button>
               </div>

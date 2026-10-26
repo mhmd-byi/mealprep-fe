@@ -3,6 +3,7 @@ import { Users, XCircle, Search, Download, Printer, ChevronUp, ChevronDown, Chev
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { useDeliveredMealLog } from "./useDeliveredMealLog";
 
 const inputClass =
@@ -301,9 +302,9 @@ export const DeliveredMealLog = () => {
                           <NameCell name={row.name} />
                         </td>
                         <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{row.mobile || "—"}</td>
-                        <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{row.plan}</td>
+                        <td className="px-3 py-2 whitespace-nowrap"><PlanBadge plan={row.plan} /></td>
                         <td className="px-3 py-2 whitespace-nowrap">
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.status === "cancelled" || row.status === "completed" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
                             {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                           </span>
                         </td>
