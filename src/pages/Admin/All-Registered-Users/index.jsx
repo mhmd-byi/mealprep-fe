@@ -34,6 +34,19 @@ import {
 } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 
+// A blank field is the obvious "no allergy" case, but customers often type
+// "No" / "None" / "N/A" / "Nil" into the field instead of leaving it empty —
+// those should count as no allergy too, not get lumped in with real ones.
+const NO_ALLERGY_TEXT = new Set([
+  "no", "none", "na", "nil", "nill", "nothing",
+  "noallergy", "noallergies", "noknownallergy", "noknownallergies",
+  "noneknown", "notapplicable",
+]);
+const hasAllergy = (value) => {
+  const normalized = (value || "").trim().toLowerCase().replace(/[^a-z]/g, "");
+  return normalized.length > 0 && !NO_ALLERGY_TEXT.has(normalized);
+};
+
 const STATUS_STYLES = {
   Active: "bg-green-100 text-green-700",
   Queued: "bg-amber-100 text-amber-700",
@@ -276,7 +289,7 @@ export const AllRegisteredUsers = () => {
     const dietMatch = dietFilter === "All" || latestSub?.mealType === dietFilter;
     const allergyMatch =
       allergyFilter === "All" ||
-      (allergyFilter === "Has" ? Boolean(latestSub?.allergy) : !latestSub?.allergy);
+      (allergyFilter === "Has" ? hasAllergy(latestSub?.allergy) : !hasAllergy(latestSub?.allergy));
 
     // Coverage isn't a stored field — a subscription's lunch/dinner split only
     // exists as remaining meal counts, so "lunch plan" / "dinner plan" / "both"
