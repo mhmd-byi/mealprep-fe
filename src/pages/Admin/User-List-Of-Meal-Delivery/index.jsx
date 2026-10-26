@@ -10,7 +10,9 @@ import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVe
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { DeliveredMealLog } from "./DeliveredMealLog";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
-import { formatCarbType, getCarbTypeColor } from "../../../carbTypeDisplay";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
+import { formatCarbType } from "../../../carbTypeDisplay";
 import {
   ChevronUp,
   ChevronDown,
@@ -27,7 +29,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  CreditCard,
   History,
 } from "lucide-react";
 
@@ -48,37 +49,6 @@ const getInitials = (name) =>
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-const CarbTypeBadge = ({ carbType }) => {
-  const color = getCarbTypeColor(carbType);
-  return (
-    <span
-      className="inline-block px-2.5 py-1 text-xs font-semibold whitespace-nowrap rounded-full"
-      style={{ backgroundColor: `${color}1a`, color }}
-    >
-      {formatCarbType(carbType)}
-    </span>
-  );
-};
-
-// Matches All Registered Users' plan badge exactly, for visual consistency.
-const PLAN_STYLES = {
-  Weekly: "bg-green-100 text-green-800",
-  Monthly: "bg-blue-100 text-blue-800",
-  Trial: "bg-amber-100 text-amber-800",
-};
-const getPlanStyle = (plan) => {
-  const key = Object.keys(PLAN_STYLES).find((k) => plan?.includes(k));
-  return key ? PLAN_STYLES[key] : "bg-gray-100 text-gray-600";
-};
-const PlanBadge = ({ plan }) =>
-  plan ? (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getPlanStyle(plan)}`}>
-      {plan}
-    </span>
-  ) : (
-    <span className="text-sm text-gray-400">—</span>
-  );
 
 const InitialsAvatar = ({ name, className = "w-9 h-9" }) => (
   <div className={`flex flex-shrink-0 justify-center items-center text-xs font-bold text-green-800 bg-green-100 rounded-full ${className}`}>
@@ -826,16 +796,26 @@ const ScheduledMealDeliveryList = () => {
                     {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
                       [...selectedUser.subscriptions].reverse().map((sub, i) => (
                         <div key={i} className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
-                          <div className="flex gap-1.5 justify-between items-center font-bold text-theme-color-1">
-                            <span className="flex gap-1.5 items-center"><CreditCard className="w-4 h-4" />{sub.plan}</span>
-                            <span>₹{sub.price}</span>
+                          <div className="flex gap-1.5 justify-between items-center">
+                            <PlanBadge plan={sub.plan} />
+                            <span className="font-bold text-theme-color-1">₹{sub.price}</span>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                            <div><span className="text-gray-500">Status:</span> <span className={`${sub.status === 'Active' ? 'text-green-600' : 'text-gray-600'} font-bold`}>{sub.status}</span></div>
+                          <div className="grid grid-cols-2 gap-2 items-center mt-2 text-xs">
+                            <div>
+                              <span className="text-gray-500">Status:</span>{" "}
+                              <span className={`font-bold ${
+                                sub.status === "active" ? "text-green-600" :
+                                sub.status === "queued" ? "text-amber-600" :
+                                sub.status === "cancelled" || sub.status === "completed" ? "text-red-600" :
+                                "text-gray-600"
+                              }`}>
+                                {sub.status?.charAt(0).toUpperCase() + sub.status?.slice(1)}
+                              </span>
+                            </div>
                             <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
                             <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
                             <div className="flex items-center"><span className="text-gray-500">Meals:</span>&nbsp;{sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}<VegNonVegIcon value={sub.mealType} className="ml-2" /></div>
-                            <div><span className="text-gray-500">Carbs:</span> {sub.carbType?.charAt(0).toUpperCase() + sub.carbType?.slice(1)}</div>
+                            <div className="flex gap-1.5 items-center col-span-2"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                             {sub.allergy && (
                               <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                             )}

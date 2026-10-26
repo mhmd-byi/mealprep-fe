@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
-import { formatCarbType } from "../../../carbTypeDisplay";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { useUserMealTracking } from "./useUserMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../../activityCategories";
 import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities } from "../../../subscriptionUtils";
@@ -48,7 +49,7 @@ const USER_STATUS_STYLES = {
   Active: "bg-green-100 text-green-700",
   Queued: "bg-amber-100 text-amber-700",
   Cancelled: "bg-red-100 text-red-700",
-  Completed: "bg-gray-100 text-gray-700",
+  Completed: "bg-red-100 text-red-700",
   "No Plan": "bg-gray-100 text-gray-500",
 };
 
@@ -56,7 +57,7 @@ const SUB_STATUS_STYLES = {
   active: "bg-green-100 text-green-700",
   queued: "bg-amber-100 text-amber-700",
   cancelled: "bg-red-100 text-red-700",
-  completed: "bg-gray-100 text-gray-700",
+  completed: "bg-red-100 text-red-700",
 };
 
 const MEAL_TYPE_LABELS = { veg: "Veg", "non-veg": "Non-Veg", both: "Both (Flexible)" };
@@ -668,7 +669,7 @@ export const UserMealTracking = () => {
                     {activeTab === "subscription" && (
                       <div className="space-y-5">
                         <div className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
-                          <SubscriptionField icon={CreditCard} label="Plan">{latestSub?.plan || "No active plan"}</SubscriptionField>
+                          <SubscriptionField icon={CreditCard} label="Plan"><PlanBadge plan={latestSub?.plan} /></SubscriptionField>
                           <SubscriptionField icon={CalendarDays} label="Est. End Date">{subEnd?.formattedDate || subEnd?.status}</SubscriptionField>
                           <SubscriptionField icon={History} label="Status">
                             {latestSub ? (
@@ -688,7 +689,7 @@ export const UserMealTracking = () => {
                           <SubscriptionField icon={CalendarDays} label="Start Date">
                             {latestSub?.subscriptionStartDate ? formatDisplayDate(latestSub.subscriptionStartDate) : "N/A"}
                           </SubscriptionField>
-                          <SubscriptionField icon={Wheat} label="Carb Type">{formatCarbType(latestSub?.carbType)}</SubscriptionField>
+                          <SubscriptionField icon={Wheat} label="Carb Type"><CarbTypeBadge carbType={latestSub?.carbType} /></SubscriptionField>
                           <SubscriptionField icon={AlertTriangle} label="Allergy">{latestSub?.allergy || "None"}</SubscriptionField>
                         </div>
 
@@ -698,8 +699,8 @@ export const UserMealTracking = () => {
                             {userDetail.subscriptions && userDetail.subscriptions.length > 0 ? (
                               [...userDetail.subscriptions].reverse().map((sub) => (
                                 <div key={sub._id} className="p-3 bg-white rounded-lg border shadow-sm">
-                                  <div className="flex justify-between items-center font-bold text-theme-color-1">
-                                    <span>{sub.plan}</span>
+                                  <div className="flex justify-between items-center">
+                                    <PlanBadge plan={sub.plan} />
                                     {sub.status === "queued" && (
                                       <button
                                         type="button"
@@ -719,7 +720,7 @@ export const UserMealTracking = () => {
                                     </div>
                                     <div><span className="text-gray-500">Start Date:</span> {formatDisplayDate(sub.subscriptionStartDate)}</div>
                                     <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
-                                    <div><span className="text-gray-500">Carbs:</span> {formatCarbType(sub.carbType)}</div>
+                                    <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                                     {sub.allergy && (
                                       <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
                                     )}
@@ -796,7 +797,7 @@ export const UserMealTracking = () => {
                       </button>
                     </div>
                     <div className="space-y-2 text-sm">
-                      <InfoRow label="Plan Name">{latestSub?.plan || "—"}</InfoRow>
+                      <InfoRow label="Plan Name"><PlanBadge plan={latestSub?.plan} /></InfoRow>
                       <InfoRow label="Start Date">{latestSub?.subscriptionStartDate ? formatDisplayDate(latestSub.subscriptionStartDate) : "N/A"}</InfoRow>
                       <InfoRow label="Est. End Date">{subEnd?.formattedDate || subEnd?.status || "—"}</InfoRow>
                       <InfoRow label="Meals / Day">
@@ -814,7 +815,7 @@ export const UserMealTracking = () => {
                     {latestSub ? (
                       <div className="flex flex-wrap gap-2">
                         <DietChip icon={latestSub.mealType === "veg" ? Leaf : Beef} label={MEAL_TYPE_LABELS[latestSub.mealType] || latestSub.mealType} tone="bg-green-50 text-green-700" />
-                        <DietChip icon={Wheat} label={formatCarbType(latestSub.carbType)} tone="bg-amber-50 text-amber-700" />
+                        <CarbTypeBadge carbType={latestSub.carbType} />
                         {latestSub.allergy && <DietChip icon={AlertTriangle} label={latestSub.allergy} tone="bg-red-50 text-red-700" />}
                       </div>
                     ) : (
