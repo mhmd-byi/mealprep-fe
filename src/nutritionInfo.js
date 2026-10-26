@@ -64,3 +64,19 @@ export const formatNutritionLine = (carbType) => {
     .filter(Boolean)
     .join(" | ");
 };
+
+// Compact form for the physical delivery label — "P-33GM,C-49GM,F-16GM
+// 472KCAL" — no room there for the full formatNutritionLine phrasing.
+// A range value (zero-carb/keto-meal) uses its lower bound, since a label
+// needs one printed number, not a range.
+const labelValue = (value) => (Array.isArray(value) ? value[0] : value);
+
+export const formatLabelMacros = (carbType) => {
+  const info = CARB_TYPE_NUTRITION[carbType];
+  if (!info) return "";
+  const protein = labelValue(info.protein);
+  const carbs = labelValue(info.carbs);
+  const fat = labelValue(info.fat);
+  const kcal = labelValue(info.kcal);
+  return `P-${protein}GM,C-${carbs}GM,F-${fat}GM ${kcal}KCAL`;
+};

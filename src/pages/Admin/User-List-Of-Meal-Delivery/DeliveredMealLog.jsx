@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Users, XCircle, Search, Download, Printer, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Users, XCircle, Search, Download, Printer, Tag, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { buildMealLabel, getCoverageCodeFromDeliveredLists, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
 import { useDeliveredMealLog } from "./useDeliveredMealLog";
 
 const inputClass =
@@ -63,7 +64,7 @@ const SortIcon = ({ direction }) => {
   );
 };
 
-const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort }) => {
+const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort, onPrintLabel }) => {
   if (rows.length === 0) {
     return <p className="py-6 text-sm text-center text-gray-400">{emptyLabel}</p>;
   }
@@ -84,6 +85,7 @@ const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort }) => {
             >
               Type <SortIcon direction={sortKey === "type" ? sortDir : null} />
             </th>
+            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Label</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -94,6 +96,17 @@ const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort }) => {
               </td>
               <td className="px-3 py-2 whitespace-nowrap">
                 <VegNonVegIcon value={row.dietaryType} />
+              </td>
+              <td className="px-3 py-2 whitespace-nowrap">
+                <button
+                  type="button"
+                  onClick={() => onPrintLabel(row)}
+                  className="flex gap-1.5 items-center px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  title="Print delivery label"
+                >
+                  <Tag className="w-3.5 h-3.5" />
+                  Label
+                </button>
               </td>
             </tr>
           ))}
@@ -146,6 +159,17 @@ export const DeliveredMealLog = () => {
   const lunchRows = sortRows((data?.lunch?.deliveries || []).filter(matches), { includeType: true });
   const dinnerRows = sortRows((data?.dinner?.deliveries || []).filter(matches), { includeType: true });
   const endedRows = sortRows((data?.endedSubscriptions || []).filter(matches), { includeType: false });
+
+  const printLabelForRow = (row) => {
+    const coverageCode = getCoverageCodeFromDeliveredLists(row.userId, lunchRows, dinnerRows);
+    printMealDeliveryLabels([buildMealLabel(row, { coverageCode, date })]);
+  };
+
+  const printLabelsForRows = (rows) => {
+    printMealDeliveryLabels(
+      rows.map((row) => buildMealLabel(row, { coverageCode: getCoverageCodeFromDeliveredLists(row.userId, lunchRows, dinnerRows), date }))
+    );
+  };
 
   const exportToCSV = () => {
     const headers = ["Section", "Name", "Mobile", "Dietary Type", "Plan", "Status", "Date/Time"];
@@ -268,18 +292,42 @@ export const DeliveredMealLog = () => {
         {!isLoading && (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <div className="flex gap-2 items-center p-4 border-b border-gray-100">
-                <MealSlotIcon slot="lunch" />
-                <p className="font-bold text-gray-900">Lunch Deliveries ({lunchRows.length})</p>
+              <div className="flex gap-2 justify-between items-center p-4 border-b border-gray-100">
+                <div className="flex gap-2 items-center">
+                  <MealSlotIcon slot="lunch" />
+                  <p className="font-bold text-gray-900">Lunch Deliveries ({lunchRows.length})</p>
+                </div>
+                {lunchRows.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => printLabelsForRows(lunchRows)}
+                    className="flex gap-1.5 items-center px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    Print All Labels
+                  </button>
+                )}
               </div>
-              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} onPrintLabel={printLabelForRow} />
             </div>
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <div className="flex gap-2 items-center p-4 border-b border-gray-100">
-                <MealSlotIcon slot="dinner" />
-                <p className="font-bold text-gray-900">Dinner Deliveries ({dinnerRows.length})</p>
+              <div className="flex gap-2 justify-between items-center p-4 border-b border-gray-100">
+                <div className="flex gap-2 items-center">
+                  <MealSlotIcon slot="dinner" />
+                  <p className="font-bold text-gray-900">Dinner Deliveries ({dinnerRows.length})</p>
+                </div>
+                {dinnerRows.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => printLabelsForRows(dinnerRows)}
+                    className="flex gap-1.5 items-center px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    Print All Labels
+                  </button>
+                )}
               </div>
-              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} onPrintLabel={printLabelForRow} />
             </div>
           </div>
         )}

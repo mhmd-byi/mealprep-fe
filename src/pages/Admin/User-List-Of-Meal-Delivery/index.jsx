@@ -13,6 +13,7 @@ import { ChangeBadge, percentChange } from "../../../components/common/ChangeBad
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { formatCarbType } from "../../../carbTypeDisplay";
+import { buildMealLabel, getCoverageCodeFromMealCounts, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
 import {
   ChevronUp,
   ChevronDown,
@@ -21,6 +22,7 @@ import {
   SlidersHorizontal,
   Download,
   Printer,
+  Tag,
   RotateCcw,
   Users,
   Leaf,
@@ -352,6 +354,21 @@ const ScheduledMealDeliveryList = () => {
     setShowExportMenu(false);
   };
 
+  const printLabelForMeal = (meal) => {
+    printMealDeliveryLabels([
+      buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date }),
+    ]);
+  };
+
+  const printAllLabels = () => {
+    printMealDeliveryLabels(
+      sortedMeals.map((meal) =>
+        buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date })
+      )
+    );
+    setShowExportMenu(false);
+  };
+
   // Summary counts over the filtered set — mirrors the stat-row pattern used
   // across the other redesigned admin pages.
   const summary = filteredMeals.reduce(
@@ -403,6 +420,14 @@ const ScheduledMealDeliveryList = () => {
                       >
                         <Printer className="w-4 h-4" />
                         Print / PDF
+                      </button>
+                      <button
+                        type="button"
+                        onClick={printAllLabels}
+                        className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50"
+                      >
+                        <Tag className="w-4 h-4" />
+                        Print All Labels
                       </button>
                     </div>
                   )}
@@ -588,6 +613,7 @@ const ScheduledMealDeliveryList = () => {
                               >
                                 Meal Counts Left <SortIcon columnKey="mealCount" />
                               </th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Label</th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-100">
@@ -635,6 +661,17 @@ const ScheduledMealDeliveryList = () => {
                                       <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>,<br/>
                                       <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                                     </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                    <button
+                                      type="button"
+                                      onClick={() => printLabelForMeal(meal)}
+                                      className="flex gap-1.5 items-center px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap"
+                                      title="Print delivery label"
+                                    >
+                                      <Tag className="w-3.5 h-3.5" />
+                                      Label
+                                    </button>
                                   </td>
                                 </tr>
                               );
@@ -694,13 +731,21 @@ const ScheduledMealDeliveryList = () => {
                                   <span className="font-medium text-gray-500">Allergy:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Meal Counts Left:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%] inline-flex items-center gap-2 flex-wrap justify-end">
                                     <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
                                     <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                                   </span>
                                 </div>
+                                <button
+                                  type="button"
+                                  onClick={() => printLabelForMeal(meal)}
+                                  className="flex gap-1.5 justify-center items-center px-3 py-2 w-full text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                                >
+                                  <Tag className="w-3.5 h-3.5" />
+                                  Print Label
+                                </button>
                               </div>
                             </div>
                           );

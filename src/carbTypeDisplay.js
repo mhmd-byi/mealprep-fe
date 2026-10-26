@@ -27,6 +27,17 @@ export const CARB_TYPE_COLORS = {
 const OTHER_COLOR = "#898781";
 export const getCarbTypeColor = (carbType) => CARB_TYPE_COLORS[carbType] || OTHER_COLOR;
 
+// Short codes for the delivery label (not enough room there for the full name).
+export const CARB_TYPE_SHORT_CODES = {
+  "low-carb-high-protein": "LCHP",
+  "high-carb-high-protein": "HCHP",
+  "balanced-meal": "BAL",
+  "zero-carb": "ZC",
+  "keto-meal": "KETO",
+};
+export const getCarbTypeShortCode = (carbType) =>
+  CARB_TYPE_SHORT_CODES[carbType] || (carbType || "").replace(/-/g, "").slice(0, 4).toUpperCase() || "—";
+
 // Falls back to a readable title-cased version of any value this map doesn't
 // recognize (e.g. a future stray value), rather than showing a raw hyphenated
 // string as-is.
