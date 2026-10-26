@@ -63,7 +63,7 @@ const SortIcon = ({ direction }) => {
   );
 };
 
-const NameList = ({ rows, emptyLabel, nameSort, onToggleNameSort }) => {
+const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort }) => {
   if (rows.length === 0) {
     return <p className="py-6 text-sm text-center text-gray-400">{emptyLabel}</p>;
   }
@@ -74,11 +74,16 @@ const NameList = ({ rows, emptyLabel, nameSort, onToggleNameSort }) => {
           <tr>
             <th
               className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase cursor-pointer hover:text-theme-color-1"
-              onClick={onToggleNameSort}
+              onClick={() => onSort("name")}
             >
-              Name <SortIcon direction={nameSort} />
+              Name <SortIcon direction={sortKey === "name" ? sortDir : null} />
             </th>
-            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Type</th>
+            <th
+              className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase cursor-pointer hover:text-theme-color-1"
+              onClick={() => onSort("type")}
+            >
+              Type <SortIcon direction={sortKey === "type" ? sortDir : null} />
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -102,7 +107,8 @@ export const DeliveredMealLog = () => {
   const { date, setDate, data, previousData, isLoading, error, todayDateString } = useDeliveredMealLog();
   const [searchQuery, setSearchQuery] = useState("");
   const [isPrinting, setIsPrinting] = useState(false);
-  const [nameSort, setNameSort] = useState(null); // null | "asc" | "desc"
+  const [sortKey, setSortKey] = useState(null); // null | "name" | "type"
+  const [sortDir, setSortDir] = useState("asc");
 
   // Printing should include every row, not held up by anything else on the page.
   useEffect(() => {
@@ -120,18 +126,26 @@ export const DeliveredMealLog = () => {
   const query = searchQuery.trim().toLowerCase();
   const matches = (row) => !query || row.name.toLowerCase().includes(query);
 
-  const toggleNameSort = () => setNameSort((prev) => (prev === "asc" ? "desc" : "asc"));
-  const sortByName = (rows) => {
-    if (!nameSort) return rows;
+  const handleSort = (key) => {
+    setSortKey((prevKey) => {
+      setSortDir((prevDir) => (prevKey === key ? (prevDir === "asc" ? "desc" : "asc") : "asc"));
+      return key;
+    });
+  };
+  // "Type" sorts by veg/non-veg — not meaningful for endedRows, which carries
+  // no dietary data, so that table only ever sorts by name regardless of key.
+  const sortRows = (rows, { includeType }) => {
+    if (!sortKey || (sortKey === "type" && !includeType)) return rows;
     return [...rows].sort((a, b) => {
-      const cmp = (a.name || "").localeCompare(b.name || "");
-      return nameSort === "asc" ? cmp : -cmp;
+      const field = sortKey === "type" ? "dietaryType" : "name";
+      const cmp = (a[field] || "").localeCompare(b[field] || "");
+      return sortDir === "asc" ? cmp : -cmp;
     });
   };
 
-  const lunchRows = sortByName((data?.lunch?.deliveries || []).filter(matches));
-  const dinnerRows = sortByName((data?.dinner?.deliveries || []).filter(matches));
-  const endedRows = sortByName((data?.endedSubscriptions || []).filter(matches));
+  const lunchRows = sortRows((data?.lunch?.deliveries || []).filter(matches), { includeType: true });
+  const dinnerRows = sortRows((data?.dinner?.deliveries || []).filter(matches), { includeType: true });
+  const endedRows = sortRows((data?.endedSubscriptions || []).filter(matches), { includeType: false });
 
   const exportToCSV = () => {
     const headers = ["Section", "Name", "Mobile", "Dietary Type", "Plan", "Status", "Date/Time"];
@@ -258,14 +272,14 @@ export const DeliveredMealLog = () => {
                 <MealSlotIcon slot="lunch" />
                 <p className="font-bold text-gray-900">Lunch Deliveries ({lunchRows.length})</p>
               </div>
-              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." nameSort={nameSort} onToggleNameSort={toggleNameSort} />
+              <NameList rows={lunchRows} emptyLabel="No lunch deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
             </div>
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
               <div className="flex gap-2 items-center p-4 border-b border-gray-100">
                 <MealSlotIcon slot="dinner" />
                 <p className="font-bold text-gray-900">Dinner Deliveries ({dinnerRows.length})</p>
               </div>
-              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." nameSort={nameSort} onToggleNameSort={toggleNameSort} />
+              <NameList rows={dinnerRows} emptyLabel="No dinner deliveries logged for this day." sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
             </div>
           </div>
         )}
@@ -285,9 +299,9 @@ export const DeliveredMealLog = () => {
                     <tr>
                       <th
                         className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase cursor-pointer hover:text-theme-color-1"
-                        onClick={toggleNameSort}
+                        onClick={() => handleSort("name")}
                       >
-                        Name <SortIcon direction={nameSort} />
+                        Name <SortIcon direction={sortKey === "name" ? sortDir : null} />
                       </th>
                       <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Mobile</th>
                       <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Plan</th>
