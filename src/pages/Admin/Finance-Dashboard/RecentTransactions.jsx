@@ -74,7 +74,7 @@ export const RecentTransactions = () => {
           <table className="w-full text-sm divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {["Date", "Type", "Description", "Amount", "Status"].map((h) => (
+                {["Date", "Type", "Description", "Payment Method", "Amount", "Status"].map((h) => (
                   <th key={h} className="px-4 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
                     {h}
                   </th>
@@ -89,6 +89,7 @@ export const RecentTransactions = () => {
                     {t.type}
                   </td>
                   <td className="px-4 py-3 text-gray-900">{t.description}</td>
+                  <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{t.method || "—"}</td>
                   <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{formatINR(t.amount)}</td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[t.status] || "bg-gray-100 text-gray-700"}`}>
