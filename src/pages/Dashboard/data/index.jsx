@@ -66,8 +66,11 @@ export const Data = () => {
     endingSoonCount,
     endingSoonUsers,
     weeklyCount,
+    weeklyCountChange,
     monthlyCount,
+    monthlyCountChange,
     trialCount,
+    trialCountChange,
     loadingStates,
     isRefreshing,
     refresh,
@@ -175,19 +178,28 @@ export const Data = () => {
                   <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
                     <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Weekly")}`} />Weekly:
                   </span>
-                  <span className="text-xl font-bold text-gray-900">{weeklyCount}</span>
+                  <span className="flex gap-1.5 items-center">
+                    <span className="text-xl font-bold text-gray-900">{weeklyCount}</span>
+                    <MiniTrend change={weeklyCountChange} />
+                  </span>
                 </button>
                 <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
                   <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
                     <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Monthly")}`} />Monthly:
                   </span>
-                  <span className="text-xl font-bold text-gray-900">{monthlyCount}</span>
+                  <span className="flex gap-1.5 items-center">
+                    <span className="text-xl font-bold text-gray-900">{monthlyCount}</span>
+                    <MiniTrend change={monthlyCountChange} />
+                  </span>
                 </button>
                 <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
                   <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
                     <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Trial")}`} />Trial:
                   </span>
-                  <span className="text-xl font-bold text-gray-900">{trialCount}</span>
+                  <span className="flex gap-1.5 items-center">
+                    <span className="text-xl font-bold text-gray-900">{trialCount}</span>
+                    <MiniTrend change={trialCountChange} />
+                  </span>
                 </button>
               </div>
             )}

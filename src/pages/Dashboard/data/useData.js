@@ -211,7 +211,13 @@ export const useData = () => {
       return {
         weekly: data.weeklyCount || 0,
         monthly: data.monthlyCount || 0,
-        trial: data.trialCount || 0
+        trial: data.trialCount || 0,
+        // null (not 0) means no snapshot exists yet for 7 days ago — the
+        // daily snapshot job only started recording from whenever it was
+        // deployed, so there's nothing to compare against until a week in.
+        previousWeekly: data.previousWeeklyCount,
+        previousMonthly: data.previousMonthlyCount,
+        previousTrial: data.previousTrialCount
       };
     },
     enabled: !!token,
@@ -243,8 +249,17 @@ export const useData = () => {
       ? percentChange(customisationQuery.data.count, customisationQuery.data.previousCount)
       : undefined,
     weeklyCount: subscriptionsQuery.data?.weekly || 0,
+    weeklyCountChange: subscriptionsQuery.data?.previousWeekly != null
+      ? percentChange(subscriptionsQuery.data.weekly, subscriptionsQuery.data.previousWeekly)
+      : undefined,
     monthlyCount: subscriptionsQuery.data?.monthly || 0,
+    monthlyCountChange: subscriptionsQuery.data?.previousMonthly != null
+      ? percentChange(subscriptionsQuery.data.monthly, subscriptionsQuery.data.previousMonthly)
+      : undefined,
     trialCount: subscriptionsQuery.data?.trial || 0,
+    trialCountChange: subscriptionsQuery.data?.previousTrial != null
+      ? percentChange(subscriptionsQuery.data.trial, subscriptionsQuery.data.previousTrial)
+      : undefined,
     loadingStates: {
       users: usersQuery.isLoading || totalUsersQuery.isLoading,
       cancelled: cancelledQuery.isLoading,
