@@ -1,7 +1,7 @@
 import { useData } from "./useData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Users, Settings2, XCircle, Clock, Truck, Crown } from "lucide-react";
+import { Users, Settings2, XCircle, Clock, Truck, Crown, RefreshCw } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
@@ -68,7 +68,9 @@ export const Data = () => {
     weeklyCount,
     monthlyCount,
     trialCount,
-    loadingStates
+    loadingStates,
+    isRefreshing,
+    refresh,
   } = useData();
 
   const navigate = useNavigate();
@@ -80,9 +82,20 @@ export const Data = () => {
 
   return (
     <div className="px-4 pt-6 pb-2 text-left lg:pt-4">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">Today's Stats</h2>
-        <p className="text-sm text-gray-500">Overview of your meal prep subscriptions.</p>
+      <div className="flex flex-wrap gap-3 justify-between items-end mb-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Today's Stats</h2>
+          <p className="text-sm text-gray-500">Overview of your meal prep subscriptions.</p>
+        </div>
+        <button
+          type="button"
+          onClick={refresh}
+          disabled={isRefreshing}
+          className="flex items-center gap-1.5 self-start px-3 py-1.5 text-sm font-semibold bg-white rounded-md border border-gray-200 text-gray-700 hover:border-theme-color-1 disabled:opacity-50 sm:self-auto"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+          {isRefreshing ? "Refreshing..." : "Refresh"}
+        </button>
       </div>
 
       <div className="grid overflow-hidden grid-cols-2 mb-1 bg-white rounded-2xl border divide-x divide-y divide-gray-100 shadow-sm border-gray-100 sm:grid-cols-3 lg:grid-cols-6 lg:divide-y-0">

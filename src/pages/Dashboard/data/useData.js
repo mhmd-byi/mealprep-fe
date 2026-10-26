@@ -5,6 +5,11 @@ import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionU
 import { listenForUsersChanged } from "../../../utils/crossTabSync";
 import { percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 
+// Same cadence as the Monetary Dashboard — re-fetches in the background so
+// numbers stay current if this page is left open, without the admin having
+// to reload.
+const AUTO_REFRESH_INTERVAL = 3 * 60 * 1000;
+
 export const useData = () => {
   const token = sessionStorage.getItem("token");
   const queryClient = useQueryClient();
@@ -83,6 +88,7 @@ export const useData = () => {
     },
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   // 1.1 Total Registered Users Count (Lightweight)
@@ -113,6 +119,7 @@ export const useData = () => {
     },
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   // getCancelledMeals responds 404 (not an empty array) when a date has no
@@ -141,6 +148,7 @@ export const useData = () => {
       return { count, previousCount };
     },
     enabled: !!token,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   const fetchDeliveryCount = async (dateStr, mealType) => {
@@ -162,6 +170,7 @@ export const useData = () => {
       return { count, previousCount };
     },
     enabled: !!token,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   const deliveryDinnerQuery = useQuery({
@@ -174,6 +183,7 @@ export const useData = () => {
       return { count, previousCount };
     },
     enabled: !!token,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   // 4. Customisation Requests Query — today vs. the same weekday last week
@@ -187,6 +197,7 @@ export const useData = () => {
       return { count: current.data.length, previousCount: previous.data.length };
     },
     enabled: !!token,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   // 5. Subscription Counts Query (Optimized to use single endpoint)
@@ -204,6 +215,7 @@ export const useData = () => {
       };
     },
     enabled: !!token,
+    refetchInterval: AUTO_REFRESH_INTERVAL,
   });
 
   return {
@@ -240,6 +252,14 @@ export const useData = () => {
       deliveryDinner: deliveryDinnerQuery.isLoading,
       customisation: customisationQuery.isLoading,
       subscriptions: subscriptionsQuery.isLoading
-    }
+    },
+    isRefreshing: [
+      usersQuery, totalUsersQuery, cancelledQuery,
+      deliveryLunchQuery, deliveryDinnerQuery, customisationQuery, subscriptionsQuery,
+    ].some((q) => q.isFetching),
+    refresh: () => Promise.all([
+      usersQuery.refetch(), totalUsersQuery.refetch(), cancelledQuery.refetch(),
+      deliveryLunchQuery.refetch(), deliveryDinnerQuery.refetch(), customisationQuery.refetch(), subscriptionsQuery.refetch(),
+    ]),
   };
 };
