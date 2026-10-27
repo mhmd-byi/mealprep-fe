@@ -18,7 +18,11 @@ export const useSignup = () => {
     password: "",
     confirmPassword: "",
     postalAddress: "",
-    pincode: undefined
+    pincode: undefined,
+    gender: "",
+    genderOther: "",
+    profession: "",
+    professionOther: "",
   });
   const getCurrentDate = () => {
     const today = new Date();
@@ -34,6 +38,8 @@ export const useSignup = () => {
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const updateFormData = (patch) => setFormData((prev) => ({ ...prev, ...patch }));
 
   const handleOtpChange = (e) => {
     setOtp(e.target.value);
@@ -126,6 +132,10 @@ export const useSignup = () => {
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         postalAddress: formData.postalAddress + " " + formData.pincode,
+        gender: formData.gender,
+        genderOther: formData.genderOther,
+        profession: formData.profession,
+        professionOther: formData.professionOther,
       },
     })
       .then((res) => {
@@ -156,6 +166,7 @@ export const useSignup = () => {
   return {
     formData,
     handleChange,
+    updateFormData,
     handleSubmit,
     errMsg,
     loaderState,

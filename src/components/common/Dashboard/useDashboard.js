@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { pickProfileFields } from "../../../profileFields";
 
 export const useDashboard = () => {
   const [userDetails, setUserDetails] = useState({
@@ -42,6 +43,7 @@ export const useDashboard = () => {
           password: res.data.password,
           confirmPassword: res.data.confirmPassword,
           role: res.data.role || "user", // Include role, default to "user" if not provided
+          ...pickProfileFields(res.data),
         });
       })
       .finally(() => {

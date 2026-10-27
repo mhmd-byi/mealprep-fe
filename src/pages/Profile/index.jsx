@@ -8,6 +8,8 @@ import { useDashboard } from "../../components/common/Dashboard/useDashboard";
 import { Helmet } from "react-helmet";
 import { Loader } from "../../components";
 import { Camera, Mail, Phone, MapPin, Lock } from "lucide-react";
+import { ProfileDetailsFields } from "../../components/common/ProfileDetailsFields/ProfileDetailsFields";
+import { pickProfileFields } from "../../profileFields";
 
 const Profile = () => {
   const { userDetails, getInitials, setUserDetails } = useDashboard();
@@ -21,7 +23,11 @@ const Profile = () => {
     handlePopupSubmit,
     isLoading,
     formData,
-  } = useProfile(setUserDetails);
+    profileDraft,
+    setProfileDraft,
+  } = useProfile(setUserDetails, userDetails);
+
+  const currentProfile = profileDraft || pickProfileFields(userDetails);
 
   const initials = getInitials();
 
@@ -212,6 +218,12 @@ const Profile = () => {
                       onChange={handleChange}
                     />
                   </div>
+
+                  <ProfileDetailsFields
+                    {...currentProfile}
+                    showLabels
+                    onChange={(patch) => setProfileDraft({ ...currentProfile, ...patch })}
+                  />
 
                   <Button type="submit" classes="w-full justify-center">
                     Update Profile

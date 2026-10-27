@@ -13,6 +13,7 @@ import AddMeal from "./pages/Admin/Add-Meal";
 import MealLibrary from "./pages/Admin/Meal-Library";
 import MealCategories from "./pages/Admin/Meal-Categories";
 import TastePreferences from "./pages/Admin/Taste-Preferences";
+import Professions from "./pages/Admin/Professions";
 import CancelRequest from "./pages/Cancel-Request";
 import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
 import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery";
@@ -112,6 +113,11 @@ export const routes = [
   {
     path: "/dashboard/taste-preferences",
     component: TastePreferences,
+    exact: true,
+  },
+  {
+    path: "/dashboard/professions",
+    component: Professions,
     exact: true,
   },
   {

@@ -3,8 +3,9 @@ import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { toast } from "sonner";
+import { pickProfileFields } from "../../profileFields";
 
-const useProfile = (setUserDetails) => {
+const useProfile = (setUserDetails, userDetails) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,6 +19,7 @@ const useProfile = (setUserDetails) => {
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
+  const [profileDraft, setProfileDraft] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +157,7 @@ const useProfile = (setUserDetails) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          data: updatedFormData,
+          data: { ...updatedFormData, ...(profileDraft || {}) },
         });
         // Not response.data — that's the raw server document, and its
         // `password` is the bcrypt hash, not something to show back in a
@@ -176,12 +178,20 @@ const useProfile = (setUserDetails) => {
           firstName: response.data.firstName,
           lastName: response.data.lastName,
           postalAddress: response.data.postalAddress,
+          ...pickProfileFields(response.data),
         }));
         toast.success("Profile updated successfully.");
 
-        const changedFields = Object.keys(CHANGED_FIELD_LABELS).filter((key) => formData[key]);
-        if (changedFields.length > 0) {
-          const labels = changedFields.map((key) => CHANGED_FIELD_LABELS[key]);
+        const labels = Object.keys(CHANGED_FIELD_LABELS)
+          .filter((key) => formData[key])
+          .map((key) => CHANGED_FIELD_LABELS[key]);
+        if (profileDraft) {
+          const saved = pickProfileFields(userDetails);
+          if (profileDraft.gender !== saved.gender || profileDraft.genderOther !== saved.genderOther) labels.push("Gender");
+          if (profileDraft.profession !== saved.profession || profileDraft.professionOther !== saved.professionOther) labels.push("Profession");
+        }
+        setProfileDraft(null);
+        if (labels.length > 0) {
           logProfileActivity(`Updated profile: ${labels.join(", ")}`);
         }
       } catch (error) {
@@ -196,6 +206,8 @@ const useProfile = (setUserDetails) => {
   return {
     formData,
     setFormData,
+    profileDraft,
+    setProfileDraft,
     showPopup,
     setShowPopup,
     handleChange,

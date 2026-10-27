@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Input, MealprepLogo } from "../../components";
 import { AuthLayout } from "../../components/common/AuthLayout/AuthLayout";
+import { ProfileDetailsFields } from "../../components/common/ProfileDetailsFields/ProfileDetailsFields";
 import { useSignup } from "./useSignup";
 import usePasswordValidation from "../../hooks/usePasswordValidation";
 import { useRef } from "react";
@@ -14,6 +15,7 @@ const Signup = () => {
   const {
     formData,
     handleChange,
+    updateFormData,
     handleSubmit,
     errMsg,
     loaderState,
@@ -191,6 +193,15 @@ const Signup = () => {
             disabled={!otpVerified}
           />
         </div>
+
+        <ProfileDetailsFields
+          gender={formData.gender}
+          genderOther={formData.genderOther}
+          profession={formData.profession}
+          professionOther={formData.professionOther}
+          onChange={updateFormData}
+          disabled={!otpVerified}
+        />
 
         {errMsg.length > 1 && (
           <div className="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">

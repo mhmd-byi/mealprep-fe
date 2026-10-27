@@ -90,6 +90,13 @@
     "adminOnly": true
   },
   {
+    "name": "Professions",
+    "icon": "Briefcase",
+    "path": "/dashboard/professions",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
     "name": "User Cancel Requests",
     "icon": "UserX",
     "path": "/dashboard/user-cancel-request-list",

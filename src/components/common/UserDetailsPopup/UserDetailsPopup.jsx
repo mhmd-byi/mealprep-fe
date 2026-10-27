@@ -8,6 +8,7 @@ import { PlanBadge } from "../PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../CarbTypeBadge/CarbTypeBadge";
 import { MealSlotIcon } from "../MealSlotIcon/MealSlotIcon";
 import { formatTastePreference } from "../../../tastePreferences";
+import { formatGender, formatProfession } from "../../../profileFields";
 import { CalendarDays, CreditCard, Droplets, Utensils, History, Sun, Pencil, Package } from "lucide-react";
 
 const STATUS_STYLES = {
@@ -165,6 +166,8 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                 <div className="grid grid-cols-1 gap-y-3 gap-x-6 mt-4 sm:grid-cols-2">
                   <DetailRow label="Email">{user.email}</DetailRow>
                   <DetailRow label="Mobile">{user.mobile}</DetailRow>
+                  <DetailRow label="Gender">{formatGender(user) || "—"}</DetailRow>
+                  <DetailRow label="Profession">{formatProfession(user) || "—"}</DetailRow>
                   <div className="sm:col-span-2">
                     <DetailRow label="Address">{user.postalAddress}</DetailRow>
                   </div>

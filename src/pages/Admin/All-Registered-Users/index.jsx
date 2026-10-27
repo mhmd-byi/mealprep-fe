@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
 import { formatTastePreference } from "../../../tastePreferences";
+import { formatGender, formatProfession } from "../../../profileFields";
 
 // A blank field is the obvious "no allergy" case, but customers often type
 // "No" / "None" / "N/A" / "Nil" into the field instead of leaving it empty —
@@ -823,6 +824,8 @@ export const AllRegisteredUsers = () => {
                 <div className="grid grid-cols-1 gap-y-3 gap-x-6 mt-4 sm:grid-cols-2">
                   <DetailRow label="Email">{selectedUser.email}</DetailRow>
                   <DetailRow label="Mobile">{selectedUser.mobile}</DetailRow>
+                  <DetailRow label="Gender">{formatGender(selectedUser) || "—"}</DetailRow>
+                  <DetailRow label="Profession">{formatProfession(selectedUser) || "—"}</DetailRow>
                   <div className="sm:col-span-2">
                     <DetailRow label="Address">{selectedUser.postalAddress}</DetailRow>
                   </div>

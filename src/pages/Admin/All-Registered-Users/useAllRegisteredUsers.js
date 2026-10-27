@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { calculateSubEndDate, holidayDateKeysFrom } from "../../../subscriptionUtils";
 import { listenForUsersChanged, notifyUsersChanged } from "../../../utils/crossTabSync";
 import { formatTastePreference } from "../../../tastePreferences";
+import { formatGender, formatProfession } from "../../../profileFields";
 
 export const useAllRegisteredUsers = () => {
   const [searchParams] = useSearchParams();
@@ -89,7 +90,7 @@ export const useAllRegisteredUsers = () => {
   };
 
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Taste Preference', 'Meal Start Date', 'Est. End Date', 'Registered Date'];
+    const headers = ['Name', 'Email', 'Mobile', 'Address', 'Current Plan', 'Meal Counts Left', 'Allergy', 'Taste Preference', 'Gender', 'Profession', 'Meal Start Date', 'Est. End Date', 'Registered Date'];
     const rows = data.map(user => [
       `${user.firstName} ${user.lastName}`, 
       user.email, 
@@ -99,6 +100,8 @@ export const useAllRegisteredUsers = () => {
       `Lunch: ${(user.mealCounts.lunchMeals || 0) + (user.mealCounts.nextDayLunchMeals || 0)}, Dinner: ${(user.mealCounts.dinnerMeals || 0) + (user.mealCounts.nextDayDinnerMeals || 0)}`, 
       (user.subscriptions[user.subscriptions.length - 1]?.allergy || 'None'),
       formatTastePreference(user.subscriptions[user.subscriptions.length - 1]).replaceAll(',', ';') || 'Not specified',
+      formatGender(user).replaceAll(',', ';') || 'Not specified',
+      formatProfession(user).replaceAll(',', ';') || 'Not specified',
       (user.subscriptions[user.subscriptions.length - 1]?.subscriptionStartDate || 'N/A'),
       (calculateSubEndDate(user, holidayDateKeys).formattedDate || calculateSubEndDate(user, holidayDateKeys).status),
       (user.createdAt || user.created_date || 'N/A')
