@@ -88,7 +88,6 @@ const ScheduledMealDeliveryList = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isPopupLoading, setIsPopupLoading] = useState(false);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
-  const [showExportMenu, setShowExportMenu] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState({
     planType: 'All',
     mealCount: '',
@@ -351,7 +350,6 @@ const ScheduledMealDeliveryList = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setShowExportMenu(false);
   };
 
   const printLabelForMeal = (meal) => {
@@ -366,7 +364,6 @@ const ScheduledMealDeliveryList = () => {
         buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date })
       )
     );
-    setShowExportMenu(false);
   };
 
   // Summary counts over the filtered set — mirrors the stat-row pattern used
@@ -397,40 +394,31 @@ const ScheduledMealDeliveryList = () => {
                 </p>
               </div>
               {mealDeliveryList.length > 0 && (
-                <div className="relative">
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowExportMenu((v) => !v)}
-                    className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black"
+                    onClick={exportToCSV}
+                    className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black whitespace-nowrap"
                   >
                     <Download className="w-4 h-4" />
-                    Export
-                    <ChevronDown className="w-4 h-4" />
+                    Export CSV
                   </button>
-                  {showExportMenu && (
-                    <div className="absolute right-0 z-20 mt-2 w-44 bg-white rounded-lg border border-gray-200 shadow-lg">
-                      <button type="button" onClick={exportToCSV} className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50">
-                        <Download className="w-4 h-4" />
-                        Export CSV
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setShowExportMenu(false); setIsPrinting(true); }}
-                        className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50"
-                      >
-                        <Printer className="w-4 h-4" />
-                        Print / PDF
-                      </button>
-                      <button
-                        type="button"
-                        onClick={printAllLabels}
-                        className="flex gap-2 items-center px-4 py-2 w-full text-sm text-left hover:bg-gray-50"
-                      >
-                        <Tag className="w-4 h-4" />
-                        Print All Labels
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsPrinting(true)}
+                    className="flex gap-2 items-center px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Export (Print / PDF)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={printAllLabels}
+                    className="flex gap-2 items-center px-4 py-2 text-sm font-semibold bg-white rounded-lg border-2 shadow-sm transition-colors duration-300 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white whitespace-nowrap"
+                  >
+                    <Tag className="w-4 h-4" />
+                    Print All Labels
+                  </button>
                 </div>
               )}
             </div>
