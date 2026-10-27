@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRecentActivity } from "./useRecentActivity";
 import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 
 // A deterministic function of (category, description) — not a stored field —
 // since most activity types here are one-time events with no real ongoing
@@ -86,6 +87,18 @@ const matchesCategory = (item, categoryKey) => {
   return item.category === categoryKey;
 };
 
+const SUBSCRIBED_PATTERN = /^Subscribed to (.+)$/i;
+
+const ActivityDetails = ({ item }) => {
+  const match = item.category === "subscription" ? SUBSCRIBED_PATTERN.exec(item.description || "") : null;
+  if (!match) return item.description;
+  return (
+    <span className="inline-flex gap-2 items-center">
+      Subscribed to <PlanBadge plan={match[1].trim()} />
+    </span>
+  );
+};
+
 const ActivityTable = ({ rows }) => (
   <div className="overflow-x-auto">
     <table className="w-full text-sm divide-y divide-gray-200">
@@ -104,7 +117,7 @@ const ActivityTable = ({ rows }) => (
           return (
             <tr key={item._id}>
               <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatRelativeTime(item.createdAt)}</td>
-              <td className="px-4 py-3 max-w-xs text-gray-600 truncate">{item.description}</td>
+              <td className="px-4 py-3 max-w-xs text-gray-600 truncate"><ActivityDetails item={item} /></td>
               <td className="px-4 py-3 whitespace-nowrap">
                 <p className="font-medium text-gray-900">{item.name}</p>
                 {item.mobile && <p className="text-xs text-gray-400">{item.mobile}</p>}
