@@ -52,7 +52,7 @@ export const RecentTransactions = () => {
   }, [fetchTransactions]);
 
   return (
-    <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <div className="overflow-hidden text-left bg-white rounded-2xl border border-gray-100 shadow-sm">
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <p className="text-base font-bold text-gray-900">Recent Transactions</p>
         <button
