@@ -1,9 +1,15 @@
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import useSubscription from "../Plans/useSubscription";
 import { useMealSchedule } from "./useMealSchedule";
 import { formatNutritionLine } from "../../nutritionInfo";
 import { formatCarbType } from "../../carbTypeDisplay";
-import { CreditCard, Clock, Utensils, Sun, Moon, Lock, Info } from "lucide-react";
+import { formatTastePreference, sameFlavours } from "../../tastePreferences";
+import { useTasteOptions } from "../../useTasteOptions";
+import { TastePreferenceFields } from "../../components/common/TastePreferenceFields/TastePreferenceFields";
+import { CreditCard, Clock, Utensils, Sun, Moon, Lock, Info, Flame } from "lucide-react";
 
 const formatDayLabel = (dateStr) => {
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -60,8 +66,91 @@ const DietToggle = ({ value, locked, isSaving, onSelect }) => {
   );
 };
 
+const PlanTastePreference = ({ plan, statusLabel }) => {
+  const initial = { spiceLevel: plan.spiceLevel || "", flavourPreferences: plan.flavourPreferences || [] };
+  const [saved, setSaved] = useState(initial);
+  const [draft, setDraft] = useState(initial);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const isChanged =
+    draft.spiceLevel !== saved.spiceLevel || !sameFlavours(draft.flavourPreferences, saved.flavourPreferences);
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}subscription/${plan._id}/taste-preference`,
+        draft,
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
+      );
+      setSaved(response.data);
+      setDraft(response.data);
+      toast.success("Taste preference saved.");
+    } catch (err) {
+      console.error("Error saving taste preference:", err);
+      toast.error(err.response?.data?.message || "Failed to save taste preference.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="p-4 space-y-4 rounded-xl border border-gray-100">
+      <div className="flex justify-between items-center">
+        <p className="font-semibold text-gray-900">{plan.plan}</p>
+        <span className="px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">{statusLabel}</span>
+      </div>
+      <TastePreferenceFields
+        spiceLevel={draft.spiceLevel}
+        flavourPreferences={draft.flavourPreferences}
+        onChange={setDraft}
+        disabled={isSaving}
+      />
+      <div className="flex gap-3 items-center">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!isChanged || isSaving}
+          className="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black disabled:opacity-50"
+        >
+          {isSaving ? "Saving..." : "Save"}
+        </button>
+        {!isChanged && formatTastePreference(saved) && (
+          <p className="text-xs text-gray-400">Saved: {formatTastePreference(saved)}</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const TastePreferenceCard = ({ plans }) => {
+  const { spiceOptions, flavourOptions } = useTasteOptions();
+  if (plans.length === 0 || (spiceOptions.length === 0 && flavourOptions.length === 0)) return null;
+
+  return (
+    <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <p className="flex gap-2 items-center mb-2 text-base font-bold text-gray-900">
+        <Flame className="w-5 h-5 text-theme-color-1" />
+        Taste Preference
+      </p>
+      <p className="mb-4 text-sm text-gray-500">
+        Tell our kitchen how you like your food. Changes apply to meals we prepare from now on.
+      </p>
+      <div className="space-y-4">
+        {plans.map(({ plan, statusLabel }) => (
+          <PlanTastePreference key={plan._id} plan={plan} statusLabel={statusLabel} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const MyPlan = () => {
   const { isSubscribed, currentPlans, nextPlan, hasQueuedPlan } = useSubscription();
+  const tastePlans = [
+    ...currentPlans.map((plan) => ({ plan, statusLabel: "Active" })),
+    ...(hasQueuedPlan && nextPlan?._id ? [{ plan: nextPlan, statusLabel: "Queued" }] : []),
+  ];
   const isBothMealType = currentPlans.some((p) => p.mealType === "both");
   const { days, applicable, isLoading: isScheduleLoading, error: scheduleError, savingKey, updatePreference } =
     useMealSchedule(isBothMealType);
@@ -143,6 +232,8 @@ export const MyPlan = () => {
               <p className="text-gray-500">You don&apos;t have any active subscription plans.</p>
             </div>
           )}
+
+          <TastePreferenceCard plans={tastePlans} />
 
           {/* ── Meal Schedule (Veg / Non-Veg per day, only for "Both" plans) ── */}
           {isSubscribed && isBothMealType && (
@@ -240,7 +331,7 @@ export const MyPlan = () => {
                 <table className="w-full text-sm divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      {["Plan Name", "Total Meals", "Meal Type", "Carb Type", "Allergy"].map((h) => (
+                      {["Plan Name", "Total Meals", "Meal Type", "Carb Type", "Allergy", "Taste"].map((h) => (
                         <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -257,6 +348,7 @@ export const MyPlan = () => {
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.allergy || "None"}</td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{formatTastePreference(nextPlan) || "Not specified"}</td>
                     </tr>
                   </tbody>
                 </table>

@@ -33,6 +33,7 @@ import {
   Utensils,
 } from "lucide-react";
 import { calculateSubEndDate } from "../../../subscriptionUtils";
+import { formatTastePreference } from "../../../tastePreferences";
 
 // A blank field is the obvious "no allergy" case, but customers often type
 // "No" / "None" / "N/A" / "Nil" into the field instead of leaving it empty —
@@ -584,6 +585,7 @@ export const AllRegisteredUsers = () => {
                             Meal Counts Left <SortIcon columnKey="mealCount" />
                           </th>
                           <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Allergy</th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Taste</th>
                           <th
                             className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:bg-gray-100"
                             onClick={() => handleSort("startDate")}
@@ -643,6 +645,7 @@ export const AllRegisteredUsers = () => {
                                 <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                               </td>
                               <td className="px-4 py-4 text-sm text-gray-700 max-w-[160px] break-words">{latestSub?.allergy || "None"}</td>
+                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[180px] break-words">{formatTastePreference(latestSub) || "—"}</td>
                               <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
                                 {latestSub?.subscriptionStartDate?.split("T")[0].split("-").reverse().join("-") || "N/A"}
                               </td>
@@ -741,6 +744,10 @@ export const AllRegisteredUsers = () => {
                             <div className="flex justify-between pb-2 border-b">
                               <span className="font-medium text-gray-500">Allergy:</span>
                               <span className="text-gray-900 text-right break-words max-w-[60%]">{latestSub?.allergy || "None"}</span>
+                            </div>
+                            <div className="flex justify-between pb-2 border-b">
+                              <span className="font-medium text-gray-500">Taste:</span>
+                              <span className="text-gray-900 text-right break-words max-w-[60%]">{formatTastePreference(latestSub) || "—"}</span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
                               <span className="font-medium text-gray-500">Meal Start Date:</span>
@@ -945,6 +952,9 @@ export const AllRegisteredUsers = () => {
                           <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                          )}
+                          {formatTastePreference(sub) && (
+                            <div className="col-span-2"><span className="text-gray-500">Taste:</span> <span className="font-bold text-gray-800">{formatTastePreference(sub)}</span></div>
                           )}
                           <div className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
                           <div className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>

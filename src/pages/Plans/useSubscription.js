@@ -4,6 +4,7 @@ import { sendEmail } from "../../utils";
 import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../emailTemplates";
 
 import { parseCancellationsFromActivities } from "../../subscriptionUtils";
+import { formatTastePreference } from "../../tastePreferences";
 
 // Mirrors the backend's purchaseOverlapsActiveSubs (subscriptionController.js) —
 // a purchase only needs to queue if it shares a meal-type track with an
@@ -124,6 +125,7 @@ export const useSubscription = () => {
     lunchDinner,
     mealStartDate,
     allergy,
+    taste,
     setErrorMessage,
   ) => {
     // Only block on an existing queued plan if THIS purchase would also need to
@@ -157,6 +159,8 @@ export const useSubscription = () => {
           lunchDinner,
           mealStartDate,
           allergy,
+          spiceLevel: taste.spiceLevel,
+          flavourPreferences: taste.flavourPreferences,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -188,6 +192,8 @@ export const useSubscription = () => {
                 lunchDinner,
                 mealStartDate,
                 allergy,
+                spiceLevel: taste.spiceLevel,
+                flavourPreferences: taste.flavourPreferences,
               },
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -208,7 +214,7 @@ export const useSubscription = () => {
 --- CUSTOMER DETAILS ---
 Name: ${userName}\nEmail: ${userEmail}\nUser ID: ${userId}\n
 --- QUEUED SUBSCRIPTION DETAILS ---
-Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\n
+Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\nTaste Preference: ${formatTastePreference(taste) || "Not specified"}\n
 This plan is QUEUED and will activate when the user's current plan runs out.`);
 
                 setHasQueuedPlan(true);
@@ -232,7 +238,7 @@ This plan is QUEUED and will activate when the user's current plan runs out.`);
 --- CUSTOMER DETAILS ---
 Name: ${userName}\nEmail: ${userEmail}\nUser ID: ${userId}\n
 --- SUBSCRIPTION DETAILS ---
-Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\n
+Plan: ${planName}\nMeals Total: ${mealCount}\nMeal Type: ${mealType}\nCarb Type: ${carbType}\nPreference: ${lunchDinner}\nStart Date: ${mealStartDate}\nAllergy Info: ${allergy || "None"}\nTaste Preference: ${formatTastePreference(taste) || "Not specified"}\n
 Please update the system accordingly.`);
 
                 setIsSubscribed(true);

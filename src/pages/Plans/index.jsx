@@ -7,6 +7,7 @@ import { CheckmarkCircleOutline } from "./circleCheckmark";
 import { formatNutritionLine } from "../../nutritionInfo";
 import { CheckCircle2, Clock, Lock, Info, CalendarDays, AlertTriangle } from "lucide-react";
 import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
+import { TastePreferenceFields } from "../../components/common/TastePreferenceFields/TastePreferenceFields";
 
 const selectClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -74,6 +75,8 @@ const SubscriptionPlans = () => {
           lunchDinner: initialLunchDinner,
           mealStartDate: initialDate,
           allergy: "",
+          spiceLevel: "",
+          flavourPreferences: [],
         },
       };
     }, {})
@@ -115,6 +118,10 @@ const SubscriptionPlans = () => {
       lunchDinner,
       mealStartDate,
       allergy,
+      {
+        spiceLevel: planDetails[planName].spiceLevel,
+        flavourPreferences: planDetails[planName].flavourPreferences,
+      },
       (message) => {
         setErrorMessages({ ...errorMessages, [planName]: message });
       }
@@ -337,6 +344,15 @@ const SubscriptionPlans = () => {
                         onChange={(e) => handleDetailChange(plan.name, "allergy", e.target.value)}
                       />
                     </div>
+
+                    <TastePreferenceFields
+                      spiceLevel={currentPlanDetails.spiceLevel}
+                      flavourPreferences={currentPlanDetails.flavourPreferences}
+                      selectClass={selectClass}
+                      onChange={(next) =>
+                        setPlanDetails((prev) => ({ ...prev, [plan.name]: { ...prev[plan.name], ...next } }))
+                      }
+                    />
                   </div>
 
                   {/* ── Status area ── */}

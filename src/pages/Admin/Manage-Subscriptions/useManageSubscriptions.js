@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { notifyUsersChanged } from "../../../utils/crossTabSync";
 import { sendEmail } from "../../../utils";
 import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../../emailTemplates";
+import { formatTastePreference } from "../../../tastePreferences";
 
 const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
@@ -137,7 +138,7 @@ export const useManageSubscriptions = () => {
       `--- SUBSCRIPTION DETAILS ---\n` +
       `Plan: ${payload.plan}\nMeals Total: ${payload.totalMeals}\nMeal Type: ${payload.mealType}\n` +
       `Carb Type: ${payload.carbType}\nPreference: ${payload.lunchDinner}\nStart Date: ${payload.subscriptionStartDate}\n` +
-      `Allergy Info: ${payload.allergy || "None"}\nPayment Method: ${payload.paymentMethod || "Not recorded"}\n` +
+      `Allergy Info: ${payload.allergy || "None"}\nTaste Preference: ${formatTastePreference(payload) || "Not specified"}\nPayment Method: ${payload.paymentMethod || "Not recorded"}\n` +
       `Reason: ${payload.reason}\n\n` +
       `${isQueued ? "This plan is QUEUED and will activate when the user's current plan runs out." : "This plan is ACTIVE."}`;
 

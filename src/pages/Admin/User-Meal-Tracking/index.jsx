@@ -8,6 +8,7 @@ import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { useUserMealTracking } from "./useUserMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../../activityCategories";
+import { formatTastePreference } from "../../../tastePreferences";
 import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities } from "../../../subscriptionUtils";
 import {
   CalendarDays,
@@ -33,6 +34,7 @@ import {
   Wheat,
   AlertTriangle,
   CalendarPlus,
+  Flame,
 } from "lucide-react";
 
 const TABS = [
@@ -691,6 +693,7 @@ export const UserMealTracking = () => {
                           </SubscriptionField>
                           <SubscriptionField icon={Wheat} label="Carb Type"><CarbTypeBadge carbType={latestSub?.carbType} /></SubscriptionField>
                           <SubscriptionField icon={AlertTriangle} label="Allergy">{latestSub?.allergy || "None"}</SubscriptionField>
+                          <SubscriptionField icon={Flame} label="Taste Preference">{formatTastePreference(latestSub) || "Not specified"}</SubscriptionField>
                         </div>
 
                         <div>
@@ -723,6 +726,9 @@ export const UserMealTracking = () => {
                                     <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                                     {sub.allergy && (
                                       <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                                    )}
+                                    {formatTastePreference(sub) && (
+                                      <div className="col-span-2"><span className="text-gray-500">Taste:</span> <span className="font-bold text-gray-800">{formatTastePreference(sub)}</span></div>
                                     )}
                                     <div><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
                                     <div><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>
@@ -817,6 +823,7 @@ export const UserMealTracking = () => {
                         <DietChip icon={latestSub.mealType === "veg" ? Leaf : Beef} label={MEAL_TYPE_LABELS[latestSub.mealType] || latestSub.mealType} tone="bg-green-50 text-green-700" />
                         <CarbTypeBadge carbType={latestSub.carbType} />
                         {latestSub.allergy && <DietChip icon={AlertTriangle} label={latestSub.allergy} tone="bg-red-50 text-red-700" />}
+                        {formatTastePreference(latestSub) && <DietChip icon={Flame} label={formatTastePreference(latestSub)} tone="bg-amber-50 text-amber-700" />}
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500">No active plan.</p>

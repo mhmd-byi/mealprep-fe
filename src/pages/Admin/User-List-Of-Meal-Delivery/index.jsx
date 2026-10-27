@@ -14,6 +14,7 @@ import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { formatCarbType } from "../../../carbTypeDisplay";
 import { buildMealLabel, getCoverageCodeFromMealCounts, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
+import { formatTastePreference } from "../../../tastePreferences";
 import {
   ChevronUp,
   ChevronDown,
@@ -319,7 +320,7 @@ const ScheduledMealDeliveryList = () => {
 
   const exportToCSV = () => {
     // Define headers
-    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Allergy", "Selected Plan", "Meal Counts Left"];
+    const headers = ["Name", "Email", "Mobile", "Address", "Meal Type", "Carb Type", "Allergy", "Taste Preference", "Selected Plan", "Meal Counts Left"];
 
     // Convert data to CSV format
     const csvData = filteredMeals.map(meal => [
@@ -330,6 +331,7 @@ const ScheduledMealDeliveryList = () => {
       formatDietLabel(meal),
       formatCarbType(meal?.carbType),
       meal.allergy,
+      formatTastePreference(meal),
       meal.plan,
       `Lunch: ${meal.lunchMeals + meal.nextDayLunchMeals}, Dinner: ${meal.dinnerMeals + meal.nextDayDinnerMeals}`,
     ]);
@@ -589,6 +591,9 @@ const ScheduledMealDeliveryList = () => {
                               <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px]">
                                 Carb Type
                               </th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px]">
+                                Taste
+                              </th>
                               <th
                                 className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
                                 onClick={() => handleSort('plan')}
@@ -640,6 +645,9 @@ const ScheduledMealDeliveryList = () => {
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <CarbTypeBadge carbType={meal?.carbType} />
+                                  </td>
+                                  <td className="px-4 py-4 text-sm text-gray-700 max-w-[200px]">
+                                    <div className="break-words">{formatTastePreference(meal) || "—"}</div>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700">
                                     <PlanBadge plan={meal?.plan} />
@@ -718,6 +726,10 @@ const ScheduledMealDeliveryList = () => {
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Allergy:</span>
                                   <span className="text-gray-900 text-right break-words max-w-[60%]">{meal?.allergy || "None"}</span>
+                                </div>
+                                <div className="flex justify-between pb-2 border-b">
+                                  <span className="font-medium text-gray-500">Taste:</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{formatTastePreference(meal) || "—"}</span>
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Meal Counts Left:</span>
@@ -851,6 +863,9 @@ const ScheduledMealDeliveryList = () => {
                             <div className="flex gap-1.5 items-center col-span-2"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                             {sub.allergy && (
                               <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                            )}
+                            {formatTastePreference(sub) && (
+                              <div className="col-span-2"><span className="text-gray-500">Taste:</span> <span className="font-bold text-gray-800">{formatTastePreference(sub)}</span></div>
                             )}
                           </div>
                         </div>

@@ -7,6 +7,7 @@ import { VegNonVegIcon } from "../VegNonVegIcon/VegNonVegIcon";
 import { PlanBadge } from "../PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../CarbTypeBadge/CarbTypeBadge";
 import { MealSlotIcon } from "../MealSlotIcon/MealSlotIcon";
+import { formatTastePreference } from "../../../tastePreferences";
 import { CalendarDays, CreditCard, Droplets, Utensils, History, Sun, Pencil, Package } from "lucide-react";
 
 const STATUS_STYLES = {
@@ -293,6 +294,9 @@ export const UserDetailsPopup = ({ userId, isOpen, onClose }) => {
                           <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
                           {sub.allergy && (
                             <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                          )}
+                          {formatTastePreference(sub) && (
+                            <div className="col-span-2"><span className="text-gray-500">Taste:</span> <span className="font-bold text-gray-800">{formatTastePreference(sub)}</span></div>
                           )}
                           <div className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
                           <div className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>

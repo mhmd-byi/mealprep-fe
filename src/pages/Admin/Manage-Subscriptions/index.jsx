@@ -9,6 +9,8 @@ import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIc
 import { AuditLogTable } from "../../../components/common/AuditLogTable/AuditLogTable";
 import { useManageSubscriptions } from "./useManageSubscriptions";
 import { FieldLabel } from "./FieldLabel";
+import { TastePreferenceFields } from "../../../components/common/TastePreferenceFields/TastePreferenceFields";
+import { formatTastePreference, sameFlavours } from "../../../tastePreferences";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
@@ -61,10 +63,14 @@ const emptyCreateForm = {
   carbType: "",
   subscriptionStartDate: "",
   allergy: "",
+  spiceLevel: "",
+  flavourPreferences: [],
   paymentMethod: "",
   paymentId: "",
   reason: "",
 };
+
+const renderFieldLabel = (text, help) => <FieldLabel label={text} help={help} />;
 
 const emptyNewUserForm = {
   firstName: "",
@@ -310,6 +316,7 @@ export const ManageSubscriptions = () => {
     ["Carb type", carbLabel],
     ["Start", createWouldOverlap ? "Automatic (will queue)" : formatDate(createForm.subscriptionStartDate)],
     ["Allergy", createForm.allergy || "None"],
+    ["Taste", formatTastePreference(createForm) || "Not specified"],
     ["Payment", createForm.paymentMethod || "No charge"],
   ];
   const CREATE_STEP_LABELS = ["Plan", "Meals & Diet", "Pricing & Duration", "Review"];
@@ -338,6 +345,8 @@ export const ManageSubscriptions = () => {
         carbType,
         subscriptionStartDate,
         allergy: createForm.allergy,
+        spiceLevel: createForm.spiceLevel,
+        flavourPreferences: createForm.flavourPreferences,
         paymentMethod: createForm.paymentMethod,
         paymentId: createForm.paymentId,
         reason: createForm.reason,
@@ -358,6 +367,8 @@ export const ManageSubscriptions = () => {
       carbType: sub.carbType,
       mealType: sub.mealType,
       allergy: sub.allergy || "",
+      spiceLevel: sub.spiceLevel || "",
+      flavourPreferences: sub.flavourPreferences || [],
       status: sub.status,
       paymentMethod: sub.paymentMethod || "",
       paymentId: sub.paymentId || "",
@@ -395,8 +406,14 @@ export const ManageSubscriptions = () => {
 
     // Only send fields that actually changed
     const fieldUpdates = {};
-    const stringFallbackFields = ["allergy", "paymentMethod", "paymentId"];
+    const stringFallbackFields = ["allergy", "spiceLevel", "paymentMethod", "paymentId"];
     Object.keys(editFieldUpdates).forEach((key) => {
+      if (key === "flavourPreferences") {
+        if (!sameFlavours(editFieldUpdates.flavourPreferences, editingSub.flavourPreferences)) {
+          fieldUpdates.flavourPreferences = editFieldUpdates.flavourPreferences;
+        }
+        return;
+      }
       const original = key === "subscriptionStartDate"
         ? toInputDate(editingSub.subscriptionStartDate)
         : stringFallbackFields.includes(key) ? editingSub[key] || "" : editingSub[key];
@@ -888,6 +905,12 @@ export const ManageSubscriptions = () => {
                         placeholder="None"
                       />
                     </div>
+                    <TastePreferenceFields
+                      spiceLevel={createForm.spiceLevel}
+                      flavourPreferences={createForm.flavourPreferences}
+                      renderLabel={renderFieldLabel}
+                      onChange={(next) => setCreateForm((prev) => ({ ...prev, ...next }))}
+                    />
                   </>
                 )}
 
@@ -1159,6 +1182,12 @@ export const ManageSubscriptions = () => {
                           placeholder="None"
                         />
                       </div>
+                      <TastePreferenceFields
+                        spiceLevel={editFieldUpdates.spiceLevel || ""}
+                        flavourPreferences={editFieldUpdates.flavourPreferences || []}
+                        renderLabel={renderFieldLabel}
+                        onChange={(next) => setEditFieldUpdates((prev) => ({ ...prev, ...next }))}
+                      />
                     </>
                   )}
 

@@ -83,6 +83,13 @@
     "adminOnly": true
   },
   {
+    "name": "Taste Preferences",
+    "icon": "Flame",
+    "path": "/dashboard/taste-preferences",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
     "name": "User Cancel Requests",
     "icon": "UserX",
     "path": "/dashboard/user-cancel-request-list",
