@@ -8,6 +8,7 @@ import {
   Utensils,
   UserCog,
   ClipboardList,
+  RefreshCw,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
@@ -34,7 +35,10 @@ const getActivityStatus = (category, description) => {
     case "account":
       return { label: "Verified", color: "blue" };
     case "subscription":
-      return { label: "Active", color: "green" };
+    case "renewal":
+      return /\(queued\)$/i.test(description || "")
+        ? { label: "Queued", color: "amber" }
+        : { label: "Active", color: "green" };
     case "cancellation":
       return { label: "Processed", color: "amber" };
     case "customisation":
@@ -69,6 +73,7 @@ const PREVIEW_COUNT = 10;
 const CATEGORIES = [
   { key: "account", label: "Account Created", icon: UserPlus, tone: "bg-purple-100 text-purple-600" },
   { key: "subscription", label: "New Subscription", icon: CreditCard, tone: "bg-teal-100 text-teal-600" },
+  { key: "renewal", label: "Renewals", icon: RefreshCw, tone: "bg-indigo-100 text-indigo-600" },
   { key: "cancellation", label: "Cancellations", icon: CalendarX, tone: "bg-red-100 text-red-600" },
   { key: "customisation", label: "Customisation", icon: SlidersHorizontal, tone: "bg-orange-100 text-orange-600" },
   { key: "profile", label: "Profile Update", icon: UserCog, tone: "bg-blue-100 text-blue-600" },
@@ -87,14 +92,16 @@ const matchesCategory = (item, categoryKey) => {
   return item.category === categoryKey;
 };
 
-const SUBSCRIBED_PATTERN = /^Subscribed to (.+)$/i;
+const SUBSCRIPTION_ACTIVITY_PATTERN = /^(Subscribed to|Renewed) (.+?)( \(queued\))?$/i;
 
 const ActivityDetails = ({ item }) => {
-  const match = item.category === "subscription" ? SUBSCRIBED_PATTERN.exec(item.description || "") : null;
+  const isPurchase = item.category === "subscription" || item.category === "renewal";
+  const match = isPurchase ? SUBSCRIPTION_ACTIVITY_PATTERN.exec(item.description || "") : null;
   if (!match) return item.description;
   return (
     <span className="inline-flex gap-2 items-center">
-      Subscribed to <PlanBadge plan={match[1].trim()} />
+      {match[1]} <PlanBadge plan={match[2].trim()} />
+      {match[3] && <span className="text-xs font-semibold text-amber-600">queued</span>}
     </span>
   );
 };

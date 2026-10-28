@@ -35,29 +35,6 @@ export const useSubscription = () => {
   const [holidays, setHolidays] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getCurrentDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  };
-  const currentDate = getCurrentDate();
-
-  const activityEntry = async (userId, mealPlan) => {
-    try {
-      const res = await axios({
-        method: "POST",
-        url: `${process.env.REACT_APP_API_URL}activity/add-activity`,
-        data: {
-          userId: userId,
-          date: currentDate,
-          description: `Subscribed to ${mealPlan}`,
-          category: "subscription",
-        },
-      });
-    } catch (e) {
-      console.error("Error adding activity:", e);
-    }
-  };
-
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
       const userId = sessionStorage.getItem("userId");
@@ -202,7 +179,6 @@ export const useSubscription = () => {
 
             if (verifyResponse.status === 201) {
               const isQueued = verifyResponse.data?.isQueued || false;
-              activityEntry(userId, planName);
 
               if (isQueued) {
                 // Notification to Customer — queued plan

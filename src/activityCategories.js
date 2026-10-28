@@ -1,6 +1,7 @@
 export const ACTIVITY_CATEGORY_LABELS = {
   account: "Account",
   subscription: "Subscription",
+  renewal: "Renewal",
   cancellation: "Cancellation",
   customisation: "Customisation",
   diet: "Diet Preference",
@@ -13,6 +14,7 @@ export const ACTIVITY_CATEGORY_LABELS = {
 export const ACTIVITY_CATEGORY_COLORS = {
   account: "bg-blue-100 text-blue-700",
   subscription: "bg-green-100 text-green-700",
+  renewal: "bg-indigo-100 text-indigo-700",
   cancellation: "bg-red-100 text-red-700",
   customisation: "bg-purple-100 text-purple-700",
   diet: "bg-amber-100 text-amber-700",

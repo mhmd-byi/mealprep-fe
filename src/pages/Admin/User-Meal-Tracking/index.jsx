@@ -114,6 +114,7 @@ const getRecordStatus = (record) => {
   }
   if (category === "cancellation") return { label: "Cancelled", style: "bg-red-100 text-red-700" };
   if (category === "subscription") return { label: "Subscribed", style: "bg-blue-100 text-blue-700" };
+  if (category === "renewal") return { label: "Renewed", style: "bg-indigo-100 text-indigo-700" };
   if (category === "holiday") return { label: "Holiday", style: "bg-purple-100 text-purple-700" };
   if (category === "diet") return { label: "Diet Updated", style: "bg-amber-100 text-amber-700" };
   if (category === "customisation") return { label: "Customisation", style: "bg-indigo-100 text-indigo-700" };
