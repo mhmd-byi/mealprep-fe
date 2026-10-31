@@ -179,5 +179,12 @@
     "path": "/dashboard/audit-log",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Notes",
+    "icon": "StickyNote",
+    "path": "/dashboard/notes",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
