@@ -566,47 +566,47 @@ const ScheduledMealDeliveryList = () => {
                   {sortedMeals.length > 0 ? (
                     <div className="w-full">
                       {/* Desktop View */}
-                      <div className="hidden overflow-x-auto md:block print:block">
+                      <div className="hidden overflow-x-auto md:block print:block print:overflow-visible print:[zoom:0.8]">
                         <table className="w-full text-left divide-y divide-gray-200">
                           <thead className="bg-gray-50 print:static">
                             <tr>
                               <th
-                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[200px] hover:bg-gray-100"
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[200px] print:min-w-0 hover:bg-gray-100"
                                 onClick={() => handleSort('name')}
                               >
                                 Customer Info <SortIcon columnKey="name" />
                               </th>
-                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[120px]">
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[120px] print:min-w-0">
                                 Mobile
                               </th>
-                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[200px]">
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[200px] print:min-w-0">
                                 Address
                               </th>
                               <th
-                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] print:min-w-0 hover:bg-gray-100"
                                 onClick={() => handleSort('category')}
                               >
                                 Meal Type <SortIcon columnKey="category" />
                               </th>
-                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px]">
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px] print:min-w-0">
                                 Carb Type
                               </th>
-                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px]">
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase min-w-[150px] print:min-w-0">
                                 Taste
                               </th>
                               <th
-                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] print:min-w-0 hover:bg-gray-100"
                                 onClick={() => handleSort('plan')}
                               >
                                 Selected Plan <SortIcon columnKey="plan" />
                               </th>
                               <th
-                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] hover:bg-gray-100"
+                                className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase cursor-pointer min-w-[150px] print:min-w-0 hover:bg-gray-100"
                                 onClick={() => handleSort('mealCount')}
                               >
                                 Meal Counts Left <SortIcon columnKey="mealCount" />
                               </th>
-                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Label</th>
+                              <th className="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase print:hidden">Label</th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-100">
@@ -616,18 +616,18 @@ const ScheduledMealDeliveryList = () => {
                               const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
 
                               return (
-                                <tr key={index} className={`hover:bg-gray-50 ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
-                                  <td className="px-4 py-4 text-sm font-medium max-w-[250px]">
+                                <tr key={index} className={`hover:bg-gray-50 print:break-inside-avoid ${isZeroMeals ? 'bg-red-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 text-sm font-medium">
                                     <div className="flex gap-3 items-center">
                                       <InitialsAvatar name={meal.name} />
                                       <div className="min-w-0">
                                         <div
-                                          className="font-bold break-words cursor-pointer text-theme-color-1 hover:underline"
+                                          className="font-bold whitespace-nowrap cursor-pointer text-theme-color-1 hover:underline"
                                           onClick={() => fetchUserDetails(meal.userId)}
                                         >
                                           {meal.name}
                                         </div>
-                                        <div className="text-xs text-gray-500 break-all">{meal.email}</div>
+                                        <div className="text-xs text-gray-500 break-all max-w-[220px]">{meal.email}</div>
                                       </div>
                                     </div>
                                   </td>
@@ -658,7 +658,7 @@ const ScheduledMealDeliveryList = () => {
                                       <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
                                     </div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-gray-700">
+                                  <td className="px-4 py-4 text-sm text-gray-700 print:hidden">
                                     <button
                                       type="button"
                                       onClick={() => printLabelForMeal(meal)}

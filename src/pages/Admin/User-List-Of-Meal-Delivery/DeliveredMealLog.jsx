@@ -85,7 +85,7 @@ const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort, onPrintLabel }) 
             >
               Type <SortIcon direction={sortKey === "type" ? sortDir : null} />
             </th>
-            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Label</th>
+            <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase print:hidden">Label</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -97,7 +97,7 @@ const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort, onPrintLabel }) 
               <td className="px-3 py-2 whitespace-nowrap">
                 <VegNonVegIcon value={row.dietaryType} />
               </td>
-              <td className="px-3 py-2 whitespace-nowrap">
+              <td className="px-3 py-2 whitespace-nowrap print:hidden">
                 <button
                   type="button"
                   onClick={() => onPrintLabel(row)}
