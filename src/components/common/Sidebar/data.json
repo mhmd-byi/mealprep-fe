@@ -186,5 +186,12 @@
     "path": "/dashboard/notes",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Notifications",
+    "icon": "Bell",
+    "path": "/dashboard/notifications",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]
