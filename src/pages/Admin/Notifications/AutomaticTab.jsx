@@ -49,13 +49,17 @@ const ReminderCard = ({ reminder }) => {
         <label className="block mb-1 text-xs font-medium text-gray-500">
           Message ({body.length}/{BODY_MAX})
         </label>
-        <textarea className={inputClass} rows={3} value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} />
+        <textarea className={inputClass} rows={reminder.trigger === "event" ? 9 : 3} value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} />
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
-          <label className="block mb-1 text-xs font-medium text-gray-500">Sends at (India time)</label>
-          <input type="time" className={inputClass} value={sendAt} onChange={(e) => setSendAt(e.target.value)} />
-        </div>
+        {reminder.trigger === "time" ? (
+          <div>
+            <label className="block mb-1 text-xs font-medium text-gray-500">Sends at (India time)</label>
+            <input type="time" className={inputClass} value={sendAt} onChange={(e) => setSendAt(e.target.value)} />
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">Sent as soon as a holiday is added. There is no send time to set.</p>
+        )}
         {reminder.key === "plan-ending" && (
           <div>
             <p className="mb-1.5 text-xs font-medium text-gray-500">Send this many days before the plan ends</p>

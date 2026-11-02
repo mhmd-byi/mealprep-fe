@@ -1,5 +1,5 @@
 export const TITLE_MAX = 65;
-export const BODY_MAX = 240;
+export const BODY_MAX = 500;
 
 export const ROUTE_OPTIONS = [
   { value: "", label: "Just open the app" },

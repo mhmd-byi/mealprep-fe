@@ -130,10 +130,11 @@ const AddHoliday = () => {
     setIsLoading(true);
     setError("");
 
-    const rangeLabel =
-      formData.endDate && formData.endDate !== formData.startDate
-        ? `${formData.startDate} to ${formData.endDate}`
-        : formData.startDate;
+    const isRange = formData.endDate && formData.endDate !== formData.startDate;
+    const rangeLabel = isRange ? `${formData.startDate} to ${formData.endDate}` : formData.startDate;
+    const friendlyDates = isRange
+      ? `${formatHolidayDate(formData.startDate)} to ${formatHolidayDate(formData.endDate)}`
+      : formatHolidayDate(formData.startDate);
 
     try {
       const response = await axios.post(
@@ -196,11 +197,8 @@ const AddHoliday = () => {
         sendEmail(
           user._id,
           "",
-          "New Holiday Added!",
-          `Dear Customer,\n
-                      We wanted to inform you that there is a holiday on ${rangeLabel}, due to ${formData.description}. Please plan accordingly.\n\n
-                        Team Mealprep\n
-                      `
+          "📢 Important Holiday Update – MealPrep",
+          `Dear Customer,\n\nPlease note that MealPrep will remain closed on ${friendlyDates} on account of ${formData.description}.\n\nThere will be no lunch or dinner deliveries on this day.\n\nYour missed meals will be adjusted in your meal balance accordingly.\n\nTeam MealPrep\nHealthy Eating, Made Easy! 🥗`
         );
       });
     } catch (error) {
@@ -227,6 +225,9 @@ const AddHoliday = () => {
             <h2 className="text-2xl font-bold text-gray-900">Add Holiday</h2>
             <p className="text-sm text-gray-500">
               Mark your non-operational days. These dates will be blocked for meal deliveries and subscriptions.
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Customers who have meals left are told straight away by email, and in the app inbox and by push notification. You can edit the app message under Notifications, Automatic reminders.
             </p>
           </div>
 
