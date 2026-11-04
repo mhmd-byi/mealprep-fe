@@ -6,6 +6,7 @@ import { useChartWidth } from "./useChartWidth";
 const VIEW_H = 220;
 const MARGIN = { top: 16, right: 56, bottom: 44, left: 64 };
 const INNER_H = VIEW_H - MARGIN.top - MARGIN.bottom;
+const END_LABEL_GAP = 16;
 
 // A line chart in plain SVG — 2px lines, an end-dot per series, a crosshair
 // that snaps to the nearest X and a tooltip listing every series at that X
@@ -38,6 +39,17 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
   // the most recent point's label.
   const labelStep = data.length > 8 ? Math.ceil(data.length / 8) : 1;
   const showLabel = (i) => i % labelStep === 0 || i === data.length - 1;
+
+  const lastRow = data[data.length - 1];
+  const endLabels = seriesKeys
+    .map((s) => ({ key: s.key, y: yFor(lastRow[s.key] || 0) }))
+    .sort((a, b) => a.y - b.y);
+  for (let i = 1; i < endLabels.length; i += 1) {
+    endLabels[i].y = Math.max(endLabels[i].y, endLabels[i - 1].y + END_LABEL_GAP);
+  }
+  const endOverflow = endLabels.length ? endLabels[endLabels.length - 1].y - INNER_H : 0;
+  if (endOverflow > 0) endLabels.forEach((label) => { label.y -= endOverflow; });
+  const endLabelY = Object.fromEntries(endLabels.map((label) => [label.key, label.y]));
 
   return (
     <div>
@@ -153,8 +165,8 @@ export const LineChart = ({ data, seriesKeys, title, valueFormatter = (v) => v, 
                         strokeWidth={2}
                       />
                     ))}
-                    <text x={last[0] + 6} y={last[1]} dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#3a3934">
-                      {valueFormatter(data[data.length - 1][s.key] || 0)}
+                    <text x={last[0] + 6} y={endLabelY[s.key]} dominantBaseline="middle" fontSize={13} fontWeight={700} fill="#3a3934">
+                      {valueFormatter(lastRow[s.key] || 0)}
                     </text>
                   </g>
                 );
