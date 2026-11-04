@@ -40,7 +40,7 @@ export const NoteCard = ({ note, category, onToggleDone, onEdit, onDelete }) => 
         <p className={`mt-2 font-semibold break-words ${note.isDone ? "text-gray-500 line-through" : "text-gray-900"}`}>
           {note.title}
         </p>
-        {note.body && <p className="text-sm text-gray-500 truncate">{note.body}</p>}
+        {note.bodyText && <p className="text-sm text-gray-500 truncate">{note.bodyText}</p>}
 
         <div className="flex flex-wrap gap-x-4 gap-y-1 items-center mt-2 text-xs text-gray-500">
           {note.dueAt && (

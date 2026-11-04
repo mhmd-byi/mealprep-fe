@@ -92,6 +92,17 @@ export const STATUS_OPTIONS = [
 
 export const withAlpha = (hex, alphaHex) => `${hex}${alphaHex}`;
 
+const escapeHtml = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+export const noteBodyToHtml = (note) => {
+  if (!note?.body) return "";
+  if (note.bodyFormat === "html") return note.body;
+  return note.body
+    .split("\n")
+    .map((line) => `<p>${escapeHtml(line)}</p>`)
+    .join("");
+};
+
 const pad = (value) => String(value).padStart(2, "0");
 
 export const formatNoteDateTime = (value) =>

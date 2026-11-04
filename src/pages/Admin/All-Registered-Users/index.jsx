@@ -8,7 +8,10 @@ import FilterPopup from "../../../components/common/FilterPopup/FilterPopup";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
-import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
+import {
+  ChangeBadge,
+  percentChange,
+} from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import {
@@ -40,12 +43,24 @@ import { formatGender, formatProfession } from "../../../profileFields";
 // "No" / "None" / "N/A" / "Nil" into the field instead of leaving it empty —
 // those should count as no allergy too, not get lumped in with real ones.
 const NO_ALLERGY_TEXT = new Set([
-  "no", "none", "na", "nil", "nill", "nothing",
-  "noallergy", "noallergies", "noknownallergy", "noknownallergies",
-  "noneknown", "notapplicable",
+  "no",
+  "none",
+  "na",
+  "nil",
+  "nill",
+  "nothing",
+  "noallergy",
+  "noallergies",
+  "noknownallergy",
+  "noknownallergies",
+  "noneknown",
+  "notapplicable",
 ]);
 const hasAllergy = (value) => {
-  const normalized = (value || "").trim().toLowerCase().replace(/[^a-z]/g, "");
+  const normalized = (value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
   return normalized.length > 0 && !NO_ALLERGY_TEXT.has(normalized);
 };
 
@@ -58,7 +73,9 @@ const STATUS_STYLES = {
 };
 
 const getLatestSub = (user) =>
-  user.subscriptions?.length ? user.subscriptions[user.subscriptions.length - 1] : null;
+  user.subscriptions?.length
+    ? user.subscriptions[user.subscriptions.length - 1]
+    : null;
 
 const getStatus = (user) => {
   const subs = user.subscriptions || [];
@@ -73,7 +90,11 @@ const getStatus = (user) => {
 const isNewThisMonth = (user) => {
   const created = new Date(user.createdAt || user.created_date);
   const now = new Date();
-  return !Number.isNaN(created.getTime()) && created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+  return (
+    !Number.isNaN(created.getTime()) &&
+    created.getMonth() === now.getMonth() &&
+    created.getFullYear() === now.getFullYear()
+  );
 };
 
 const STATUS_TABS = [
@@ -84,12 +105,24 @@ const STATUS_TABS = [
   // when there's already an overlapping active plan), and getStatus()
   // collapses that pair down to just "Active", so this tab needs its own
   // independent check to ever show anyone.
-  { key: "queued", label: "Queued", match: (u) => (u.subscriptions || []).some((s) => s.status === "queued") },
+  {
+    key: "queued",
+    label: "Queued",
+    match: (u) => (u.subscriptions || []).some((s) => s.status === "queued"),
+  },
   // Never subscribed to any plan at all (empty subscriptions array) — distinct
   // from "completed" below, which did subscribe at some point but isn't
   // continuing.
-  { key: "inactive", label: "Inactive", match: (u) => getStatus(u) === "No Plan" },
-  { key: "completed", label: "Completed", match: (u) => ["Cancelled", "Completed"].includes(getStatus(u)) },
+  {
+    key: "inactive",
+    label: "Inactive",
+    match: (u) => getStatus(u) === "No Plan",
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    match: (u) => ["Cancelled", "Completed"].includes(getStatus(u)),
+  },
   { key: "new", label: "New This Month", match: isNewThisMonth },
 ];
 
@@ -116,28 +149,48 @@ const SubscriptionField = ({ icon: Icon, label, children }) => (
 
 const DayBalanceCard = ({ icon: Icon, tone, label, lunch, dinner }) => (
   <div className="flex gap-4 items-center p-4 bg-white rounded-xl border border-gray-200">
-    <div className={`flex flex-shrink-0 justify-center items-center w-11 h-11 rounded-full ${tone}`}>
+    <div
+      className={`flex flex-shrink-0 justify-center items-center w-11 h-11 rounded-full ${tone}`}
+    >
       <Icon className="w-5 h-5" />
     </div>
     <p className="w-20 font-bold text-gray-900">{label}</p>
     <div className="flex flex-1 text-center divide-x divide-gray-200">
       <div className="flex-1 px-4">
-        <p className="flex items-center gap-1 text-xs text-gray-500"><MealSlotIcon slot="lunch" />Lunch</p>
+        <p className="flex gap-1 items-center text-xs text-gray-500">
+          <MealSlotIcon slot="lunch" />
+          Lunch
+        </p>
         <p className="text-xl font-bold text-theme-color-1">{lunch}</p>
       </div>
       <div className="flex-1 px-4">
-        <p className="flex items-center gap-1 text-xs text-gray-500"><MealSlotIcon slot="dinner" />Dinner</p>
+        <p className="flex gap-1 items-center text-xs text-gray-500">
+          <MealSlotIcon slot="dinner" />
+          Dinner
+        </p>
         <p className="text-xl font-bold text-orange-600">{dinner}</p>
       </div>
     </div>
   </div>
 );
 
-const MEAL_TYPE_LABELS = { veg: "Veg", "non-veg": "Non-Veg", both: "Both (Flexible)" };
+const MEAL_TYPE_LABELS = {
+  veg: "Veg",
+  "non-veg": "Non-Veg",
+  both: "Both (Flexible)",
+};
 
 export const AllRegisteredUsers = () => {
   const navigate = useNavigate();
-  const { allRegisteredUsers, isLoading, isBackgroundLoading, planFilter, downloadCSV, cancelQueuedPlan, holidayDateKeys } = useAllRegisteredUsers();
+  const {
+    allRegisteredUsers,
+    isLoading,
+    isBackgroundLoading,
+    planFilter,
+    downloadCSV,
+    cancelQueuedPlan,
+    holidayDateKeys,
+  } = useAllRegisteredUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -191,13 +244,20 @@ export const AllRegisteredUsers = () => {
   };
 
   const handleCancelPlan = async (subId, userName) => {
-    if (window.confirm(`Are you sure you want to cancel the queued plan for ${userName}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to cancel the queued plan for ${userName}?`,
+      )
+    ) {
       try {
         await cancelQueuedPlan(subId);
         alert("Queued plan cancelled successfully.");
         setSelectedUser(null);
       } catch (err) {
-        alert("Failed to cancel queued plan: " + (err.response?.data?.message || err.message));
+        alert(
+          "Failed to cancel queued plan: " +
+            (err.response?.data?.message || err.message),
+        );
       }
     }
   };
@@ -209,12 +269,21 @@ export const AllRegisteredUsers = () => {
     setAllergyFilter("All");
     setCoverageFilter("All");
     setShowZeroMeals(false);
-    setFilterCriteria({ mealCount: "", operator: ">", planType: "All", endDateOperator: "", endDate: "" });
+    setFilterCriteria({
+      mealCount: "",
+      operator: ">",
+      planType: "All",
+      endDateOperator: "",
+      endDate: "",
+    });
     setCurrentPage(1);
   };
 
   const tabCounts = Object.fromEntries(
-    STATUS_TABS.map((tab) => [tab.key, allRegisteredUsers.filter((u) => tab.match(u)).length])
+    STATUS_TABS.map((tab) => [
+      tab.key,
+      allRegisteredUsers.filter((u) => tab.match(u)).length,
+    ]),
   );
 
   // Registration dates are immutable, so both of these can be reconstructed
@@ -233,7 +302,11 @@ export const AllRegisteredUsers = () => {
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const newLastMonthCount = allRegisteredUsers.filter((u) => {
     const created = new Date(u.createdAt || u.created_date);
-    return !Number.isNaN(created.getTime()) && created.getMonth() === lastMonthDate.getMonth() && created.getFullYear() === lastMonthDate.getFullYear();
+    return (
+      !Number.isNaN(created.getTime()) &&
+      created.getMonth() === lastMonthDate.getMonth() &&
+      created.getFullYear() === lastMonthDate.getFullYear()
+    );
   }).length;
 
   const statCards = [
@@ -245,9 +318,24 @@ export const AllRegisteredUsers = () => {
       change: percentChange(allRegisteredUsers.length, usersThirtyDaysAgoCount),
       changeSuffix: "vs last month",
     },
-    { label: "Active Subscribers", value: tabCounts.active, icon: UserCheck, tabKey: "active" },
-    { label: "Inactive", value: tabCounts.inactive, icon: PauseCircle, tabKey: "inactive" },
-    { label: "Completed", value: tabCounts.completed, icon: History, tabKey: "completed" },
+    {
+      label: "Active Subscribers",
+      value: tabCounts.active,
+      icon: UserCheck,
+      tabKey: "active",
+    },
+    {
+      label: "Inactive",
+      value: tabCounts.inactive,
+      icon: PauseCircle,
+      tabKey: "inactive",
+    },
+    {
+      label: "Completed",
+      value: tabCounts.completed,
+      icon: History,
+      tabKey: "completed",
+    },
     {
       label: "New This Month",
       value: tabCounts.new,
@@ -261,13 +349,17 @@ export const AllRegisteredUsers = () => {
   const activeTab = STATUS_TABS.find((tab) => tab.key === statusTab);
 
   const filteredUsers = allRegisteredUsers.filter((user) => {
-    const searchMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const searchMatch =
+      `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const totalMeals = (user.mealCounts?.lunchMeals || 0) +
-                      (user.mealCounts?.nextDayLunchMeals || 0) +
-                      (user.mealCounts?.dinnerMeals || 0) +
-                      (user.mealCounts?.nextDayDinnerMeals || 0);
+    const totalMeals =
+      (user.mealCounts?.lunchMeals || 0) +
+      (user.mealCounts?.nextDayLunchMeals || 0) +
+      (user.mealCounts?.dinnerMeals || 0) +
+      (user.mealCounts?.nextDayDinnerMeals || 0);
 
     // Zero-meals hiding only makes sense on the "Active" view — it's meant to
     // cut noise from users who nominally look active but have run dry. "All
@@ -278,7 +370,8 @@ export const AllRegisteredUsers = () => {
     // signup has none yet), so applying it there would hide almost everyone
     // those tabs exist to show.
     const presenceFilterApplies = statusTab === "active";
-    const presenceMatch = !presenceFilterApplies || showZeroMeals ? true : totalMeals > 0;
+    const presenceMatch =
+      !presenceFilterApplies || showZeroMeals ? true : totalMeals > 0;
 
     const latestSub = getLatestSub(user);
 
@@ -288,27 +381,40 @@ export const AllRegisteredUsers = () => {
     }
 
     const statusMatch = Boolean(activeTab.match(user));
-    const dietMatch = dietFilter === "All" || latestSub?.mealType === dietFilter;
+    const dietMatch =
+      dietFilter === "All" || latestSub?.mealType === dietFilter;
     const allergyMatch =
       allergyFilter === "All" ||
-      (allergyFilter === "Has" ? hasAllergy(latestSub?.allergy) : !hasAllergy(latestSub?.allergy));
+      (allergyFilter === "Has"
+        ? hasAllergy(latestSub?.allergy)
+        : !hasAllergy(latestSub?.allergy));
 
     // Coverage isn't a stored field — a subscription's lunch/dinner split only
     // exists as remaining meal counts, so "lunch plan" / "dinner plan" / "both"
     // is derived from which side currently still has meals left.
-    const lunchLeft = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
-    const dinnerLeft = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
+    const lunchLeft =
+      (user.mealCounts?.lunchMeals || 0) +
+      (user.mealCounts?.nextDayLunchMeals || 0);
+    const dinnerLeft =
+      (user.mealCounts?.dinnerMeals || 0) +
+      (user.mealCounts?.nextDayDinnerMeals || 0);
     let coverageMatch = true;
-    if (coverageFilter === "lunch") coverageMatch = lunchLeft > 0 && dinnerLeft === 0;
-    else if (coverageFilter === "dinner") coverageMatch = dinnerLeft > 0 && lunchLeft === 0;
-    else if (coverageFilter === "both") coverageMatch = lunchLeft > 0 && dinnerLeft > 0;
+    if (coverageFilter === "lunch")
+      coverageMatch = lunchLeft > 0 && dinnerLeft === 0;
+    else if (coverageFilter === "dinner")
+      coverageMatch = dinnerLeft > 0 && lunchLeft === 0;
+    else if (coverageFilter === "both")
+      coverageMatch = lunchLeft > 0 && dinnerLeft > 0;
 
     let mealCountMatch = true;
     if (filterCriteria.mealCount !== "") {
       const targetCount = parseInt(filterCriteria.mealCount);
-      if (filterCriteria.operator === ">") mealCountMatch = totalMeals > targetCount;
-      else if (filterCriteria.operator === "<") mealCountMatch = totalMeals < targetCount;
-      else if (filterCriteria.operator === "=") mealCountMatch = totalMeals === targetCount;
+      if (filterCriteria.operator === ">")
+        mealCountMatch = totalMeals > targetCount;
+      else if (filterCriteria.operator === "<")
+        mealCountMatch = totalMeals < targetCount;
+      else if (filterCriteria.operator === "=")
+        mealCountMatch = totalMeals === targetCount;
     }
 
     let endDateMatch = true;
@@ -320,15 +426,28 @@ export const AllRegisteredUsers = () => {
         const filterDate = new Date(filterCriteria.endDate);
         filterDate.setHours(0, 0, 0, 0);
 
-        if (filterCriteria.endDateOperator === "<") endDateMatch = userEndDate < filterDate;
-        else if (filterCriteria.endDateOperator === ">") endDateMatch = userEndDate > filterDate;
-        else if (filterCriteria.endDateOperator === "=") endDateMatch = userEndDate.getTime() === filterDate.getTime();
+        if (filterCriteria.endDateOperator === "<")
+          endDateMatch = userEndDate < filterDate;
+        else if (filterCriteria.endDateOperator === ">")
+          endDateMatch = userEndDate > filterDate;
+        else if (filterCriteria.endDateOperator === "=")
+          endDateMatch = userEndDate.getTime() === filterDate.getTime();
       } else {
         endDateMatch = false;
       }
     }
 
-    return searchMatch && mealCountMatch && presenceMatch && planMatch && endDateMatch && statusMatch && dietMatch && allergyMatch && coverageMatch;
+    return (
+      searchMatch &&
+      mealCountMatch &&
+      presenceMatch &&
+      planMatch &&
+      endDateMatch &&
+      statusMatch &&
+      dietMatch &&
+      allergyMatch &&
+      coverageMatch
+    );
   });
 
   const latestSubscriptionTime = (user) => {
@@ -339,17 +458,24 @@ export const AllRegisteredUsers = () => {
   };
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (!sortConfig.key) return latestSubscriptionTime(b) - latestSubscriptionTime(a);
+    if (!sortConfig.key)
+      return latestSubscriptionTime(b) - latestSubscriptionTime(a);
 
     let aValue, bValue;
     if (sortConfig.key === "name") {
       aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
       bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
     } else if (sortConfig.key === "mealCount") {
-      aValue = (a.mealCounts?.lunchMeals || 0) + (a.mealCounts?.nextDayLunchMeals || 0) +
-               (a.mealCounts?.dinnerMeals || 0) + (a.mealCounts?.nextDayDinnerMeals || 0);
-      bValue = (b.mealCounts?.lunchMeals || 0) + (b.mealCounts?.nextDayLunchMeals || 0) +
-               (b.mealCounts?.dinnerMeals || 0) + (b.mealCounts?.nextDayDinnerMeals || 0);
+      aValue =
+        (a.mealCounts?.lunchMeals || 0) +
+        (a.mealCounts?.nextDayLunchMeals || 0) +
+        (a.mealCounts?.dinnerMeals || 0) +
+        (a.mealCounts?.nextDayDinnerMeals || 0);
+      bValue =
+        (b.mealCounts?.lunchMeals || 0) +
+        (b.mealCounts?.nextDayLunchMeals || 0) +
+        (b.mealCounts?.dinnerMeals || 0) +
+        (b.mealCounts?.nextDayDinnerMeals || 0);
     } else if (sortConfig.key === "startDate") {
       const subA = a.subscriptions?.[a.subscriptions.length - 1];
       const subB = b.subscriptions?.[b.subscriptions.length - 1];
@@ -366,11 +492,14 @@ export const AllRegisteredUsers = () => {
     ? sortedUsers
     : sortedUsers.slice(
         (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
+        currentPage * rowsPerPage,
       );
 
   const SortIcon = ({ columnKey }) => {
-    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />;
+    if (sortConfig.key !== columnKey)
+      return (
+        <ChevronsUpDown className="inline-block ml-1 w-3 h-3 text-theme-color-1" />
+      );
     return sortConfig.direction === "asc" ? (
       <ChevronUp className="inline-block ml-1 w-4 h-4 font-bold text-theme-color-1" />
     ) : (
@@ -378,16 +507,32 @@ export const AllRegisteredUsers = () => {
     );
   };
 
-  const pageTitle = planFilter ? `${planFilter} Plan Subscribers` : "All Registered Users";
+  const pageTitle = planFilter
+    ? `${planFilter} Plan Subscribers`
+    : "All Registered Users";
 
   const detailLatestSub = selectedUser ? getLatestSub(selectedUser) : null;
   const detailStatus = selectedUser ? getStatus(selectedUser) : "No Plan";
-  const detailLunchLeft = (selectedUser?.mealCounts?.lunchMeals || 0) + (selectedUser?.mealCounts?.nextDayLunchMeals || 0);
-  const detailDinnerLeft = (selectedUser?.mealCounts?.dinnerMeals || 0) + (selectedUser?.mealCounts?.nextDayDinnerMeals || 0);
-  const detailToday = { lunch: selectedUser?.mealCounts?.lunchMeals || 0, dinner: selectedUser?.mealCounts?.dinnerMeals || 0 };
-  const detailUpcoming = { lunch: selectedUser?.mealCounts?.nextDayLunchMeals || 0, dinner: selectedUser?.mealCounts?.nextDayDinnerMeals || 0 };
+  const detailLunchLeft =
+    (selectedUser?.mealCounts?.lunchMeals || 0) +
+    (selectedUser?.mealCounts?.nextDayLunchMeals || 0);
+  const detailDinnerLeft =
+    (selectedUser?.mealCounts?.dinnerMeals || 0) +
+    (selectedUser?.mealCounts?.nextDayDinnerMeals || 0);
+  const detailToday = {
+    lunch: selectedUser?.mealCounts?.lunchMeals || 0,
+    dinner: selectedUser?.mealCounts?.dinnerMeals || 0,
+  };
+  const detailUpcoming = {
+    lunch: selectedUser?.mealCounts?.nextDayLunchMeals || 0,
+    dinner: selectedUser?.mealCounts?.nextDayDinnerMeals || 0,
+  };
   const detailRegistered = selectedUser
-    ? (selectedUser.createdAt || selectedUser.created_date)?.split("T")[0].split("-").reverse().join("-") || "N/A"
+    ? (selectedUser.createdAt || selectedUser.created_date)
+        ?.split("T")[0]
+        .split("-")
+        .reverse()
+        .join("-") || "N/A"
     : "";
   const detailInitials = selectedUser
     ? `${selectedUser.firstName?.[0] || ""}${selectedUser.lastName?.[0] || ""}`.toUpperCase()
@@ -400,12 +545,21 @@ export const AllRegisteredUsers = () => {
           <div className="mx-auto space-y-6 w-full">
             <div className="flex flex-col gap-4 justify-between sm:flex-row sm:items-center print:hidden">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{pageTitle}</h2>
-                <p className="text-sm text-gray-500">Manage and view all your customers, their plans, meal usage and more.</p>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {pageTitle}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Manage and view all your customers, their plans, meal usage
+                  and more.
+                </p>
               </div>
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/manage-subscriptions", { state: { openNewUser: true } })}
+                onClick={() =>
+                  navigate("/dashboard/manage-subscriptions", {
+                    state: { openNewUser: true },
+                  })
+                }
                 className="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black"
               >
                 + Add New User
@@ -417,18 +571,30 @@ export const AllRegisteredUsers = () => {
                 <button
                   key={card.label}
                   type="button"
-                  onClick={() => { setStatusTab(card.tabKey); setCurrentPage(1); }}
+                  onClick={() => {
+                    setStatusTab(card.tabKey);
+                    setCurrentPage(1);
+                  }}
                   className={`flex gap-4 items-center p-5 text-left bg-white rounded-2xl border shadow-sm transition-colors hover:border-theme-color-1 ${
-                    statusTab === card.tabKey ? "border-theme-color-1 ring-1 ring-theme-color-1" : "border-gray-100"
+                    statusTab === card.tabKey
+                      ? "border-theme-color-1 ring-1 ring-theme-color-1"
+                      : "border-gray-100"
                   }`}
                 >
                   <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 bg-green-50 rounded-xl text-theme-color-1">
                     <card.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{card.value.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {card.value.toLocaleString()}
+                    </p>
                     <p className="text-sm text-gray-500">{card.label}</p>
-                    {card.change !== undefined && <ChangeBadge change={card.change} suffix={card.changeSuffix} />}
+                    {card.change !== undefined && (
+                      <ChangeBadge
+                        change={card.change}
+                        suffix={card.changeSuffix}
+                      />
+                    )}
                   </div>
                 </button>
               ))}
@@ -441,7 +607,10 @@ export const AllRegisteredUsers = () => {
                     <button
                       key={tab.key}
                       type="button"
-                      onClick={() => { setStatusTab(tab.key); setCurrentPage(1); }}
+                      onClick={() => {
+                        setStatusTab(tab.key);
+                        setCurrentPage(1);
+                      }}
                       className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
                         statusTab === tab.key
                           ? "bg-theme-color-1 text-white"
@@ -460,7 +629,11 @@ export const AllRegisteredUsers = () => {
                   >
                     Export CSV
                   </button>
-                  <button onClick={() => setIsPrinting(true)} type="button" className={outlineButtonClass}>
+                  <button
+                    onClick={() => setIsPrinting(true)}
+                    type="button"
+                    className={outlineButtonClass}
+                  >
                     Export (Print / PDF)
                   </button>
                 </div>
@@ -470,13 +643,22 @@ export const AllRegisteredUsers = () => {
                 <div className="sm:col-span-2 xl:col-span-2">
                   <SearchBar
                     value={searchQuery}
-                    onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                    onChange={(val) => {
+                      setSearchQuery(val);
+                      setCurrentPage(1);
+                    }}
                     placeholder="Search users by name or email..."
                   />
                 </div>
                 <select
                   value={filterCriteria.planType}
-                  onChange={(e) => { setFilterCriteria({ ...filterCriteria, planType: e.target.value }); setCurrentPage(1); }}
+                  onChange={(e) => {
+                    setFilterCriteria({
+                      ...filterCriteria,
+                      planType: e.target.value,
+                    });
+                    setCurrentPage(1);
+                  }}
                   className={selectClass}
                 >
                   <option value="All">Plan: All</option>
@@ -486,7 +668,10 @@ export const AllRegisteredUsers = () => {
                 </select>
                 <select
                   value={dietFilter}
-                  onChange={(e) => { setDietFilter(e.target.value); setCurrentPage(1); }}
+                  onChange={(e) => {
+                    setDietFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className={selectClass}
                 >
                   <option value="All">Diet: All</option>
@@ -496,7 +681,10 @@ export const AllRegisteredUsers = () => {
                 </select>
                 <select
                   value={allergyFilter}
-                  onChange={(e) => { setAllergyFilter(e.target.value); setCurrentPage(1); }}
+                  onChange={(e) => {
+                    setAllergyFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className={selectClass}
                 >
                   <option value="All">Allergy: All</option>
@@ -505,7 +693,10 @@ export const AllRegisteredUsers = () => {
                 </select>
                 <select
                   value={coverageFilter}
-                  onChange={(e) => { setCoverageFilter(e.target.value); setCurrentPage(1); }}
+                  onChange={(e) => {
+                    setCoverageFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className={selectClass}
                 >
                   <option value="All">Coverage: All</option>
@@ -530,11 +721,19 @@ export const AllRegisteredUsers = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 justify-end">
-                <button type="button" onClick={handleReset} className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-600 bg-white rounded-lg border border-gray-300 shadow-sm transition-colors hover:bg-gray-100">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-600 bg-white rounded-lg border border-gray-300 shadow-sm transition-colors hover:bg-gray-100"
+                >
                   <RotateCcw className="w-4 h-4" />
                   Reset
                 </button>
-                <button type="button" onClick={() => setShowFilterPopup(true)} className={outlineButtonClass}>
+                <button
+                  type="button"
+                  onClick={() => setShowFilterPopup(true)}
+                  className={outlineButtonClass}
+                >
                   <SlidersHorizontal className="w-4 h-4" />
                   Meal Count Filter
                 </button>
@@ -548,19 +747,28 @@ export const AllRegisteredUsers = () => {
                 {searchQuery && `Search: "${searchQuery}" `}
                 {statusTab !== "all" && `Status: ${activeTab.label} `}
                 {showZeroMeals && `Including users with 0 meals `}
-                {filterCriteria.planType !== "All" && `Plan: ${filterCriteria.planType} `}
+                {filterCriteria.planType !== "All" &&
+                  `Plan: ${filterCriteria.planType} `}
                 {dietFilter !== "All" && `Diet: ${dietFilter} `}
                 {allergyFilter !== "All" && `Allergy: ${allergyFilter} `}
-                {filterCriteria.mealCount !== "" && `Meal Count ${filterCriteria.operator} ${filterCriteria.mealCount} `}
-                {filterCriteria.endDateOperator && filterCriteria.endDate && `End Date ${filterCriteria.endDateOperator} ${filterCriteria.endDate}`}
+                {filterCriteria.mealCount !== "" &&
+                  `Meal Count ${filterCriteria.operator} ${filterCriteria.mealCount} `}
+                {filterCriteria.endDateOperator &&
+                  filterCriteria.endDate &&
+                  `End Date ${filterCriteria.endDateOperator} ${filterCriteria.endDate}`}
               </p>
             </div>
 
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
               {isLoading ? (
                 <div className="flex flex-col justify-center items-center py-20">
-                  <div className="w-12 h-12 rounded-full border-b-2 animate-spin" style={{ borderColor: "#3c9b62" }}></div>
-                  <p className="mt-4 font-medium text-gray-500">Loading user data...</p>
+                  <div
+                    className="w-12 h-12 rounded-full border-b-2 animate-spin"
+                    style={{ borderColor: "#3c9b62" }}
+                  ></div>
+                  <p className="mt-4 font-medium text-gray-500">
+                    Loading user data...
+                  </p>
                 </div>
               ) : sortedUsers.length > 0 ? (
                 <>
@@ -575,27 +783,45 @@ export const AllRegisteredUsers = () => {
                           >
                             Customer <SortIcon columnKey="name" />
                           </th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">Contact</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase min-w-[200px]">Address</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">Current Plan</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Diet</th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">
+                            Contact
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase min-w-[200px]">
+                            Address
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">
+                            Current Plan
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                            Diet
+                          </th>
                           <th
                             className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:bg-gray-100"
                             onClick={() => handleSort("mealCount")}
                           >
                             Meal Counts Left <SortIcon columnKey="mealCount" />
                           </th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Allergy</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Taste</th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                            Allergy
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                            Taste
+                          </th>
                           <th
                             className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap cursor-pointer hover:bg-gray-100"
                             onClick={() => handleSort("startDate")}
                           >
                             Start Date <SortIcon columnKey="startDate" />
                           </th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">Est. End Date</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Status</th>
-                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase print:hidden">Actions</th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase whitespace-nowrap">
+                            Est. End Date
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                            Status
+                          </th>
+                          <th className="px-4 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase print:hidden">
+                            Actions
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-100">
@@ -603,14 +829,26 @@ export const AllRegisteredUsers = () => {
                           const latestSub = getLatestSub(user);
                           const status = getStatus(user);
                           // Meal counts are summed across every active subscription (see user.mealCounts, computed server-side).
-                          const lunchCount = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
-                          const dinnerCount = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
-                          const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
-                          const endInfo = calculateSubEndDate(user, holidayDateKeys);
-                          const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
+                          const lunchCount =
+                            (user.mealCounts?.lunchMeals || 0) +
+                            (user.mealCounts?.nextDayLunchMeals || 0);
+                          const dinnerCount =
+                            (user.mealCounts?.dinnerMeals || 0) +
+                            (user.mealCounts?.nextDayDinnerMeals || 0);
+                          const isZeroMeals =
+                            lunchCount === 0 && dinnerCount === 0;
+                          const endInfo = calculateSubEndDate(
+                            user,
+                            holidayDateKeys,
+                          );
+                          const initials =
+                            `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
 
                           return (
-                            <tr key={user._id} className={`hover:bg-gray-50 ${isZeroMeals ? "bg-red-50" : "bg-white"}`}>
+                            <tr
+                              key={user._id}
+                              className={`hover:bg-gray-50 ${isZeroMeals ? "bg-red-50" : "bg-white"}`}
+                            >
                               <td className="px-4 py-4">
                                 <div className="flex gap-3 items-center">
                                   <div className="flex flex-shrink-0 justify-center items-center w-9 h-9 text-xs font-bold text-green-800 bg-green-100 rounded-full">
@@ -624,37 +862,63 @@ export const AllRegisteredUsers = () => {
                                     >
                                       {user.firstName} {user.lastName}
                                     </button>
-                                    <div className="text-xs text-gray-500 break-all max-w-[220px]">{user.email}</div>
+                                    <div className="text-xs text-gray-500 break-all max-w-[220px]">
+                                      {user.email}
+                                    </div>
                                   </div>
                                 </div>
                               </td>
-                              <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{user.mobile}</td>
-                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[220px] break-words">{user.postalAddress}</td>
+                              <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                                {user.mobile}
+                              </td>
+                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[220px] break-words">
+                                {user.postalAddress}
+                              </td>
                               <td className="px-4 py-4 whitespace-nowrap">
                                 {latestSub ? (
                                   <PlanBadge plan={latestSub.plan} />
                                 ) : (
-                                  <span className="text-sm text-gray-400">No active plan</span>
+                                  <span className="text-sm text-gray-400">
+                                    No active plan
+                                  </span>
                                 )}
                               </td>
                               <td className="px-4 py-4">
-                                {latestSub && <VegNonVegIcon value={latestSub.mealType} />}
+                                {latestSub && (
+                                  <VegNonVegIcon value={latestSub.mealType} />
+                                )}
                               </td>
                               <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
-                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
+                                <span className="inline-flex gap-1 items-center">
+                                  <MealSlotIcon slot="lunch" />
+                                  Lunch: {lunchCount}
+                                </span>
                                 <br />
-                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
+                                <span className="inline-flex gap-1 items-center">
+                                  <MealSlotIcon slot="dinner" />
+                                  Dinner: {dinnerCount}
+                                </span>
                               </td>
-                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[160px] break-words">{latestSub?.allergy || "None"}</td>
-                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[180px] break-words">{formatTastePreference(latestSub) || "—"}</td>
+                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[160px] break-words">
+                                {latestSub?.allergy || "None"}
+                              </td>
+                              <td className="px-4 py-4 text-sm text-gray-700 max-w-[180px] break-words">
+                                {formatTastePreference(latestSub) || "—"}
+                              </td>
                               <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
-                                {latestSub?.subscriptionStartDate?.split("T")[0].split("-").reverse().join("-") || "N/A"}
+                                {latestSub?.subscriptionStartDate
+                                  ?.split("T")[0]
+                                  .split("-")
+                                  .reverse()
+                                  .join("-") || "N/A"}
                               </td>
                               <td className="px-4 py-4 text-sm font-bold whitespace-nowrap text-theme-color-1">
                                 {endInfo.formattedDate || endInfo.status}
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap">
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[status]}`}>
+                                <span
+                                  className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[status]}`}
+                                >
                                   {status}
                                 </span>
                               </td>
@@ -671,7 +935,12 @@ export const AllRegisteredUsers = () => {
                                   <button
                                     type="button"
                                     title="Edit subscription"
-                                    onClick={() => navigate("/dashboard/manage-subscriptions", { state: { userId: user._id } })}
+                                    onClick={() =>
+                                      navigate(
+                                        "/dashboard/manage-subscriptions",
+                                        { state: { userId: user._id } },
+                                      )
+                                    }
                                     className="p-2 text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-100"
                                   >
                                     <Pencil className="w-4 h-4" />
@@ -689,10 +958,17 @@ export const AllRegisteredUsers = () => {
                   <div className="p-4 space-y-4 md:hidden print:hidden">
                     {paginatedUsers.map((user) => {
                       const latestSub = getLatestSub(user);
-                      const lunchCount = (user.mealCounts?.lunchMeals || 0) + (user.mealCounts?.nextDayLunchMeals || 0);
-                      const dinnerCount = (user.mealCounts?.dinnerMeals || 0) + (user.mealCounts?.nextDayDinnerMeals || 0);
+                      const lunchCount =
+                        (user.mealCounts?.lunchMeals || 0) +
+                        (user.mealCounts?.nextDayLunchMeals || 0);
+                      const dinnerCount =
+                        (user.mealCounts?.dinnerMeals || 0) +
+                        (user.mealCounts?.nextDayDinnerMeals || 0);
                       const isZeroMeals = lunchCount === 0 && dinnerCount === 0;
-                      const endInfo = calculateSubEndDate(user, holidayDateKeys);
+                      const endInfo = calculateSubEndDate(
+                        user,
+                        holidayDateKeys,
+                      );
 
                       return (
                         <div
@@ -701,7 +977,9 @@ export const AllRegisteredUsers = () => {
                         >
                           <div className="space-y-2">
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Name:</span>
+                              <span className="font-medium text-gray-500">
+                                Name:
+                              </span>
                               <span
                                 className="text-theme-color-1 cursor-pointer hover:underline text-right break-words max-w-[60%]"
                                 onClick={() => setSelectedUser(user)}
@@ -710,54 +988,94 @@ export const AllRegisteredUsers = () => {
                               </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Email:</span>
-                              <span className="text-gray-900 text-right break-all max-w-[60%]">{user.email}</span>
+                              <span className="font-medium text-gray-500">
+                                Email:
+                              </span>
+                              <span className="text-gray-900 text-right break-all max-w-[60%]">
+                                {user.email}
+                              </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Mobile:</span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">{user.mobile}</span>
+                              <span className="font-medium text-gray-500">
+                                Mobile:
+                              </span>
+                              <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                {user.mobile}
+                              </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Address:</span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">{user.postalAddress}</span>
+                              <span className="font-medium text-gray-500">
+                                Address:
+                              </span>
+                              <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                {user.postalAddress}
+                              </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Current Plan:</span>
+                              <span className="font-medium text-gray-500">
+                                Current Plan:
+                              </span>
                               <span className="text-gray-900 text-right break-words max-w-[60%]">
                                 {latestSub?.plan || "No active plan"}
                               </span>
                             </div>
                             {latestSub && (
                               <div className="flex justify-between pb-2 border-b">
-                                <span className="font-medium text-gray-500">Diet:</span>
+                                <span className="font-medium text-gray-500">
+                                  Diet:
+                                </span>
                                 <span className="flex justify-end items-center text-right">
                                   <VegNonVegIcon value={latestSub.mealType} />
                                 </span>
                               </div>
                             )}
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Meal Counts Left:</span>
+                              <span className="font-medium text-gray-500">
+                                Meal Counts Left:
+                              </span>
                               <span className="text-gray-900 text-right break-words max-w-[60%] inline-flex items-center gap-2 flex-wrap justify-end">
-                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch: {lunchCount}</span>
-                                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner: {dinnerCount}</span>
+                                <span className="inline-flex gap-1 items-center">
+                                  <MealSlotIcon slot="lunch" />
+                                  Lunch: {lunchCount}
+                                </span>
+                                <span className="inline-flex gap-1 items-center">
+                                  <MealSlotIcon slot="dinner" />
+                                  Dinner: {dinnerCount}
+                                </span>
                               </span>
                             </div>
                             <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Allergy:</span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">{latestSub?.allergy || "None"}</span>
-                            </div>
-                            <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Taste:</span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">{formatTastePreference(latestSub) || "—"}</span>
-                            </div>
-                            <div className="flex justify-between pb-2 border-b">
-                              <span className="font-medium text-gray-500">Meal Start Date:</span>
+                              <span className="font-medium text-gray-500">
+                                Allergy:
+                              </span>
                               <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                {latestSub?.subscriptionStartDate ? new Date(latestSub.subscriptionStartDate).toLocaleDateString() : "N/A"}
+                                {latestSub?.allergy || "None"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between pb-2 border-b">
+                              <span className="font-medium text-gray-500">
+                                Taste:
+                              </span>
+                              <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                {formatTastePreference(latestSub) || "—"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between pb-2 border-b">
+                              <span className="font-medium text-gray-500">
+                                Meal Start Date:
+                              </span>
+                              <span className="text-gray-900 text-right break-words max-w-[60%]">
+                                {latestSub?.subscriptionStartDate
+                                  ? new Date(
+                                      latestSub.subscriptionStartDate,
+                                    ).toLocaleDateString()
+                                  : "N/A"}
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="font-medium text-gray-500">Est. End Date:</span>
+                              <span className="font-medium text-gray-500">
+                                Est. End Date:
+                              </span>
                               <span className="text-theme-color-1 font-bold text-right break-words max-w-[60%]">
                                 {endInfo.formattedDate || endInfo.status}
                               </span>
@@ -774,13 +1092,18 @@ export const AllRegisteredUsers = () => {
                       currentPage={currentPage}
                       rowsPerPage={rowsPerPage}
                       onPageChange={setCurrentPage}
-                      onRowsChange={(rows) => { setRowsPerPage(rows); setCurrentPage(1); }}
+                      onRowsChange={(rows) => {
+                        setRowsPerPage(rows);
+                        setCurrentPage(1);
+                      }}
                     />
                   </div>
                 </>
               ) : (
                 <div className="flex flex-col justify-center items-center py-10">
-                  <p className="font-medium text-gray-500">No user data found</p>
+                  <p className="font-medium text-gray-500">
+                    No user data found
+                  </p>
                 </div>
               )}
             </div>
@@ -792,7 +1115,10 @@ export const AllRegisteredUsers = () => {
         isOpen={showFilterPopup}
         onClose={() => setShowFilterPopup(false)}
         criteria={filterCriteria}
-        setCriteria={(val) => { setFilterCriteria(val); setCurrentPage(1); }}
+        setCriteria={(val) => {
+          setFilterCriteria(val);
+          setCurrentPage(1);
+        }}
       />
 
       <Popup
@@ -810,42 +1136,72 @@ export const AllRegisteredUsers = () => {
                       {detailInitials}
                     </div>
                     <div>
-                      <p className="text-lg font-bold text-gray-900">{selectedUser.firstName} {selectedUser.lastName}</p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {selectedUser.firstName} {selectedUser.lastName}
+                      </p>
                       <p className="text-gray-500">Customer</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${STATUS_STYLES[detailStatus]}`}>
-                      {detailStatus === "Active" ? "Active User" : "Inactive User"}
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full ${STATUS_STYLES[detailStatus]}`}
+                    >
+                      {detailStatus === "Active"
+                        ? "Active User"
+                        : "Inactive User"}
                     </span>
-                    <p className="mt-1 text-xs text-gray-500">Registered on {detailRegistered}</p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Registered on {detailRegistered}
+                    </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-y-3 gap-x-6 mt-4 sm:grid-cols-2">
                   <DetailRow label="Email">{selectedUser.email}</DetailRow>
                   <DetailRow label="Mobile">{selectedUser.mobile}</DetailRow>
-                  <DetailRow label="Gender">{formatGender(selectedUser) || "—"}</DetailRow>
-                  <DetailRow label="Profession">{formatProfession(selectedUser) || "—"}</DetailRow>
+                  <DetailRow label="Gender">
+                    {formatGender(selectedUser) || "—"}
+                  </DetailRow>
+                  <DetailRow label="Profession">
+                    {formatProfession(selectedUser) || "—"}
+                  </DetailRow>
                   <div className="sm:col-span-2">
-                    <DetailRow label="Address">{selectedUser.postalAddress}</DetailRow>
+                    <DetailRow label="Address">
+                      {selectedUser.postalAddress}
+                    </DetailRow>
                   </div>
                 </div>
               </div>
 
               <section>
-                <p className="text-base font-bold text-gray-900">Meal Balance</p>
-                <p className="mb-3 text-xs text-gray-500">Remaining meal counts across active plans.</p>
+                <p className="text-base font-bold text-gray-900">
+                  Meal Balance
+                </p>
+                <p className="mb-3 text-xs text-gray-500">
+                  Remaining meal counts across active plans.
+                </p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                    <p className="flex items-center gap-1 text-xs font-semibold text-theme-color-1"><MealSlotIcon slot="lunch" />Lunch</p>
+                    <p className="flex gap-1 items-center text-xs font-semibold text-theme-color-1">
+                      <MealSlotIcon slot="lunch" />
+                      Lunch
+                    </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {detailLunchLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
+                      {detailLunchLeft}{" "}
+                      <span className="text-sm font-medium text-gray-600">
+                        meals left
+                      </span>
                     </p>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
-                    <p className="flex items-center gap-1 text-xs font-semibold text-orange-700"><MealSlotIcon slot="dinner" />Dinner</p>
+                    <p className="flex gap-1 items-center text-xs font-semibold text-orange-700">
+                      <MealSlotIcon slot="dinner" />
+                      Dinner
+                    </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {detailDinnerLeft} <span className="text-sm font-medium text-gray-600">meals left</span>
+                      {detailDinnerLeft}{" "}
+                      <span className="text-sm font-medium text-gray-600">
+                        meals left
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -855,42 +1211,65 @@ export const AllRegisteredUsers = () => {
                 <div className="flex gap-3 items-center">
                   <CreditCard className="w-5 h-5 text-gray-700" />
                   <div>
-                    <p className="text-base font-bold text-gray-900">Subscription</p>
-                    <p className="text-xs text-gray-500">Current plan and preferences.</p>
+                    <p className="text-base font-bold text-gray-900">
+                      Subscription
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Current plan and preferences.
+                    </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-y-4 gap-x-8 p-5 mt-3 bg-gray-50 rounded-xl border border-gray-100 sm:grid-cols-2">
                   <div className="space-y-4">
-                    <SubscriptionField icon={Package} label="Plan"><PlanBadge plan={detailLatestSub?.plan} /></SubscriptionField>
+                    <SubscriptionField icon={Package} label="Plan">
+                      <PlanBadge plan={detailLatestSub?.plan} />
+                    </SubscriptionField>
                     <SubscriptionField icon={Clock} label="Status">
                       {detailLatestSub ? (
                         <span
                           className={`flex gap-1.5 items-center w-fit px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            detailLatestSub.status === "active" ? "bg-green-50 text-green-700" :
-                            detailLatestSub.status === "queued" ? "bg-amber-50 text-amber-700" :
-                            detailLatestSub.status === "cancelled" || detailLatestSub.status === "completed" ? "bg-red-50 text-red-700" :
-                            "bg-gray-100 text-gray-700"
+                            detailLatestSub.status === "active"
+                              ? "bg-green-50 text-green-700"
+                              : detailLatestSub.status === "queued"
+                                ? "bg-amber-50 text-amber-700"
+                                : detailLatestSub.status === "cancelled" ||
+                                    detailLatestSub.status === "completed"
+                                  ? "bg-red-50 text-red-700"
+                                  : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          {detailLatestSub.status.charAt(0).toUpperCase() + detailLatestSub.status.slice(1)}
+                          {detailLatestSub.status.charAt(0).toUpperCase() +
+                            detailLatestSub.status.slice(1)}
                         </span>
-                      ) : "—"}
+                      ) : (
+                        "—"
+                      )}
                     </SubscriptionField>
                     <SubscriptionField icon={CalendarDays} label="Start Date">
                       {detailLatestSub?.subscriptionStartDate
-                        ? new Date(detailLatestSub.subscriptionStartDate).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })
+                        ? new Date(
+                            detailLatestSub.subscriptionStartDate,
+                          ).toLocaleDateString(undefined, {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
                         : "N/A"}
                     </SubscriptionField>
                   </div>
                   <div className="space-y-4">
                     <SubscriptionField icon={CalendarDays} label="End Date">
-                      {detailLatestSub ? getSubscriptionEndLabel(detailLatestSub) : "—"}
+                      {detailLatestSub
+                        ? getSubscriptionEndLabel(detailLatestSub)
+                        : "—"}
                     </SubscriptionField>
                     <SubscriptionField icon={Utensils} label="Meal Type">
                       <span className="flex gap-2 items-center">
                         {MEAL_TYPE_LABELS[detailLatestSub?.mealType] || "—"}
-                        {detailLatestSub && <VegNonVegIcon value={detailLatestSub.mealType} />}
+                        {detailLatestSub && (
+                          <VegNonVegIcon value={detailLatestSub.mealType} />
+                        )}
                       </span>
                     </SubscriptionField>
                     <SubscriptionField icon={Droplets} label="Carb Preference">
@@ -904,27 +1283,54 @@ export const AllRegisteredUsers = () => {
                 <div className="flex gap-3 items-center">
                   <CalendarDays className="w-5 h-5 text-gray-700" />
                   <div>
-                    <p className="text-base font-bold text-gray-900">Meal Balance by Day</p>
-                    <p className="text-xs text-gray-500">Today's usage and upcoming meal allocation.</p>
+                    <p className="text-base font-bold text-gray-900">
+                      Meal Balance by Day
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Today's usage and upcoming meal allocation.
+                    </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-3 mt-3 sm:grid-cols-2">
-                  <DayBalanceCard icon={Sun} tone="bg-orange-50 text-orange-500" label="Today" lunch={detailToday.lunch} dinner={detailToday.dinner} />
-                  <DayBalanceCard icon={CalendarDays} tone="bg-green-50 text-theme-color-1" label="Upcoming" lunch={detailUpcoming.lunch} dinner={detailUpcoming.dinner} />
+                  <DayBalanceCard
+                    icon={Sun}
+                    tone="bg-orange-50 text-orange-500"
+                    label="Today"
+                    lunch={detailToday.lunch}
+                    dinner={detailToday.dinner}
+                  />
+                  <DayBalanceCard
+                    icon={CalendarDays}
+                    tone="bg-green-50 text-theme-color-1"
+                    label="Upcoming"
+                    lunch={detailUpcoming.lunch}
+                    dinner={detailUpcoming.dinner}
+                  />
                 </div>
               </section>
 
               <section>
-                <p className="mb-3 text-base font-bold text-gray-900">Subscription History</p>
+                <p className="mb-3 text-base font-bold text-gray-900">
+                  Subscription History
+                </p>
                 <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-2">
-                  {selectedUser.subscriptions && selectedUser.subscriptions.length > 0 ? (
+                  {selectedUser.subscriptions &&
+                  selectedUser.subscriptions.length > 0 ? (
                     [...selectedUser.subscriptions].reverse().map((sub, i) => (
-                      <div key={i} className="p-3 bg-white rounded-lg border shadow-sm">
+                      <div
+                        key={i}
+                        className="p-3 bg-white rounded-lg border shadow-sm"
+                      >
                         <div className="flex justify-between items-center">
                           <PlanBadge plan={sub.plan} />
                           {sub.status === "queued" && (
                             <button
-                              onClick={() => handleCancelPlan(sub._id, `${selectedUser.firstName} ${selectedUser.lastName}`)}
+                              onClick={() =>
+                                handleCancelPlan(
+                                  sub._id,
+                                  `${selectedUser.firstName} ${selectedUser.lastName}`,
+                                )
+                              }
                               className="px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-md hover:bg-red-600"
                             >
                               Cancel Queued Plan
@@ -934,38 +1340,84 @@ export const AllRegisteredUsers = () => {
                         <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
                           <div>
                             <span className="text-gray-500">Status:</span>
-                            <span className={`${
-                              sub.status === "active" || sub.status === "Active" ? "text-green-600" :
-                              sub.status === "queued" ? "text-amber-600" :
-                              sub.status === "cancelled" || sub.status === "completed" ? "text-red-600" :
-                              "text-gray-600"
-                            } font-bold`}>
-                              {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
+                            <span
+                              className={`${
+                                sub.status === "active" ||
+                                sub.status === "Active"
+                                  ? "text-green-600"
+                                  : sub.status === "queued"
+                                    ? "text-amber-600"
+                                    : sub.status === "cancelled" ||
+                                        sub.status === "completed"
+                                      ? "text-red-600"
+                                      : "text-gray-600"
+                              } font-bold`}
+                            >
+                              {sub.status.charAt(0).toUpperCase() +
+                                sub.status.slice(1)}
                             </span>
                           </div>
-                          <div><span className="text-gray-500">Start Date:</span> {new Date(sub.subscriptionStartDate).toLocaleDateString()}</div>
-                          <div><span className="text-gray-500">End Date:</span> {getSubscriptionEndLabel(sub)}</div>
+                          <div>
+                            <span className="text-gray-500">Start Date:</span>{" "}
+                            {new Date(
+                              sub.subscriptionStartDate,
+                            ).toLocaleDateString()}
+                          </div>
+                          <div>
+                            <span className="text-gray-500">End Date:</span>{" "}
+                            {getSubscriptionEndLabel(sub)}
+                          </div>
                           <div>
                             <span className="text-gray-500">Meals:</span>{" "}
                             <span className="inline-flex gap-1.5 items-center align-middle">
-                              {sub.mealType?.charAt(0).toUpperCase() + sub.mealType?.slice(1)}
+                              {sub.mealType?.charAt(0).toUpperCase() +
+                                sub.mealType?.slice(1)}
                               <VegNonVegIcon value={sub.mealType} />
                             </span>
                           </div>
-                          <div className="flex gap-1.5 items-center"><span className="text-gray-500">Carbs:</span> <CarbTypeBadge carbType={sub.carbType} /></div>
+                          <div className="flex gap-1.5 items-center">
+                            <span className="text-gray-500">Carbs:</span>{" "}
+                            <CarbTypeBadge carbType={sub.carbType} />
+                          </div>
                           {sub.allergy && (
-                            <div className="col-span-2"><span className="text-gray-500">Allergy:</span> <span className="font-bold text-red-500">{sub.allergy}</span></div>
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Allergy:</span>{" "}
+                              <span className="font-bold text-red-500">
+                                {sub.allergy}
+                              </span>
+                            </div>
                           )}
                           {formatTastePreference(sub) && (
-                            <div className="col-span-2"><span className="text-gray-500">Taste:</span> <span className="font-bold text-gray-800">{formatTastePreference(sub)}</span></div>
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Taste:</span>{" "}
+                              <span className="font-bold text-gray-800">
+                                {formatTastePreference(sub)}
+                              </span>
+                            </div>
                           )}
-                          <div className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><span className="text-gray-500">Remaining L:</span> {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals} (Next)</div>
-                          <div className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><span className="text-gray-500">Remaining D:</span> {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals} (Next)</div>
+                          <div className="inline-flex gap-1 items-center">
+                            <MealSlotIcon slot="lunch" />
+                            <span className="text-gray-500">
+                              Remaining L:
+                            </span>{" "}
+                            {sub.lunchMeals} (Today) + {sub.nextDayLunchMeals}{" "}
+                            (Next)
+                          </div>
+                          <div className="inline-flex gap-1 items-center">
+                            <MealSlotIcon slot="dinner" />
+                            <span className="text-gray-500">
+                              Remaining D:
+                            </span>{" "}
+                            {sub.dinnerMeals} (Today) + {sub.nextDayDinnerMeals}{" "}
+                            (Next)
+                          </div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="py-4 text-center text-gray-500">No subscription history found.</p>
+                    <p className="py-4 text-center text-gray-500">
+                      No subscription history found.
+                    </p>
                   )}
                 </div>
               </section>
@@ -977,7 +1429,11 @@ export const AllRegisteredUsers = () => {
             <>
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/manage-subscriptions", { state: { userId: selectedUser._id } })}
+                onClick={() =>
+                  navigate("/dashboard/manage-subscriptions", {
+                    state: { userId: selectedUser._id },
+                  })
+                }
                 className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50"
               >
                 <Pencil className="w-4 h-4" />
@@ -985,7 +1441,11 @@ export const AllRegisteredUsers = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/user-meal-tracking", { state: { user: selectedUser } })}
+                onClick={() =>
+                  navigate("/dashboard/user-meal-tracking", {
+                    state: { user: selectedUser },
+                  })
+                }
                 className="flex gap-2 items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50"
               >
                 <History className="w-4 h-4" />

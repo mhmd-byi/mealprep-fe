@@ -4,7 +4,9 @@ import { Search, X, ImagePlus, Loader2 } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { uploadImageToS3, deleteFileFromS3 } from "../../../utils/s3Files";
 import { searchNoteCustomers } from "./useNotes";
+import { RichTextEditor } from "./RichTextEditor";
 import {
+  noteBodyToHtml,
   PRIORITY_OPTIONS,
   PRIORITY_CHIP_STYLES,
   formatNoteDateTime,
@@ -105,7 +107,8 @@ const CustomerPicker = ({ customer, onChange }) => {
 export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
   const isEditing = Boolean(note);
   const [title, setTitle] = useState(note?.title || "");
-  const [body, setBody] = useState(note?.body || "");
+  const initialBodyHtml = noteBodyToHtml(note);
+  const [body, setBody] = useState(initialBodyHtml);
   const [category, setCategory] = useState(note?.category || "");
   const [priority, setPriority] = useState(note?.priority || "medium");
   const [dueAt, setDueAt] = useState(toDateTimeInputValue(note?.dueAt));
@@ -190,7 +193,8 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
       setIsSaving(true);
       await onSave({
         title: title.trim(),
-        body: body.trim(),
+        body,
+        bodyFormat: "html",
         category,
         priority,
         dueAt: fromDateTimeInputValue(dueAt),
@@ -210,7 +214,7 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
       isOpen
       onClose={handleClose}
       title={isEditing ? "Edit Note" : "Add New Note"}
-      maxWidthClass="max-w-xl"
+      maxWidthClass="max-w-2xl"
       content={
         <div className="space-y-4">
           {isEditing && (
@@ -235,14 +239,7 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
 
           <div>
             <FieldLabel>Details</FieldLabel>
-            <textarea
-              className={`${inputClass} resize-y`}
-              rows={4}
-              value={body}
-              maxLength={2000}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Add anything worth remembering"
-            />
+            <RichTextEditor initialHtml={initialBodyHtml} onChange={setBody} />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
