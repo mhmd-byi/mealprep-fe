@@ -132,9 +132,10 @@ const AddHoliday = () => {
 
     const isRange = formData.endDate && formData.endDate !== formData.startDate;
     const rangeLabel = isRange ? `${formData.startDate} to ${formData.endDate}` : formData.startDate;
-    const friendlyDates = isRange
-      ? `${formatHolidayDate(formData.startDate)} to ${formatHolidayDate(formData.endDate)}`
-      : formatHolidayDate(formData.startDate);
+    const closedWhen = isRange
+      ? `from ${formatHolidayDate(formData.startDate)} to ${formatHolidayDate(formData.endDate)}`
+      : `on ${formatHolidayDate(formData.startDate)}`;
+    const thisDay = isRange ? "these days" : "this day";
 
     try {
       const response = await axios.post(
@@ -198,7 +199,7 @@ const AddHoliday = () => {
           user._id,
           "",
           "📢 Important Holiday Update – MealPrep",
-          `Dear Customer,\n\nPlease note that MealPrep will remain closed on ${friendlyDates} on account of ${formData.description}.\n\nThere will be no lunch or dinner deliveries on this day.\n\nYour missed meals will be adjusted in your meal balance accordingly.\n\nTeam MealPrep\nHealthy Eating, Made Easy! 🥗`
+          `Dear Customer,\n\nPlease note that MealPrep will remain closed ${closedWhen} on account of ${formData.description}.\n\nThere will be no lunch or dinner deliveries on ${thisDay}.\n\nYour missed meals will be adjusted in your meal balance accordingly.\n\nTeam MealPrep\nHealthy Eating, Made Easy! 🥗`
         );
       });
     } catch (error) {
