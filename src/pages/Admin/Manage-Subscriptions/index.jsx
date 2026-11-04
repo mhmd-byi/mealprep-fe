@@ -144,6 +144,7 @@ export const ManageSubscriptions = () => {
   const [editingSub, setEditingSub] = useState(null);
   const [editFieldUpdates, setEditFieldUpdates] = useState({});
   const [editMealDeltas, setEditMealDeltas] = useState({});
+  const [editAffectsRevenue, setEditAffectsRevenue] = useState(false);
   const [editReason, setEditReason] = useState("");
   const [editError, setEditError] = useState(null);
   const [editSection, setEditSection] = useState("plan");
@@ -377,6 +378,7 @@ export const ManageSubscriptions = () => {
       subscriptionStartDate: toInputDate(sub.subscriptionStartDate),
     });
     setEditMealDeltas({ lunchMeals: 0, dinnerMeals: 0, nextDayLunchMeals: 0, nextDayDinnerMeals: 0 });
+    setEditAffectsRevenue(false);
     setEditReason("");
     setEditError(null);
     setEditSection("plan");
@@ -438,7 +440,7 @@ export const ManageSubscriptions = () => {
     try {
       setIsSavingEdit(true);
       setEditError(null);
-      await updateSubscription(editingSub._id, { reason: editReason, fieldUpdates, mealDeltas });
+      await updateSubscription(editingSub._id, { reason: editReason, fieldUpdates, mealDeltas, affectsRevenue: editAffectsRevenue });
       closeEditModal();
     } catch (err) {
       console.error("Error updating subscription:", err);
@@ -1142,6 +1144,26 @@ export const ManageSubscriptions = () => {
                       <p className="text-sm text-gray-600">
                         Total change: {Object.values(editMealDeltas).reduce((sum, value) => sum + (Number(value) || 0), 0)} meal(s)
                       </p>
+                      <label
+                        className={`flex gap-3 items-start p-4 rounded-xl border cursor-pointer ${
+                          editAffectsRevenue ? "bg-amber-50 border-amber-300" : "bg-white border-gray-200"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={editAffectsRevenue}
+                          onChange={(e) => setEditAffectsRevenue(e.target.checked)}
+                          className="mt-0.5 w-5 h-5 accent-green-600"
+                        />
+                        <span>
+                          <span className="block text-sm font-semibold text-gray-900">Also change this plan's revenue</span>
+                          <span className="block text-xs text-gray-600">
+                            {editAffectsRevenue
+                              ? "The plan's total meals will change by the amount above, so the revenue figures on the Finance dashboard change with it."
+                              : "Only the meal counts change. The plan's revenue stays exactly as it is."}
+                          </span>
+                        </span>
+                      </label>
                     </>
                   )}
 

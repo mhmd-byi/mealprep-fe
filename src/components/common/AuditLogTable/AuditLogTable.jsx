@@ -78,6 +78,11 @@ export const AuditLogTable = ({ logs, isLoading, scopeLabel, showCustomer = fals
                 <td className="px-4 py-4 text-sm text-left text-gray-700 max-w-xs">{log.reason}</td>
                 <td className="px-4 py-4 text-xs text-left text-gray-500 max-w-sm">
                   <FieldDiff before={log.before} after={log.after} />
+                  {typeof log.revenueAffected === "boolean" && (
+                    <p className={`mt-1 font-semibold ${log.revenueAffected ? "text-amber-700" : "text-gray-500"}`}>
+                      Revenue: {log.revenueAffected ? "changed with the meals" : "not changed"}
+                    </p>
+                  )}
                 </td>
               </tr>
             );
