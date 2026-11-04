@@ -6,6 +6,8 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { Button, Input } from "../../../components";
 import Popup from "../../../components/common/Popup/Popup";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
+import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { AuditLogTable } from "../../../components/common/AuditLogTable/AuditLogTable";
 import { useManageSubscriptions } from "./useManageSubscriptions";
 import { FieldLabel } from "./FieldLabel";
@@ -448,14 +450,14 @@ export const ManageSubscriptions = () => {
 
   const editSummaryRows = editingSub
     ? [
-        ["Plan", editingSub.plan],
+        ["Plan", <PlanBadge plan={editingSub.plan} />],
         ["Status", capitalize(editingSub.status)],
         ["Start", formatDate(editingSub.subscriptionStartDate)],
         ["End", getSubscriptionEndLabel(editingSub)],
         [<span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" />Lunch left</span>, (editingSub.lunchMeals || 0) + (editingSub.nextDayLunchMeals || 0)],
         [<span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" />Dinner left</span>, (editingSub.dinnerMeals || 0) + (editingSub.nextDayDinnerMeals || 0)],
         ["Diet", capitalize(editingSub.mealType)],
-        ["Carb type", editingSub.carbType],
+        ["Carb type", <CarbTypeBadge carbType={editingSub.carbType} />],
         ["Payment", editingSub.paymentMethod || (editingSub.paymentId ? "Online" : "—")],
       ]
     : [];
@@ -622,7 +624,7 @@ export const ManageSubscriptions = () => {
                               const dinnerCount = (sub.dinnerMeals || 0) + (sub.nextDayDinnerMeals || 0);
                               return (
                                 <tr key={sub._id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{sub.plan}</td>
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap"><PlanBadge plan={sub.plan} /></td>
                                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[sub.status] || "bg-gray-100 text-gray-700"}`}>
                                       {capitalize(sub.status)}
@@ -637,7 +639,7 @@ export const ManageSubscriptions = () => {
                                     </span>
                                   </td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{capitalize(sub.mealType)}</td>
-                                  <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{sub.carbType}</td>
+                                  <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap"><CarbTypeBadge carbType={sub.carbType} /></td>
                                   <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
                                     {sub.paymentMethod || (sub.paymentId ? "Online" : "—")}
                                   </td>
@@ -1018,7 +1020,7 @@ export const ManageSubscriptions = () => {
                 </div>
                 <div className="text-sm">
                   <p className="text-gray-500">Plan</p>
-                  <p className="font-semibold text-gray-900">{editingSub.plan}</p>
+                  <div className="mt-0.5"><PlanBadge plan={editingSub.plan} /></div>
                 </div>
                 <span className={`px-3 py-1 text-sm font-semibold rounded-full ${STATUS_COLORS[editingSub.status] || "bg-gray-100 text-gray-700"}`}>
                   {capitalize(editingSub.status)}
