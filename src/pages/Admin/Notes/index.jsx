@@ -4,12 +4,21 @@ import { Plus, Search, X } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { deleteFileFromS3 } from "../../../utils/s3Files";
-import { useNoteCategories, useNotesList, useNotesOverview, useNoteActions } from "./useNotes";
+import {
+  useNoteCategories,
+  useNotesList,
+  useNotesOverview,
+  useNoteActions,
+} from "./useNotes";
 import { CategoryPanel } from "./CategoryPanel";
 import { NoteCard } from "./NoteCard";
 import { NoteFormPopup } from "./NoteFormPopup";
 import { CategoryFormPopup } from "./CategoryFormPopup";
-import { SummaryCard, UpcomingCard, RecentActivityCard } from "./NotesSidePanels";
+import {
+  SummaryCard,
+  UpcomingCard,
+  RecentActivityCard,
+} from "./NotesSidePanels";
 import { SORT_OPTIONS, STATUS_OPTIONS } from "./noteDisplay";
 
 const EMPTY_OVERVIEW = {
@@ -40,13 +49,14 @@ export const Notes = () => {
   const [status, setStatus] = useState("all");
   const [pending, setPending] = useState(false);
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(6);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [noteForm, setNoteForm] = useState(null);
   const [categoryForm, setCategoryForm] = useState(null);
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
-  const { categories, addCategory, editCategory, removeCategory } = useNoteCategories();
+  const { categories, addCategory, editCategory, removeCategory } =
+    useNoteCategories();
   const overviewQuery = useNotesOverview(quick);
   const listQuery = useNotesList({
     search: debouncedSearch,
@@ -63,10 +73,17 @@ export const Notes = () => {
   const overview = overviewQuery.data || EMPTY_OVERVIEW;
   const notes = listQuery.data?.notes || [];
   const total = listQuery.data?.total || 0;
-  const categoryByName = new Map(categories.map((category) => [category.name, category]));
+  const categoryByName = new Map(
+    categories.map((category) => [category.name, category]),
+  );
 
   useEffect(() => {
-    if (listQuery.data && listQuery.data.notes.length === 0 && listQuery.data.total > 0 && page > 1) {
+    if (
+      listQuery.data &&
+      listQuery.data.notes.length === 0 &&
+      listQuery.data.total > 0 &&
+      page > 1
+    ) {
       setPage(Math.max(1, Math.ceil(listQuery.data.total / rowsPerPage)));
     }
   }, [listQuery.data, page, rowsPerPage]);
@@ -106,10 +123,13 @@ export const Notes = () => {
   };
 
   const handleDeleteNote = async (note) => {
-    if (!window.confirm(`Delete "${note.title}"? This can't be undone.`)) return;
+    if (!window.confirm(`Delete "${note.title}"? This can't be undone.`))
+      return;
     try {
       const result = await deleteNote(note._id);
-      (result.attachments || []).forEach((attachment) => deleteFileFromS3(attachment.url));
+      (result.attachments || []).forEach((attachment) =>
+        deleteFileFromS3(attachment.url),
+      );
       toast.success("Note deleted.");
     } catch (err) {
       console.error("Error deleting note:", err);
@@ -137,16 +157,22 @@ export const Notes = () => {
     toast.success("Category deleted.");
   };
 
-  const hasActiveFilters = Boolean(debouncedSearch || activeCategory || quick || status !== "all");
+  const hasActiveFilters = Boolean(
+    debouncedSearch || activeCategory || quick || status !== "all",
+  );
 
   return (
     <DashboardLayoutComponent>
       <div className="p-4 w-full text-left sm:p-6 md:p-8">
-        <div className="mx-auto space-y-6 w-full max-w-7xl">
+        <div className="space-y-6 w-full">
           <div className="flex flex-wrap gap-3 justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Notes &amp; Tasks</h2>
-              <p className="text-sm text-gray-500">Keep track of important notes, daily tasks and admin updates.</p>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Notes &amp; Tasks
+              </h2>
+              <p className="text-sm text-gray-500">
+                Keep track of important notes, daily tasks and admin updates.
+              </p>
             </div>
             <button
               type="button"
@@ -164,11 +190,17 @@ export const Notes = () => {
               countsByCategory={overview.countsByCategory}
               totalNotes={overview.totalNotes}
               activeCategory={activeCategory}
-              onSelectCategory={(name) => { changeFilter(setActiveCategory)(name); setPending(false); }}
+              onSelectCategory={(name) => {
+                changeFilter(setActiveCategory)(name);
+                setPending(false);
+              }}
               onAddCategory={() => setCategoryForm({ category: null })}
               onEditCategory={(category) => setCategoryForm({ category })}
               quick={quick}
-              onSelectQuick={(key) => { changeFilter(setQuick)(key); setPending(false); }}
+              onSelectQuick={(key) => {
+                changeFilter(setQuick)(key);
+                setPending(false);
+              }}
             />
 
             <div className="space-y-4 min-w-0">
@@ -177,7 +209,10 @@ export const Notes = () => {
                   <Search className="absolute left-3 top-1/2 w-4 h-4 text-gray-400 -translate-y-1/2" />
                   <input
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
                     placeholder="Search notes..."
                     className="py-2 pr-3 pl-9 w-full text-sm text-gray-700 bg-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-theme-color-1"
                   />
@@ -185,11 +220,16 @@ export const Notes = () => {
                 <select
                   className={selectClass}
                   value={status}
-                  onChange={(e) => { changeFilter(setStatus)(e.target.value); setPending(false); }}
+                  onChange={(e) => {
+                    changeFilter(setStatus)(e.target.value);
+                    setPending(false);
+                  }}
                   aria-label="Filter by status"
                 >
                   {STATUS_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
                 <select
@@ -200,14 +240,18 @@ export const Notes = () => {
                   aria-label="Sort notes"
                 >
                   {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {pending && (
                 <div className="flex gap-3 justify-between items-center px-4 py-2.5 text-sm text-amber-800 bg-amber-50 rounded-xl border border-amber-200">
-                  <span>Showing open tasks with a due date, soonest first.</span>
+                  <span>
+                    Showing open tasks with a due date, soonest first.
+                  </span>
                   <button
                     type="button"
                     onClick={() => changeFilter(setPending)(false)}
@@ -221,13 +265,19 @@ export const Notes = () => {
 
               <div className="space-y-3">
                 {listQuery.isLoading ? (
-                  <p className="py-10 text-sm text-center text-gray-500">Loading notes...</p>
+                  <p className="py-10 text-sm text-center text-gray-500">
+                    Loading notes...
+                  </p>
                 ) : listQuery.isError ? (
-                  <p className="py-10 text-sm text-center text-red-500">Could not load notes. Please try again.</p>
+                  <p className="py-10 text-sm text-center text-red-500">
+                    Could not load notes. Please try again.
+                  </p>
                 ) : notes.length === 0 ? (
                   <div className="py-12 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500">
-                      {hasActiveFilters || pending ? "No notes match these filters." : "No notes yet — add your first one."}
+                      {hasActiveFilters || pending
+                        ? "No notes match these filters."
+                        : "No notes yet — add your first one."}
                     </p>
                   </div>
                 ) : (
@@ -252,7 +302,7 @@ export const Notes = () => {
                     rowsPerPage={rowsPerPage}
                     onPageChange={setPage}
                     onRowsChange={setRowsPerPage}
-                    rowsOptions={[6, 12, 24]}
+                    rowsOptions={[10, 25, 50, 100]}
                   />
                 </div>
               )}
