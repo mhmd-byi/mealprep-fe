@@ -184,7 +184,7 @@ export const Notes = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_19rem]">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[18rem_minmax(0,1fr)_19rem]">
             <CategoryPanel
               categories={categories}
               countsByCategory={overview.countsByCategory}
