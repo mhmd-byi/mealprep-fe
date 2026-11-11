@@ -57,6 +57,7 @@ export const useAlacarteActions = () => {
       ),
     deleteCategory: (id) => run(() => axios.delete(`${base()}admin/product-categories/${id}`, auth())),
     setOrderStatus: (id, status) => run(() => axios.patch(`${base()}admin/alacarte/orders/${id}/status`, { status }, auth())),
+    checkPayment: (id) => run(() => axios.post(`${base()}admin/alacarte/orders/${id}/check-payment`, {}, auth())),
     clearAttention: (id) => run(() => axios.delete(`${base()}admin/alacarte/orders/${id}/attention`, auth())),
     saveSettings: (payload) => run(() => axios.put(`${base()}admin/alacarte/settings`, payload, auth())),
   };

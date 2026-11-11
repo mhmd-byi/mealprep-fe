@@ -15,6 +15,8 @@ export const SLOT_LABELS = {
 };
 
 export const ORDER_STATUS = {
+  pending_payment: { label: "Awaiting payment", style: "bg-gray-100 text-gray-700" },
+  expired: { label: "Expired", style: "bg-red-100 text-red-700" },
   placed: { label: "Placed", style: "bg-blue-100 text-blue-700" },
   confirmed: { label: "Confirmed", style: "bg-amber-100 text-amber-700" },
   out_for_delivery: { label: "Out for delivery", style: "bg-purple-100 text-purple-700" },

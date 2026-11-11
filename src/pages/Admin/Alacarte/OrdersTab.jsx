@@ -14,9 +14,12 @@ import {
 } from "./alacarteDisplay";
 import { errorText, useAdminOrders, useAlacarteActions } from "./useAlacarteAdmin";
 
-const OrderCard = ({ order, onStatus, onClearAttention }) => {
+const UNPAID = ["pending_payment", "expired"];
+
+const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment }) => {
   const status = ORDER_STATUS[order.status] || { label: order.status, style: "bg-gray-100 text-gray-700" };
   const actions = NEXT_ACTIONS[order.status] || [];
+  const isUnpaid = UNPAID.includes(order.status);
 
   return (
     <div className={`p-4 space-y-3 bg-white rounded-2xl border shadow-sm ${order.needsAttention ? "border-amber-300" : "border-gray-100"}`}>
@@ -27,6 +30,21 @@ const OrderCard = ({ order, onStatus, onClearAttention }) => {
         </div>
         <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${status.style}`}>{status.label}</span>
       </div>
+
+      {isUnpaid && (
+        <div className="p-3 space-y-2 text-sm text-gray-700 bg-gray-50 rounded-lg">
+          <p>
+            {order.status === "expired"
+              ? "Payment was not completed in time and the items were released."
+              : "Waiting for the customer's payment."}{" "}
+            If the customer says they paid, check with Razorpay.
+          </p>
+          {order.razorpayOrderId && <p className="text-xs text-gray-500">Razorpay order: {order.razorpayOrderId}</p>}
+          <button type="button" className={outlineButton} onClick={() => onCheckPayment(order)}>
+            Check payment with Razorpay
+          </button>
+        </div>
+      )}
 
       {order.needsAttention && (
         <div className="flex gap-2 items-start p-3 text-sm text-amber-800 bg-amber-50 rounded-lg">
@@ -100,7 +118,7 @@ export const OrdersTab = () => {
   const [attentionOnly, setAttentionOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { setOrderStatus, clearAttention } = useAlacarteActions();
+  const { setOrderStatus, clearAttention, checkPayment } = useAlacarteActions();
 
   const params = { status, page, limit: rowsPerPage };
   if (date) params.date = date;
@@ -121,6 +139,15 @@ export const OrdersTab = () => {
       toast.success(`${order.orderNumber} updated.`);
     } catch (error) {
       toast.error(errorText(error, "Could not update this order."));
+    }
+  };
+
+  const handleCheckPayment = async (order) => {
+    try {
+      await checkPayment(order._id);
+      toast.success(`${order.orderNumber} is paid and now placed.`);
+    } catch (error) {
+      toast.error(errorText(error, "Could not check this payment."));
     }
   };
 
@@ -182,7 +209,13 @@ export const OrdersTab = () => {
       ) : (
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           {orders.map((order) => (
-            <OrderCard key={order._id} order={order} onStatus={handleStatus} onClearAttention={handleClearAttention} />
+            <OrderCard
+              key={order._id}
+              order={order}
+              onStatus={handleStatus}
+              onClearAttention={handleClearAttention}
+              onCheckPayment={handleCheckPayment}
+            />
           ))}
         </div>
       )}

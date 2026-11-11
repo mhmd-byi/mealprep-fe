@@ -25,7 +25,8 @@ export const STATUS_FILTERS = [
   { value: "confirmed", label: "Confirmed" },
   { value: "out_for_delivery", label: "Out for delivery" },
   { value: "delivered", label: "Delivered" },
-  { value: "all", label: "All" },
+  { value: "unpaid", label: "Unpaid" },
+  { value: "all", label: "All paid" },
 ];
 
 export const CUTOFF_DAY_OPTIONS = [
