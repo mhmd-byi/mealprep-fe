@@ -12,6 +12,8 @@ export const ROUTE_OPTIONS = [
   { value: "/customise-meal", label: "Customise a meal" },
   { value: "/help", label: "Help & FAQs" },
   { value: "/profile", label: "Profile" },
+  { value: "/alacarte", label: "À la carte shop" },
+  { value: "/alacarte-orders", label: "À la carte orders" },
 ];
 
 export const CATEGORY_OPTIONS = [

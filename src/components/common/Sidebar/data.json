@@ -13,6 +13,13 @@
     "userOnly": true
   },
   {
+    "name": "À la carte",
+    "icon": "ShoppingBasket",
+    "path": "/dashboard/a-la-carte",
+    "requiresSubscription": false,
+    "userOnly": true
+  },
+  {
     "name": "Cancel Meal Request",
     "icon": "XCircle",
     "path": "/dashboard/cancel-request",
@@ -191,6 +198,13 @@
     "name": "Notifications",
     "icon": "Bell",
     "path": "/dashboard/notifications",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
+    "name": "À la carte",
+    "icon": "ShoppingBag",
+    "path": "/dashboard/alacarte",
     "requiresSubscription": false,
     "adminOnly": true
   }

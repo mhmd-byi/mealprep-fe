@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ShieldCheck, Wallet, TrendingUp, TrendingDown, Users, Truck, Download, ChevronDown, RefreshCw } from "lucide-react";
+import { ShieldCheck, Wallet, TrendingUp, TrendingDown, Users, Truck, Download, ChevronDown, RefreshCw, ShoppingBag } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import { useFinanceDashboard, PRESET_OPTIONS } from "./useFinanceDashboard";
 import { GroupedBarChart } from "./GroupedBarChart";
@@ -373,6 +373,26 @@ export const FinanceDashboardContent = () => {
 
             <div className="mb-4">
               <DailySalesTable />
+            </div>
+
+            <div className="flex flex-col gap-4 p-4 mb-4 bg-white border border-gray-100 shadow-sm rounded-2xl sm:flex-row sm:items-center">
+              <div className="flex justify-center items-center w-10 h-10 text-amber-600 bg-amber-50 rounded-xl shrink-0">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold tracking-wider text-gray-600 uppercase">À la carte (separate from subscriptions)</p>
+                <p className="mt-0.5 text-xs text-gray-400">Paid one-off orders, counted by the date they were paid. Not included in the figures below.</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500">Selected range</p>
+                <p className="text-xl font-bold text-gray-900">{formatINR(data?.alacarte?.revenue)}</p>
+                <p className="text-xs text-gray-400">{formatCount(data?.alacarte?.orders)} order(s)</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500">Today</p>
+                <p className="text-xl font-bold text-gray-900">{formatINR(data?.alacarte?.today?.revenue)}</p>
+                <p className="text-xs text-gray-400">{formatCount(data?.alacarte?.today?.orders)} order(s)</p>
+              </div>
             </div>
 
             {/* ── KPI cards ── */}
