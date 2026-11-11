@@ -1,9 +1,8 @@
 import { useState } from "react";
-import AWS from "aws-sdk";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { toast } from "sonner";
 import { pickProfileFields } from "../../profileFields";
+import { failureText, uploadProfilePhoto } from "../../utils/imageUpload";
 
 const useProfile = (setUserDetails, userDetails) => {
   const [formData, setFormData] = useState({
@@ -23,20 +22,6 @@ const useProfile = (setUserDetails, userDetails) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [oldImageUrl, setOldImageUrl] = useState(null);
-
-  const S3_BUCKET = process.env.REACT_APP_API_S3_BUCKET_NAME;
-  const REGION = process.env.REACT_APP_API_S3_REGION;
-  const ACCESS_KEY = process.env.REACT_APP_API_S3_ACCESS_KEY;
-  const SECRET_ACCESS_KEY = process.env.REACT_APP_API_S3_SECRET_ACCESS_KEY;
-
-  AWS.config.update({
-    accessKeyId: ACCESS_KEY,
-    secretAccessKey: SECRET_ACCESS_KEY,
-    region: REGION,
-  });
-
-  const s3 = new AWS.S3();
 
   const logProfileActivity = async (description) => {
     try {
@@ -51,84 +36,29 @@ const useProfile = (setUserDetails, userDetails) => {
     }
   };
 
-  const deleteFileFromS3 = async (url) => {
-    if (!url) return;
-
-    const fileName = decodeURIComponent(url.split('/').pop().split('?')[0]);
-    const params = {
-      Bucket: S3_BUCKET,
-      Key: fileName,
-    };
-
-    try {
-      await s3.deleteObject(params).promise();
-    } catch (err) {
-      console.error("Error deleting file:", err);
-    }
-  };
-
-  const uploadFileToS3 = async (fileToUpload) => {
-    if (!fileToUpload) {
-      toast.error("Please choose a file first!");
-      return null;
-    }
-
-    const fileName = `${uuidv4()}-${fileToUpload.name}`;
-    const params = {
-      Bucket: S3_BUCKET,
-      Key: fileName,
-      Body: fileToUpload,
-    };
-
-    try {
-      const data = await s3.upload(params).promise();
-      return data.Location;
-    } catch (err) {
-      console.error("Error uploading file:", err);
-      return null;
-    }
-  };
-
   const handleFileChange = (event) => {
     const fileToUpload = event.target.files[0];
     setFile(fileToUpload);
   };
 
   const handlePopupSubmit = async () => {
+    if (!file) {
+      toast.error("Please choose a file first!");
+      return;
+    }
     setIsLoading(true);
-    const newImageUrl = await uploadFileToS3(file);
-    if (newImageUrl) {
-      try {
-        if (oldImageUrl) {
-          await deleteFileFromS3(oldImageUrl);
-        }
-
-        const response = await axios({
-          method: "PATCH",
-          url: `${process.env.REACT_APP_API_URL}user/${userId}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: {
-            profileImageUrl: newImageUrl,
-          },
-        });
-
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,
-          profileImageUrl: newImageUrl,
-        }));
-        setOldImageUrl(newImageUrl);
-        setShowPopup(false);
-        setIsLoading(false);
-        toast.success("Profile photo updated successfully.");
-        logProfileActivity("Updated profile photo");
-      } catch (error) {
-        console.error("Error updating image URL:", error);
-        setIsLoading(false);
-        toast.error(error.response?.data?.message || "Failed to update profile photo.");
-      }
-    } else {
+    try {
+      const newImageUrl = await uploadProfilePhoto(userId, file);
+      setUserDetails((prevDetails) => ({
+        ...prevDetails,
+        profileImageUrl: newImageUrl,
+      }));
+      setShowPopup(false);
+      toast.success("Profile photo updated successfully.");
+    } catch (error) {
+      console.error("Error updating profile photo:", error);
+      toast.error(failureText(error, "Failed to update profile photo."));
+    } finally {
       setIsLoading(false);
     }
   };

@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { Plus, Search, X } from "lucide-react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
 import Pagination from "../../../components/common/Pagination/Pagination";
-import { deleteFileFromS3 } from "../../../utils/s3Files";
 import {
   useNoteCategories,
   useNotesList,
@@ -126,10 +125,7 @@ export const Notes = () => {
     if (!window.confirm(`Delete "${note.title}"? This can't be undone.`))
       return;
     try {
-      const result = await deleteNote(note._id);
-      (result.attachments || []).forEach((attachment) =>
-        deleteFileFromS3(attachment.url),
-      );
+      await deleteNote(note._id);
       toast.success("Note deleted.");
     } catch (err) {
       console.error("Error deleting note:", err);

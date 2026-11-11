@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Search, X, ImagePlus, Loader2 } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
-import { uploadImageToS3, deleteFileFromS3 } from "../../../utils/s3Files";
+import { deleteUnsavedImage, failureText, uploadAdminImage } from "../../../utils/imageUpload";
 import { searchNoteCustomers } from "./useNotes";
 import { RichTextEditor } from "./RichTextEditor";
 import {
@@ -115,7 +115,6 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
   const [customer, setCustomer] = useState(note?.customer || null);
   const [attachments, setAttachments] = useState(note?.attachments || []);
   const [sessionUploads, setSessionUploads] = useState([]);
-  const [removedExisting, setRemovedExisting] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -128,7 +127,7 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
       toast.info("Please wait for the upload to finish.");
       return;
     }
-    await Promise.all(sessionUploads.map(deleteFileFromS3));
+    await Promise.all(sessionUploads.map(deleteUnsavedImage));
     onClose();
   };
 
@@ -158,12 +157,12 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
     setIsUploading(true);
     for (const file of accepted) {
       try {
-        const url = await uploadImageToS3(file);
+        const url = await uploadAdminImage(file, "note");
         setAttachments((prev) => [...prev, { url, name: file.name }]);
         setSessionUploads((prev) => [...prev, url]);
       } catch (err) {
         console.error("Error uploading image:", err);
-        toast.error(`Could not upload "${file.name}".`);
+        toast.error(failureText(err, `Could not upload "${file.name}".`));
       }
     }
     setIsUploading(false);
@@ -173,9 +172,7 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
     setAttachments((prev) => prev.filter((item) => item.url !== attachment.url));
     if (sessionUploads.includes(attachment.url)) {
       setSessionUploads((prev) => prev.filter((url) => url !== attachment.url));
-      deleteFileFromS3(attachment.url);
-    } else {
-      setRemovedExisting((prev) => [...prev, attachment.url]);
+      deleteUnsavedImage(attachment.url);
     }
   };
 
@@ -201,7 +198,6 @@ export const NoteFormPopup = ({ note, categories, onClose, onSave }) => {
         customerId: customer?._id || null,
         attachments,
       });
-      removedExisting.forEach(deleteFileFromS3);
     } catch (err) {
       console.error("Error saving note:", err);
       toast.error(err.response?.data?.message || "Failed to save note.");

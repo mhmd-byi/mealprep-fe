@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { uploadFileToS3 } from "../../../utils/s3Upload";
+import { uploadAdminImage } from "../../../utils/imageUpload";
 
 const authHeaders = () => ({
   headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
@@ -17,15 +17,12 @@ export const useAddMeal = () => {
     setIsPublishing(true);
     try {
       if (referenceImages.length > 0) {
-        const uploaded = await Promise.all(referenceImages.map((file) => uploadFileToS3(file)));
-        const imageUrls = uploaded.filter(Boolean);
-        if (imageUrls.length > 0) {
-          await axios.put(
-            `${process.env.REACT_APP_API_URL}meal/update-meal-images`,
-            { date, imageUrls, userId },
-            authHeaders()
-          );
-        }
+        const imageUrls = await Promise.all(referenceImages.map((file) => uploadAdminImage(file, "menu")));
+        await axios.put(
+          `${process.env.REACT_APP_API_URL}meal/update-meal-images`,
+          { date, imageUrls, userId },
+          authHeaders()
+        );
       }
 
       await axios.post(

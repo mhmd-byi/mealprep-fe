@@ -6,7 +6,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVegIcon";
 import { useMealLibrary } from "./useMealLibrary";
 import { MealItemForm, emptyMealItemForm } from "./MealItemForm";
-import { uploadFileToS3 } from "../../../utils/s3Upload";
+import { failureText, uploadAdminImage } from "../../../utils/imageUpload";
 import { Pencil, Trash2, Search, UploadCloud } from "lucide-react";
 
 const fieldClass = "px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -91,8 +91,7 @@ export const MealLibrary = () => {
       setFormError(null);
       let imageUrl = form.imageUrl;
       if (imageFile) {
-        const uploaded = await uploadFileToS3(imageFile);
-        if (uploaded) imageUrl = uploaded;
+        imageUrl = await uploadAdminImage(imageFile, "meal");
       }
       const payload = {
         ...form,
@@ -116,7 +115,7 @@ export const MealLibrary = () => {
       setIsOpen(false);
     } catch (err) {
       console.error("Error saving meal library item:", err);
-      setFormError(err.response?.data?.message || "Failed to save meal item.");
+      setFormError(failureText(err, "Failed to save meal item."));
     } finally {
       setIsSaving(false);
     }

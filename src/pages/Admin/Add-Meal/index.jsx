@@ -7,7 +7,7 @@ import { VegNonVegIcon } from "../../../components/common/VegNonVegIcon/VegNonVe
 import { useAddMeal } from "./useAddMeal";
 import { useMealLibrary } from "../Meal-Library/useMealLibrary";
 import { MealItemForm, emptyMealItemForm } from "../Meal-Library/MealItemForm";
-import { uploadFileToS3 } from "../../../utils/s3Upload";
+import { failureText, uploadAdminImage } from "../../../utils/imageUpload";
 import { ArrowLeft, ArrowRight, Check, Search, Plus, X, BookOpen } from "lucide-react";
 
 const STEPS = [
@@ -120,8 +120,7 @@ const AddMeal = () => {
         dayItems.map(async (d) => {
           let imageUrl = d.form.imageUrl;
           if (d.imageFile) {
-            const uploaded = await uploadFileToS3(d.imageFile);
-            if (uploaded) imageUrl = uploaded;
+            imageUrl = await uploadAdminImage(d.imageFile, "meal");
           }
           const payload = {
             ...d.form,
@@ -148,7 +147,7 @@ const AddMeal = () => {
       setStep(5);
     } catch (err) {
       console.error("Error saving to meal library:", err);
-      toast.error(err.response?.data?.message || "Failed to save to Meal Library.");
+      toast.error(failureText(err, "Failed to save to Meal Library."));
     } finally {
       setIsSavingLibrary(false);
     }
@@ -167,7 +166,7 @@ const AddMeal = () => {
       setPublished(true);
     } catch (err) {
       console.error("Error publishing menu:", err);
-      toast.error(err.response?.data?.message || "Failed to publish menu.");
+      toast.error(failureText(err, "Failed to publish menu."));
     }
   };
 
