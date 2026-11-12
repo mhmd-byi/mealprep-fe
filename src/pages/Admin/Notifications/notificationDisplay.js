@@ -40,14 +40,6 @@ export const SLOT_OPTIONS = [
   { value: "both", label: "Lunch and dinner" },
 ];
 
-export const CARB_OPTIONS = [
-  { value: "low-carb-high-protein", label: "Low Carb High Protein" },
-  { value: "balanced-meal", label: "Balanced Meal" },
-  { value: "high-carb-high-protein", label: "High Carb High Protein" },
-  { value: "zero-carb", label: "Zero Carb" },
-  { value: "keto-meal", label: "Keto" },
-];
-
 export const OPERATOR_OPTIONS = [
   { value: ">", label: "More than" },
   { value: "<", label: "Fewer than" },

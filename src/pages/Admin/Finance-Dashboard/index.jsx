@@ -10,11 +10,9 @@ import { RecentTransactions } from "./RecentTransactions";
 import { DailySalesTable } from "./DailySalesTable";
 import { formatINR, formatCompactINR, formatPercent, formatCount } from "./format";
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
-import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
+import { useCarbLookup } from "../../../carbTypes";
 import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 import { usePlanColor } from "../../../plans";
-
-export { CARB_TYPE_LABELS, getCarbTypeColor };
 
 const PAYMENT_METHOD_COLORS = {
   "Online (Razorpay)": "#2a78d6",
@@ -145,6 +143,7 @@ const GRANULARITY_LABEL = { day: "Daily", week: "Weekly", month: "Monthly" };
 // another page without nesting a second Header/Sidebar.
 export const FinanceDashboardContent = () => {
   const planColor = usePlanColor();
+  const carbs = useCarbLookup();
   const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error, refresh } = useFinanceDashboard();
 
   const [isCustomOpen, setIsCustomOpen] = useState(false);
@@ -208,9 +207,9 @@ export const FinanceDashboardContent = () => {
     color: getPaymentMethodColor(p.method),
   }));
   const carbMealsData = carbBreakdown.map((c) => ({
-    label: CARB_TYPE_LABELS[c.carbType] || c.carbType,
+    label: carbs.label(c.carbType),
     value: c.meals,
-    color: getCarbTypeColor(c.carbType),
+    color: carbs.color(c.carbType),
   }));
   const expenseCategoryData = expenseCategoryBreakdown.map((c) => ({
     label: c.category,

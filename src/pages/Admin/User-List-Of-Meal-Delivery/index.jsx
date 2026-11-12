@@ -13,7 +13,7 @@ import { ChangeBadge, percentChange } from "../../../components/common/ChangeBad
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { usePlans } from "../../../plans";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
-import { formatCarbType } from "../../../carbTypeDisplay";
+import { useCarbLookup } from "../../../carbTypes";
 import { buildMealLabel, getCoverageCodeFromMealCounts, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
 import { formatTastePreference } from "../../../tastePreferences";
 import {
@@ -75,6 +75,7 @@ const StatTile = ({ icon: Icon, tone, label, value, highlight, change }) => (
 
 const ScheduledMealDeliveryList = () => {
   const { data: plans = [] } = usePlans();
+  const carbs = useCarbLookup();
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
   // What actually went out the same day last week (real MealDelivery records,
   // via the Delivered Meal Log's own endpoint) — the honest comparison point
@@ -331,7 +332,7 @@ const ScheduledMealDeliveryList = () => {
       meal.mobile,
       meal.address,
       formatDietLabel(meal),
-      formatCarbType(meal?.carbType),
+      carbs.label(meal?.carbType),
       meal.allergy,
       formatTastePreference(meal),
       meal.plan,
@@ -358,14 +359,14 @@ const ScheduledMealDeliveryList = () => {
 
   const printLabelForMeal = (meal) => {
     printMealDeliveryLabels([
-      buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date }),
+      buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date, carbs }),
     ]);
   };
 
   const printAllLabels = () => {
     printMealDeliveryLabels(
       sortedMeals.map((meal) =>
-        buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date })
+        buildMealLabel(meal, { coverageCode: getCoverageCodeFromMealCounts(meal), date: formData.date, carbs })
       )
     );
   };

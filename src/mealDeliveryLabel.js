@@ -1,5 +1,4 @@
-import { getCarbTypeShortCode } from "./carbTypeDisplay";
-import { formatLabelMacros } from "./nutritionInfo";
+import { buildCarbLookup } from "./carbTypes";
 import mealprepLogo from "./assets/images/logo/mp-logo.png";
 
 // Resolved to an absolute URL — the print iframe below gets its HTML via
@@ -64,7 +63,7 @@ const formatLabelDate = (value) => {
 // Shapes one delivery row (from either tab) into exactly what the label
 // template needs — name/address/mobile/date plus the NEW/coverage tag,
 // the carb-type short code, and the macro line.
-export const buildMealLabel = (row, { coverageCode, date }) => {
+export const buildMealLabel = (row, { coverageCode, date, carbs = buildCarbLookup() }) => {
   const dietType = row.dietaryType || row.dietaryPreference;
   return {
     name: row.name || "",
@@ -72,8 +71,8 @@ export const buildMealLabel = (row, { coverageCode, date }) => {
     tag: `${row.isNewCustomer ? "NEW" : ""}${coverageCode ? `(${coverageCode})` : ""}`,
     date: formatLabelDate(date),
     mobile: row.mobile || "",
-    macros: formatLabelMacros(row.carbType),
-    carbCode: getCarbTypeShortCode(row.carbType),
+    macros: carbs.labelMacros(row.carbType),
+    carbCode: carbs.shortCode(row.carbType),
     dietCode: dietType === "non-veg" ? "NON VEG" : "VEG",
   };
 };

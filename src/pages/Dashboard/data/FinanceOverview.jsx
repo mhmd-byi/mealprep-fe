@@ -7,7 +7,7 @@ import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
 import { RecentTransactions } from "../../Admin/Finance-Dashboard/RecentTransactions";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
 import { usePlanColor, usePlans } from "../../../plans";
-import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
+import { useCarbLookup } from "../../../carbTypes";
 import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 
 const ChartCardSkeleton = () => (
@@ -75,6 +75,7 @@ const ChangeBadge = ({ percent }) => {
 export const FinanceOverview = () => {
   const navigate = useNavigate();
   const planColor = usePlanColor();
+  const carbs = useCarbLookup();
   const { data: catalog = [] } = usePlans();
   const { data, isLoading } = useFinanceDashboard();
 
@@ -91,9 +92,9 @@ export const FinanceOverview = () => {
   const profitChange = latest && previous ? percentChange(latest.profit, previous.profit) : undefined;
 
   const carbData = (data.carbBreakdown || []).map((c) => ({
-    label: CARB_TYPE_LABELS[c.carbType] || c.carbType,
+    label: carbs.label(c.carbType),
     value: c.meals,
-    color: getCarbTypeColor(c.carbType),
+    color: carbs.color(c.carbType),
   }));
 
   const revenueByPlanData = (data.planBreakdown || []).map((p) => ({

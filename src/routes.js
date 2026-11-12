@@ -19,6 +19,7 @@ import Notifications from "./pages/Admin/Notifications";
 import Alacarte from "./pages/Admin/Alacarte";
 import AlacarteShop from "./pages/Alacarte";
 import ManagePlans from "./pages/Admin/Plans";
+import ManageCarbTypes from "./pages/Admin/CarbTypes";
 import CancelRequest from "./pages/Cancel-Request";
 import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
 import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery";
@@ -148,6 +149,11 @@ export const routes = [
   {
     path: "/dashboard/manage-plans",
     component: ManagePlans,
+    exact: true,
+  },
+  {
+    path: "/dashboard/manage-carb-types",
+    component: ManageCarbTypes,
     exact: true,
   },
   {

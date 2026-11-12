@@ -4,8 +4,7 @@ import { toast } from "sonner";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import useSubscription from "../Plans/useSubscription";
 import { useMealSchedule } from "./useMealSchedule";
-import { formatNutritionLine } from "../../nutritionInfo";
-import { formatCarbType } from "../../carbTypeDisplay";
+import { useCarbLookup } from "../../carbTypes";
 import { formatTastePreference, sameFlavours } from "../../tastePreferences";
 import { useTasteOptions } from "../../useTasteOptions";
 import { TastePreferenceFields } from "../../components/common/TastePreferenceFields/TastePreferenceFields";
@@ -146,6 +145,7 @@ const TastePreferenceCard = ({ plans }) => {
 };
 
 export const MyPlan = () => {
+  const carbs = useCarbLookup();
   const { isSubscribed, currentPlans, nextPlan, hasQueuedPlan } = useSubscription();
   const tastePlans = [
     ...currentPlans.map((plan) => ({ plan, statusLabel: "Active" })),
@@ -216,9 +216,9 @@ export const MyPlan = () => {
                         </td>
                         <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{plan?.mealType}</td>
                         <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                          {formatCarbType(plan?.carbType)}
-                          {formatNutritionLine(plan?.carbType) && (
-                            <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(plan?.carbType)}</p>
+                          {carbs.label(plan?.carbType)}
+                          {carbs.nutritionLine(plan?.carbType) && (
+                            <p className="text-xs text-gray-400 normal-case">{carbs.nutritionLine(plan?.carbType)}</p>
                           )}
                         </td>
                       </tr>
@@ -342,9 +342,9 @@ export const MyPlan = () => {
                       <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.totalMeals} Meals</td>
                       <td className="px-4 py-3 text-gray-700 uppercase whitespace-nowrap">{nextPlan?.mealType}</td>
                       <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                        {formatCarbType(nextPlan?.carbType)}
-                        {formatNutritionLine(nextPlan?.carbType) && (
-                          <p className="text-xs text-gray-400 normal-case">{formatNutritionLine(nextPlan?.carbType)}</p>
+                        {carbs.label(nextPlan?.carbType)}
+                        {carbs.nutritionLine(nextPlan?.carbType) && (
+                          <p className="text-xs text-gray-400 normal-case">{carbs.nutritionLine(nextPlan?.carbType)}</p>
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{nextPlan?.allergy || "None"}</td>

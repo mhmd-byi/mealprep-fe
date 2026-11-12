@@ -214,5 +214,12 @@
     "path": "/dashboard/manage-plans",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Manage Carb Types",
+    "icon": "Wheat",
+    "path": "/dashboard/manage-carb-types",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

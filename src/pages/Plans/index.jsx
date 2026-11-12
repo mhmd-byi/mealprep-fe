@@ -4,7 +4,7 @@ import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboar
 import { planQuote, useActivePlans } from "../../plans";
 import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
-import { formatNutritionLine } from "../../nutritionInfo";
+import { useActiveCarbTypes, useCarbLookup } from "../../carbTypes";
 import { CheckCircle2, Clock, Lock, Info, CalendarDays, AlertTriangle } from "lucide-react";
 import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
 import { TastePreferenceFields } from "../../components/common/TastePreferenceFields/TastePreferenceFields";
@@ -12,7 +12,8 @@ import { TastePreferenceFields } from "../../components/common/TastePreferenceFi
 const selectClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
-const PlansContent = ({ plans }) => {
+const PlansContent = ({ plans, carbTypes }) => {
+  const carbs = useCarbLookup();
   const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan, currentPlans } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
   const [dateWarnings, setDateWarnings] = useState({});
@@ -70,7 +71,7 @@ const PlansContent = ({ plans }) => {
         ...acc,
         [plan.name]: {
           mealType: "veg",
-          carbType: "low-carb-high-protein",
+          carbType: carbTypes[0]?.slug || "",
           lunchDinner: initialLunchDinner,
           mealStartDate: initialDate,
           allergy: "",
@@ -281,14 +282,14 @@ const PlansContent = ({ plans }) => {
                         value={currentPlanDetails.carbType}
                         onChange={(e) => handleDetailChange(plan.name, "carbType", e.target.value)}
                       >
-                        <option value="low-carb-high-protein">Low Carb High Protein Meal</option>
-                        <option value="balanced-meal">Balanced Meal</option>
-                        <option value="high-carb-high-protein">High Carb High Protein Meal</option>
-                        <option value="zero-carb">Zero Carb Meal</option>
-                        <option value="keto-meal">Keto Meal</option>
+                        {carbTypes.map((carbType) => (
+                          <option key={carbType.slug} value={carbType.slug}>
+                            {carbType.name}
+                          </option>
+                        ))}
                       </select>
-                      {formatNutritionLine(currentPlanDetails.carbType) && (
-                        <p className="mt-1 text-xs text-gray-400">{formatNutritionLine(currentPlanDetails.carbType)} (per meal)</p>
+                      {carbs.nutritionLine(currentPlanDetails.carbType) && (
+                        <p className="mt-1 text-xs text-gray-400">{carbs.nutritionLine(currentPlanDetails.carbType)} (per meal)</p>
                       )}
                     </div>
 
@@ -448,9 +449,16 @@ const PlansContent = ({ plans }) => {
 };
 
 const SubscriptionPlans = () => {
-  const { data: plans, isLoading, isError, refetch } = useActivePlans();
+  const { data: plans, isLoading: plansLoading, isError: plansError, refetch: refetchPlans } = useActivePlans();
+  const { data: carbTypes, isLoading: carbsLoading, isError: carbsError, refetch: refetchCarbs } = useActiveCarbTypes();
+  const isLoading = plansLoading || carbsLoading;
+  const isError = plansError || carbsError;
+  const refetch = () => {
+    refetchPlans();
+    refetchCarbs();
+  };
 
-  if (isLoading || isError || !plans) {
+  if (isLoading || isError || !plans || !carbTypes) {
     return (
       <DashboardLayoutComponent>
         <div className="flex flex-col justify-center items-center py-24 text-center">
@@ -469,7 +477,7 @@ const SubscriptionPlans = () => {
     );
   }
 
-  return <PlansContent key={plans.map((plan) => plan.name).join("|")} plans={plans} />;
+  return <PlansContent key={`${plans.map((plan) => plan.name).join("|")}#${carbTypes.map((carbType) => carbType.slug).join("|")}`} plans={plans} carbTypes={carbTypes} />;
 };
 
 export default SubscriptionPlans;

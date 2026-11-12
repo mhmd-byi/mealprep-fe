@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  CARB_OPTIONS,
   DIET_OPTIONS,
   OPERATOR_OPTIONS,
   SLOT_OPTIONS,
@@ -10,6 +9,7 @@ import {
 } from "./notificationDisplay";
 import { EMPTY_FILTER, useCustomerList } from "./useNotifications";
 import { usePlans } from "../../../plans";
+import { useCarbTypes } from "../../../carbTypes";
 
 const ChipGroup = ({ title, options, selected, onChange }) => (
   <div>
@@ -95,6 +95,8 @@ const PickCustomers = ({ filter, onChange }) => {
 
 export const AudienceFilters = ({ filter, onChange }) => {
   const { data: planList = [] } = usePlans();
+  const { data: carbList = [] } = useCarbTypes();
+  const carbOptions = carbList.map((carbType) => ({ value: carbType.slug, label: carbType.name }));
   const planOptions = planList.map((plan) => ({ value: plan.name, label: plan.name }));
   const [mode, setMode] = useState(filter.userIds.length > 0 ? "pick" : "filter");
   const [pincodeText, setPincodeText] = useState(filter.pincodes.join(", "));
@@ -132,7 +134,7 @@ export const AudienceFilters = ({ filter, onChange }) => {
           <ChipGroup title="Plan" options={planOptions} selected={filter.plans} onChange={(plans) => patch({ plans })} />
           <ChipGroup title="Diet" options={DIET_OPTIONS} selected={filter.diets} onChange={(diets) => patch({ diets })} />
           <ChipGroup title="Meals they get" options={SLOT_OPTIONS} selected={filter.mealSlots} onChange={(mealSlots) => patch({ mealSlots })} />
-          <ChipGroup title="Carb type" options={CARB_OPTIONS} selected={filter.carbTypes} onChange={(carbTypes) => patch({ carbTypes })} />
+          <ChipGroup title="Carb type" options={carbOptions} selected={filter.carbTypes} onChange={(carbTypes) => patch({ carbTypes })} />
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
             <div>

@@ -6,6 +6,7 @@ import { ChangeBadge, percentChange } from "../../../components/common/ChangeBad
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { buildMealLabel, getCoverageCodeFromDeliveredLists, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
 import { useDeliveredMealLog } from "./useDeliveredMealLog";
+import { useCarbLookup } from "../../../carbTypes";
 
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -117,6 +118,7 @@ const NameList = ({ rows, emptyLabel, sortKey, sortDir, onSort, onPrintLabel }) 
 };
 
 export const DeliveredMealLog = () => {
+  const carbs = useCarbLookup();
   const { date, setDate, data, previousData, isLoading, error, todayDateString } = useDeliveredMealLog();
   const [searchQuery, setSearchQuery] = useState("");
   const [isPrinting, setIsPrinting] = useState(false);
@@ -162,12 +164,12 @@ export const DeliveredMealLog = () => {
 
   const printLabelForRow = (row) => {
     const coverageCode = getCoverageCodeFromDeliveredLists(row.userId, lunchRows, dinnerRows);
-    printMealDeliveryLabels([buildMealLabel(row, { coverageCode, date })]);
+    printMealDeliveryLabels([buildMealLabel(row, { coverageCode, date, carbs })]);
   };
 
   const printLabelsForRows = (rows) => {
     printMealDeliveryLabels(
-      rows.map((row) => buildMealLabel(row, { coverageCode: getCoverageCodeFromDeliveredLists(row.userId, lunchRows, dinnerRows), date }))
+      rows.map((row) => buildMealLabel(row, { coverageCode: getCoverageCodeFromDeliveredLists(row.userId, lunchRows, dinnerRows), date, carbs }))
     );
   };
 

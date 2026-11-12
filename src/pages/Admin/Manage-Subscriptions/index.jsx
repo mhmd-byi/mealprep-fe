@@ -15,11 +15,11 @@ import { TastePreferenceFields } from "../../../components/common/TastePreferenc
 import { formatTastePreference, sameFlavours } from "../../../tastePreferences";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
 import { usePlans } from "../../../plans";
+import { useCarbTypes } from "../../../carbTypes";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
   LUNCH_DINNER_OPTIONS,
   MEAL_TYPES,
-  CARB_TYPES,
   STATUSES,
   MEAL_COUNT_FIELDS,
   PAYMENT_METHODS,
@@ -88,6 +88,8 @@ const generatePassword = () =>
 
 export const ManageSubscriptions = () => {
   const { data: planList = [] } = usePlans();
+  const { data: carbList = [] } = useCarbTypes();
+  const carbOptions = carbList.filter((c) => c.isActive).map((c) => ({ value: c.slug, label: c.name }));
   const {
     allUsers,
     isLoadingUsers,
@@ -310,7 +312,7 @@ export const ManageSubscriptions = () => {
 
   const lunchDinnerLabel = LUNCH_DINNER_OPTIONS.find((o) => o.value === createForm.lunchDinner)?.label || "—";
   const dietLabel = MEAL_TYPES.find((o) => o.value === createForm.mealType)?.label || "—";
-  const carbLabel = CARB_TYPES.find((o) => o.value === createForm.carbType)?.label || "—";
+  const carbLabel = carbList.find((c) => c.slug === createForm.carbType)?.name || "—";
   const createSummaryRows = [
     ["Customer", selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "—"],
     ["Plan", createForm.plan || "—"],
@@ -898,7 +900,7 @@ export const ManageSubscriptions = () => {
                         value={createForm.carbType}
                         onChange={(e) => handleCreateChange("carbType", e.target.value)}
                         placeholder="Select"
-                        options={CARB_TYPES}
+                        options={carbOptions}
                       />
                     </div>
                     <div>
@@ -1195,7 +1197,7 @@ export const ManageSubscriptions = () => {
                           type="select"
                           value={editFieldUpdates.carbType || ""}
                           onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, carbType: e.target.value }))}
-                          options={CARB_TYPES}
+                          options={carbList.filter((c) => c.isActive || c.slug === editingSub?.carbType).map((c) => ({ value: c.slug, label: c.name }))}
                         />
                       </div>
                       <div>
