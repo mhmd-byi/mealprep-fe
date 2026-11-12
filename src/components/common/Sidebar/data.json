@@ -221,5 +221,13 @@
     "path": "/dashboard/manage-carb-types",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Contact Messages",
+    "icon": "Inbox",
+    "path": "/dashboard/contact-messages",
+    "requiresSubscription": false,
+    "adminOnly": true,
+    "badge": "contactMessages"
   }
 ]

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import sidebarData from "./data.json";
 import whiteLogo from "../../../assets/images/logo/white-logo.png";
 import Diet from "../../../assets/images/diet.png";
@@ -22,6 +24,19 @@ const Sidebar = ({ closeSidebar }) => {
   const fetchUserProfileImage = userDetails.profileImageUrl;
   const fetchUserName = userDetails.firstName;
   const userRole = userDetails.role;
+
+  const { data: contactSummary } = useQuery({
+    queryKey: ["contact-messages", "summary"],
+    queryFn: async () =>
+      (
+        await axios.get(`${process.env.REACT_APP_API_URL}admin/contact-messages/summary`, {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+        })
+      ).data,
+    enabled: userRole === "admin",
+    refetchInterval: 60 * 1000,
+  });
+  const badgeCounts = { contactMessages: contactSummary?.newCount || 0 };
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -157,6 +172,11 @@ const Sidebar = ({ closeSidebar }) => {
                   )}
                   <Icon className="relative z-10 flex-shrink-0 w-5 h-5" />
                   <span className="relative z-10 truncate">{item.name}</span>
+                  {item.badge && badgeCounts[item.badge] > 0 && (
+                    <span className="relative z-10 px-1.5 ml-auto min-w-[1.25rem] text-xs font-bold text-center text-white bg-red-500 rounded-full">
+                      {badgeCounts[item.badge]}
+                    </span>
+                  )}
                 </motion.button>
               </React.Fragment>
             );
