@@ -10,6 +10,7 @@ import { MealSlotIcon } from "../MealSlotIcon/MealSlotIcon";
 import { formatTastePreference } from "../../../tastePreferences";
 import { formatGender, formatProfession } from "../../../profileFields";
 import { CalendarDays, CreditCard, Droplets, Utensils, History, Sun, Pencil, Package } from "lucide-react";
+import { subscriptionEndLabel } from "../../../subscriptionUtils";
 
 const STATUS_STYLES = {
   Active: "bg-green-100 text-green-700",
@@ -34,13 +35,7 @@ const getStatus = (user) => {
   return "No Plan";
 };
 
-const getSubscriptionEndLabel = (sub) => {
-  if (sub.status === "completed" || sub.status === "cancelled") {
-    return sub.updatedAt ? new Date(sub.updatedAt).toLocaleDateString() : "—";
-  }
-  if (sub.status === "active") return "Ongoing";
-  return "Not started";
-};
+const getSubscriptionEndLabel = (sub) => subscriptionEndLabel(sub, (value) => new Date(value).toLocaleDateString());
 
 const DetailRow = ({ label, children }) => (
   <div>

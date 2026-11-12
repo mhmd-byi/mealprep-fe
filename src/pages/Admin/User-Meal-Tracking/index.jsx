@@ -9,7 +9,7 @@ import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbType
 import { useUserMealTracking } from "./useUserMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../../activityCategories";
 import { formatTastePreference } from "../../../tastePreferences";
-import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities } from "../../../subscriptionUtils";
+import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities, subscriptionEndLabel } from "../../../subscriptionUtils";
 import {
   CalendarDays,
   Download,
@@ -79,13 +79,7 @@ const getUserStatus = (user) => {
   return "No Plan";
 };
 
-const getSubscriptionEndLabel = (sub) => {
-  if (sub.status === "completed" || sub.status === "cancelled") {
-    return sub.updatedAt ? formatDisplayDate(sub.updatedAt) : "—";
-  }
-  if (sub.status === "active") return "Ongoing";
-  return "Not started";
-};
+const getSubscriptionEndLabel = (sub) => subscriptionEndLabel(sub, formatDisplayDate);
 
 const dateKey = (value) => {
   const d = new Date(value);

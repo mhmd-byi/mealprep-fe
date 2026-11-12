@@ -103,6 +103,18 @@ export const parseCancellationsFromActivities = (activities = []) => {
 // nothing about which meal TIMES a plan covers. Coverage must come from the
 // actual remaining lunch/dinner counts instead, same as everywhere else in
 // this app (getMealCoverage, the meal-delivery-list query, etc.).
+export const subscriptionEndedAt = (sub) => sub?.endedAt || sub?.updatedAt || null;
+
+export const subscriptionEndLabel = (sub, format) => {
+  if (sub.status === "completed" || sub.status === "cancelled") {
+    const ended = subscriptionEndedAt(sub);
+    if (!ended) return "—";
+    return `${format(ended)}${sub.endedAtEstimated ? " (approx.)" : ""}`;
+  }
+  if (sub.status === "active") return "Ongoing";
+  return "Not started";
+};
+
 export const calculateSubEndDate = (user, holidayDateKeys = new Set()) => {
   const latestSub = user.subscriptions?.[user.subscriptions.length - 1];
   if (!latestSub) return { date: null, status: 'N/A' };
@@ -116,7 +128,7 @@ export const calculateSubEndDate = (user, holidayDateKeys = new Set()) => {
     const completedSub = [...(user.subscriptions || [])]
       .reverse()
       .find((sub) => sub.status === 'completed');
-    const finishedDateValue = completedSub?.updatedAt || latestSub.completedAt;
+    const finishedDateValue = subscriptionEndedAt(completedSub) || latestSub.completedAt;
     const finishedDate = finishedDateValue ? new Date(finishedDateValue) : null;
     const hasValidFinishedDate = finishedDate && !Number.isNaN(finishedDate.getTime());
 

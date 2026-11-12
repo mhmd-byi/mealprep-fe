@@ -15,6 +15,7 @@ import { TastePreferenceFields } from "../../../components/common/TastePreferenc
 import { formatTastePreference, sameFlavours } from "../../../tastePreferences";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
 import { usePlans } from "../../../plans";
+import { subscriptionEndLabel } from "../../../subscriptionUtils";
 import { useCarbTypes } from "../../../carbTypes";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
@@ -41,14 +42,7 @@ const toInputDate = (dateValue) => {
   return new Date(dateValue).toISOString().split("T")[0];
 };
 
-// end date only exists once a plan stops delivering — updatedAt is when that happened
-const getSubscriptionEndLabel = (sub) => {
-  if (sub.status === "completed" || sub.status === "cancelled") {
-    return sub.updatedAt ? formatDate(sub.updatedAt) : "—";
-  }
-  if (sub.status === "active") return "Ongoing";
-  return "Not started";
-};
+const getSubscriptionEndLabel = (sub) => subscriptionEndLabel(sub, formatDate);
 
 const STATUS_COLORS = {
   active: "bg-green-100 text-green-700",

@@ -36,7 +36,7 @@ import {
   CalendarDays,
   Utensils,
 } from "lucide-react";
-import { calculateSubEndDate } from "../../../subscriptionUtils";
+import { calculateSubEndDate, subscriptionEndLabel } from "../../../subscriptionUtils";
 import { formatTastePreference } from "../../../tastePreferences";
 import { formatGender, formatProfession } from "../../../profileFields";
 
@@ -236,14 +236,7 @@ export const AllRegisteredUsers = () => {
     setCurrentPage(1);
   };
 
-  // end date only exists once a plan stops delivering — updatedAt is when that happened
-  const getSubscriptionEndLabel = (sub) => {
-    if (sub.status === "completed" || sub.status === "cancelled") {
-      return sub.updatedAt ? new Date(sub.updatedAt).toLocaleDateString() : "—";
-    }
-    if (sub.status === "active") return "Ongoing";
-    return "Not started";
-  };
+  const getSubscriptionEndLabel = (sub) => subscriptionEndLabel(sub, (value) => new Date(value).toLocaleDateString());
 
   const handleCancelPlan = async (subId, userName) => {
     if (

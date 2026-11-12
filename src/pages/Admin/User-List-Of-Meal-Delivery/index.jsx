@@ -12,6 +12,7 @@ import { DeliveredMealLog } from "./DeliveredMealLog";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
 import { usePlans } from "../../../plans";
+import { subscriptionEndLabel } from "../../../subscriptionUtils";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { useCarbLookup } from "../../../carbTypes";
 import { buildMealLabel, getCoverageCodeFromMealCounts, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
@@ -222,14 +223,7 @@ const ScheduledMealDeliveryList = () => {
 
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
-  // end date only exists once a plan stops delivering — updatedAt is when that happened
-  const getSubscriptionEndLabel = (sub) => {
-    if (sub.status === 'completed' || sub.status === 'cancelled') {
-      return sub.updatedAt ? new Date(sub.updatedAt).toLocaleDateString() : '—';
-    }
-    if (sub.status === 'active') return 'Ongoing';
-    return 'Not started';
-  };
+  const getSubscriptionEndLabel = (sub) => subscriptionEndLabel(sub, (value) => new Date(value).toLocaleDateString());
 
   // "Both" plans don't say what to actually pack — show the resolved pick for
   // this specific date instead, with a note that the plan itself is flexible.
