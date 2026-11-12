@@ -27,7 +27,9 @@ export const useCustomiseYourMeal = () => {
     // Use a regular expression to ensure only valid weight formats are captured
     const validWeightRegex = /\d+[a-zA-Z]+/;
   
-    return weights.filter(weight => validWeightRegex.test(weight));
+    const parsed = weights.filter(weight => validWeightRegex.test(weight));
+    if (parsed.length > 0) return parsed;
+    return input.split(/[,;/|\n]+/).map((segment) => segment.trim()).filter(Boolean);
   };
 
   const getMealItems = async (date, mealType, subscribedFor) => {
