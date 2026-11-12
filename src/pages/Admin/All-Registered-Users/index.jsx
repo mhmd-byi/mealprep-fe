@@ -13,6 +13,7 @@ import {
   percentChange,
 } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { usePlans } from "../../../plans";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import {
   ChevronUp,
@@ -182,6 +183,7 @@ const MEAL_TYPE_LABELS = {
 
 export const AllRegisteredUsers = () => {
   const navigate = useNavigate();
+  const { data: plans = [] } = usePlans();
   const {
     allRegisteredUsers,
     isLoading,
@@ -508,7 +510,7 @@ export const AllRegisteredUsers = () => {
   };
 
   const pageTitle = planFilter
-    ? `${planFilter} Plan Subscribers`
+    ? `${planFilter} Subscribers`
     : "All Registered Users";
 
   const detailLatestSub = selectedUser ? getLatestSub(selectedUser) : null;
@@ -662,9 +664,11 @@ export const AllRegisteredUsers = () => {
                   className={selectClass}
                 >
                   <option value="All">Plan: All</option>
-                  <option value="Weekly">Weekly Plan</option>
-                  <option value="Monthly">Monthly Plan</option>
-                  <option value="Trial">Trial Pack</option>
+                  {plans.map((plan) => (
+                    <option key={plan.name} value={plan.name}>
+                      {plan.name}
+                    </option>
+                  ))}
                 </select>
                 <select
                   value={dietFilter}

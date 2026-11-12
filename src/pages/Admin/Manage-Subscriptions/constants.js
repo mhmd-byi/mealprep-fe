@@ -1,5 +1,3 @@
-export const PLANS = ["Trial Meal Pack", "Weekly Plan", "Monthly Plan"];
-
 export const LUNCH_DINNER_OPTIONS = [
   { value: "lunch", label: "Only Lunch" },
   { value: "dinner", label: "Only Dinner" },

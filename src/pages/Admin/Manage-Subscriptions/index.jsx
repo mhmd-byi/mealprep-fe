@@ -14,9 +14,9 @@ import { FieldLabel } from "./FieldLabel";
 import { TastePreferenceFields } from "../../../components/common/TastePreferenceFields/TastePreferenceFields";
 import { formatTastePreference, sameFlavours } from "../../../tastePreferences";
 import { purchaseOverlapsActiveSubs } from "../../Plans/useSubscription";
+import { usePlans } from "../../../plans";
 import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../../utils";
 import {
-  PLANS,
   LUNCH_DINNER_OPTIONS,
   MEAL_TYPES,
   CARB_TYPES,
@@ -87,6 +87,7 @@ const generatePassword = () =>
   Math.random().toString(36).slice(-8) + Math.floor(Math.random() * 10);
 
 export const ManageSubscriptions = () => {
+  const { data: planList = [] } = usePlans();
   const {
     allUsers,
     isLoadingUsers,
@@ -827,7 +828,7 @@ export const ManageSubscriptions = () => {
                         value={createForm.plan}
                         onChange={(e) => handleCreateChange("plan", e.target.value)}
                         placeholder="Select plan"
-                        options={PLANS.map((p) => ({ value: p, label: p }))}
+                        options={planList.filter((p) => p.isActive).map((p) => ({ value: p.name, label: p.name }))}
                       />
                     </div>
                     {createWouldOverlap ? (
@@ -1053,12 +1054,12 @@ export const ManageSubscriptions = () => {
                   {editSection === "plan" && (
                     <>
                       <div>
-                        <FieldLabel label="Plan" help="Changes the plan name shown on this subscription. It does not change the meal counts." />
+                        <FieldLabel label="Plan" help="Changes the plan on this subscription, and the per-meal price used for its revenue. It does not change the meal counts." />
                         <Input
                           type="select"
                           value={editFieldUpdates.plan || ""}
                           onChange={(e) => setEditFieldUpdates((prev) => ({ ...prev, plan: e.target.value }))}
-                          options={PLANS.map((p) => ({ value: p, label: p }))}
+                          options={planList.filter((p) => p.isActive || p.name === editingSub?.plan).map((p) => ({ value: p.name, label: p.name }))}
                         />
                       </div>
                       <div>

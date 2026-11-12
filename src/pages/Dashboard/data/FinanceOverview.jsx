@@ -6,7 +6,7 @@ import { LineChart } from "../../Admin/Finance-Dashboard/LineChart";
 import { PieChart } from "../../Admin/Finance-Dashboard/PieChart";
 import { RecentTransactions } from "../../Admin/Finance-Dashboard/RecentTransactions";
 import { formatINR, formatCount } from "../../Admin/Finance-Dashboard/format";
-import { getPlanColor, PLAN_COLORS } from "../../Admin/Finance-Dashboard/index";
+import { usePlanColor, usePlans } from "../../../plans";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
 import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
 
@@ -74,6 +74,8 @@ const ChangeBadge = ({ percent }) => {
 
 export const FinanceOverview = () => {
   const navigate = useNavigate();
+  const planColor = usePlanColor();
+  const { data: catalog = [] } = usePlans();
   const { data, isLoading } = useFinanceDashboard();
 
   if (isLoading && !data) {
@@ -97,13 +99,10 @@ export const FinanceOverview = () => {
   const revenueByPlanData = (data.planBreakdown || []).map((p) => ({
     label: p.plan,
     value: p.revenue,
-    color: getPlanColor(p.plan),
+    color: planColor(p.plan),
   }));
 
-  // The performance table below is meant to read as "the 3 plans we sell" —
-  // stray/legacy plan names (e.g. an old renamed or test value) stay out of
-  // it rather than showing up as an unstyled gray row with 0 revenue.
-  const knownPlanBreakdown = (data.planBreakdown || []).filter((p) => Boolean(PLAN_COLORS[p.plan]));
+  const knownPlanBreakdown = (data.planBreakdown || []).filter((p) => catalog.some((plan) => plan.name === p.plan));
 
   const activeSubscribersNow = (data.planBreakdown || []).reduce((sum, p) => sum + p.count, 0);
   const newUsersInWindow = series.reduce((sum, row) => sum + (row.newUsers || 0), 0);
@@ -222,7 +221,7 @@ export const FinanceOverview = () => {
                   <tr key={p.plan}>
                     <td className="px-4 py-3 text-left font-semibold text-gray-900">
                       <span className="inline-flex gap-2 items-center">
-                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: getPlanColor(p.plan) }} />
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: planColor(p.plan) }} />
                         {p.plan}
                       </span>
                     </td>

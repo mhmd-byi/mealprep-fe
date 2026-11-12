@@ -11,6 +11,7 @@ import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIc
 import { DeliveredMealLog } from "./DeliveredMealLog";
 import { ChangeBadge, percentChange } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { usePlans } from "../../../plans";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import { formatCarbType } from "../../../carbTypeDisplay";
 import { buildMealLabel, getCoverageCodeFromMealCounts, printMealDeliveryLabels } from "../../../mealDeliveryLabel";
@@ -73,6 +74,7 @@ const StatTile = ({ icon: Icon, tone, label, value, highlight, change }) => (
 );
 
 const ScheduledMealDeliveryList = () => {
+  const { data: plans = [] } = usePlans();
   const [mealDeliveryList, setMealDeliveryList] = useState([]);
   // What actually went out the same day last week (real MealDelivery records,
   // via the Delivered Meal Log's own endpoint) — the honest comparison point
@@ -535,12 +537,7 @@ const ScheduledMealDeliveryList = () => {
                       type="select"
                       value={filterCriteria.planType}
                       onChange={(e) => { setFilterCriteria((prev) => ({ ...prev, planType: e.target.value })); setCurrentPage(1); }}
-                      options={[
-                        { value: 'All', label: 'All Plans' },
-                        { value: 'Trial', label: 'Trial Pack' },
-                        { value: 'Weekly', label: 'Weekly Plan' },
-                        { value: 'Monthly', label: 'Monthly Plan' },
-                      ]}
+                      options={[{ value: 'All', label: 'All Plans' }, ...plans.map((plan) => ({ value: plan.name, label: plan.name }))]}
                       classes={compactSelectClass}
                     />
                     <button

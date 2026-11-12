@@ -28,12 +28,6 @@ export const STATUS_OPTIONS = [
   { value: "never", label: "Never subscribed" },
 ];
 
-export const PLAN_OPTIONS = [
-  { value: "Trial", label: "Trial" },
-  { value: "Weekly", label: "Weekly" },
-  { value: "Monthly", label: "Monthly" },
-];
-
 export const DIET_OPTIONS = [
   { value: "veg", label: "Veg" },
   { value: "non-veg", label: "Non-veg" },

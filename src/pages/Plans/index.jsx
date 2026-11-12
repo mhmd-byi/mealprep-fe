@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "../../components";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
-import data from "./data.json";
+import { planQuote, useActivePlans } from "../../plans";
 import { useSubscription, purchaseOverlapsActiveSubs } from "./useSubscription";
 import { CheckmarkCircleOutline } from "./circleCheckmark";
 import { formatNutritionLine } from "../../nutritionInfo";
@@ -12,8 +12,7 @@ import { TastePreferenceFields } from "../../components/common/TastePreferenceFi
 const selectClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
 
-const SubscriptionPlans = () => {
-  const { plans } = data;
+const PlansContent = ({ plans }) => {
   const { handleSubscribe, isSubscribedTo, isQueuedTo, isSubscribed, hasQueuedPlan, currentPlans } = useSubscription();
   const [errorMessages, setErrorMessages] = useState({});
   const [dateWarnings, setDateWarnings] = useState({});
@@ -82,18 +81,7 @@ const SubscriptionPlans = () => {
     }, {})
   );
 
-  const getAdjustedPlanDetails = (plan) => {
-    const multiplier =
-      planDetails[plan.name].lunchDinner === "lunchAndDinner" ? 2 : 1;
-    return {
-      price: plan.price * multiplier,
-      meals: plan.meals * multiplier,
-      duration: plan.duration.replace(
-        /\d+/g,
-        (match) => parseInt(match) * multiplier
-      ),
-    };
-  };
+  const getAdjustedPlanDetails = (plan) => planQuote(plan, planDetails[plan.name].lunchDinner);
 
   const handlePlanSubscribe = (
     planName,
@@ -457,6 +445,31 @@ const SubscriptionPlans = () => {
       </div>
     </DashboardLayoutComponent>
   );
+};
+
+const SubscriptionPlans = () => {
+  const { data: plans, isLoading, isError, refetch } = useActivePlans();
+
+  if (isLoading || isError || !plans) {
+    return (
+      <DashboardLayoutComponent>
+        <div className="flex flex-col justify-center items-center py-24 text-center">
+          {isError ? (
+            <>
+              <p className="text-gray-600">We could not load the plans.</p>
+              <button type="button" onClick={() => refetch()} className="px-4 py-2 mt-3 text-sm font-semibold text-white rounded-lg bg-theme-color-1">
+                Try again
+              </button>
+            </>
+          ) : (
+            <div className="w-10 h-10 rounded-full border-b-2 animate-spin border-theme-color-1"></div>
+          )}
+        </div>
+      </DashboardLayoutComponent>
+    );
+  }
+
+  return <PlansContent key={plans.map((plan) => plan.name).join("|")} plans={plans} />;
 };
 
 export default SubscriptionPlans;

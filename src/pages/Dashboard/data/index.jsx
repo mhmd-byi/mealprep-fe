@@ -6,7 +6,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import { RecentActivity } from "./RecentActivity";
 import { MealSlotIcon } from "../../../components/common/MealSlotIcon/MealSlotIcon";
 import { ChangeBadge } from "../../../components/common/ChangeBadge/ChangeBadge";
-import { getPlanDotColor } from "../../../planDisplay";
+import { usePlanColor } from "../../../plans";
 
 const Spinner = () => <div className="w-4 h-4 rounded-full border-2 animate-spin border-theme-color-1 border-t-transparent" />;
 
@@ -65,12 +65,7 @@ export const Data = () => {
     customisationRequestChange,
     endingSoonCount,
     endingSoonUsers,
-    weeklyCount,
-    weeklyCountChange,
-    monthlyCount,
-    monthlyCountChange,
-    trialCount,
-    trialCountChange,
+    planCounts,
     loadingStates,
     isRefreshing,
     refresh,
@@ -79,8 +74,10 @@ export const Data = () => {
   const navigate = useNavigate();
   const [showEndingSoonModal, setShowEndingSoonModal] = useState(false);
 
-  const handlePlanClick = (planType) => {
-    navigate(`/dashboard/all-registered-users?plan=${planType}`);
+  const planColor = usePlanColor();
+
+  const handlePlanClick = (planName) => {
+    navigate(`/dashboard/all-registered-users?plan=${encodeURIComponent(planName)}`);
   };
 
   return (
@@ -174,33 +171,23 @@ export const Data = () => {
               <Spinner />
             ) : (
               <div className="space-y-0.5">
-                <button type="button" onClick={() => handlePlanClick("Weekly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
-                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Weekly")}`} />Weekly:
-                  </span>
-                  <span className="flex gap-1.5 items-center">
-                    <span className="text-xl font-bold text-gray-900">{weeklyCount}</span>
-                    <MiniTrend change={weeklyCountChange} />
-                  </span>
-                </button>
-                <button type="button" onClick={() => handlePlanClick("Monthly")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
-                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Monthly")}`} />Monthly:
-                  </span>
-                  <span className="flex gap-1.5 items-center">
-                    <span className="text-xl font-bold text-gray-900">{monthlyCount}</span>
-                    <MiniTrend change={monthlyCountChange} />
-                  </span>
-                </button>
-                <button type="button" onClick={() => handlePlanClick("Trial")} className="flex justify-between items-center w-full text-left hover:text-theme-color-1">
-                  <span className="flex gap-1.5 items-center text-xs font-medium text-gray-500">
-                    <span className={`w-2 h-2 rounded-full ${getPlanDotColor("Trial")}`} />Trial:
-                  </span>
-                  <span className="flex gap-1.5 items-center">
-                    <span className="text-xl font-bold text-gray-900">{trialCount}</span>
-                    <MiniTrend change={trialCountChange} />
-                  </span>
-                </button>
+                {planCounts.map((item) => (
+                  <button
+                    key={item.plan}
+                    type="button"
+                    onClick={() => handlePlanClick(item.plan)}
+                    className="flex gap-2 justify-between items-center w-full text-left hover:text-theme-color-1"
+                  >
+                    <span className="flex gap-1.5 items-center min-w-0 text-xs font-medium text-gray-500">
+                      <span className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: planColor(item.plan) }} />
+                      <span className="truncate">{item.plan}:</span>
+                    </span>
+                    <span className="flex flex-shrink-0 gap-1.5 items-center">
+                      <span className="text-xl font-bold text-gray-900">{item.count}</span>
+                      <MiniTrend change={item.change} />
+                    </span>
+                  </button>
+                ))}
               </div>
             )}
           </div>

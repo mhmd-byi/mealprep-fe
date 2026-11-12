@@ -18,6 +18,7 @@ import Notes from "./pages/Admin/Notes";
 import Notifications from "./pages/Admin/Notifications";
 import Alacarte from "./pages/Admin/Alacarte";
 import AlacarteShop from "./pages/Alacarte";
+import ManagePlans from "./pages/Admin/Plans";
 import CancelRequest from "./pages/Cancel-Request";
 import { UserListWithCancelRequest } from "./pages/Admin/User-List-of-Cancel-Request";
 import { UserListOfMealDelivery } from "./pages/Admin/User-List-Of-Meal-Delivery";
@@ -142,6 +143,11 @@ export const routes = [
   {
     path: "/dashboard/a-la-carte",
     component: AlacarteShop,
+    exact: true,
+  },
+  {
+    path: "/dashboard/manage-plans",
+    component: ManagePlans,
     exact: true,
   },
   {

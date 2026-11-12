@@ -207,5 +207,12 @@
     "path": "/dashboard/alacarte",
     "requiresSubscription": false,
     "adminOnly": true
+  },
+  {
+    "name": "Manage Plans",
+    "icon": "Layers",
+    "path": "/dashboard/manage-plans",
+    "requiresSubscription": false,
+    "adminOnly": true
   }
 ]

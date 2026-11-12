@@ -222,7 +222,7 @@ Please update the system accordingly.`);
                   plan: planName,
                   subscriptionStartDate: mealStartDate,
                   subscriptionEndDate: new Date().setDate(
-                    new Date().getDate() + (planName === "Weekly Plan" ? 7 : 30)
+                    new Date().getDate() + Math.max(1, Math.ceil(((lunchDinner === "lunchAndDinner" ? mealCount / 2 : mealCount) * 7) / 6))
                   ),
                 });
                 setTimeout(() => {

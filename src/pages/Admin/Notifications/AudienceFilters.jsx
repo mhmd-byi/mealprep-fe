@@ -3,13 +3,13 @@ import {
   CARB_OPTIONS,
   DIET_OPTIONS,
   OPERATOR_OPTIONS,
-  PLAN_OPTIONS,
   SLOT_OPTIONS,
   STATUS_OPTIONS,
   inputClass,
   toggleValue,
 } from "./notificationDisplay";
 import { EMPTY_FILTER, useCustomerList } from "./useNotifications";
+import { usePlans } from "../../../plans";
 
 const ChipGroup = ({ title, options, selected, onChange }) => (
   <div>
@@ -94,6 +94,8 @@ const PickCustomers = ({ filter, onChange }) => {
 };
 
 export const AudienceFilters = ({ filter, onChange }) => {
+  const { data: planList = [] } = usePlans();
+  const planOptions = planList.map((plan) => ({ value: plan.name, label: plan.name }));
   const [mode, setMode] = useState(filter.userIds.length > 0 ? "pick" : "filter");
   const [pincodeText, setPincodeText] = useState(filter.pincodes.join(", "));
   const patch = (changes) => onChange({ ...filter, ...changes });
@@ -127,7 +129,7 @@ export const AudienceFilters = ({ filter, onChange }) => {
       ) : (
         <div className="space-y-4">
           <ChipGroup title="Subscription status" options={STATUS_OPTIONS} selected={filter.statuses} onChange={(statuses) => patch({ statuses })} />
-          <ChipGroup title="Plan" options={PLAN_OPTIONS} selected={filter.plans} onChange={(plans) => patch({ plans })} />
+          <ChipGroup title="Plan" options={planOptions} selected={filter.plans} onChange={(plans) => patch({ plans })} />
           <ChipGroup title="Diet" options={DIET_OPTIONS} selected={filter.diets} onChange={(diets) => patch({ diets })} />
           <ChipGroup title="Meals they get" options={SLOT_OPTIONS} selected={filter.mealSlots} onChange={(mealSlots) => patch({ mealSlots })} />
           <ChipGroup title="Carb type" options={CARB_OPTIONS} selected={filter.carbTypes} onChange={(carbTypes) => patch({ carbTypes })} />

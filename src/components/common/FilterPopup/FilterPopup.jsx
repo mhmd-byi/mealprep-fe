@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Popup from '../Popup/Popup';
+import { usePlans } from '../../../plans';
 
 const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter Results", showEndDateFilter = true }) => {
   const [endDateError, setEndDateError] = useState('');
+  const { data: plans = [] } = usePlans();
 
   const handleApply = () => {
     // Validate: if an end date operator is set but no date is picked
@@ -37,9 +39,9 @@ const FilterPopup = ({ isOpen, onClose, criteria, setCriteria, title = "Filter R
               onChange={(e) => setCriteria({...criteria, planType: e.target.value})}
             >
               <option value="All">All Plans</option>
-              <option value="Weekly">Weekly Plan</option>
-              <option value="Monthly">Monthly Plan</option>
-              <option value="Trial">Trial Pack</option>
+              {plans.map((plan) => (
+                <option key={plan.name} value={plan.name}>{plan.name}</option>
+              ))}
             </select>
           </div>
 

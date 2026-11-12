@@ -12,18 +12,9 @@ import { formatINR, formatCompactINR, formatPercent, formatCount } from "./forma
 import { buildFinanceReportCSV, downloadCSV } from "./exportCsv";
 import { CARB_TYPE_LABELS, getCarbTypeColor } from "../../../carbTypeDisplay";
 import { Skeleton } from "../../../components/common/Skeleton/Skeleton";
+import { usePlanColor } from "../../../plans";
 
 export { CARB_TYPE_LABELS, getCarbTypeColor };
-
-// Same categorical palette used across the app's other charts (Expenses
-// module) — assign fixed slots to the 3 known plans, fall back to the
-// existing muted "Other" gray for anything outside that list.
-export const PLAN_COLORS = {
-  "Monthly Plan": "#2a78d6",
-  "Weekly Plan": "#eb6834",
-  "Trial Meal Pack": "#1baf7a",
-};
-export const getPlanColor = (plan) => PLAN_COLORS[plan] || "#898781";
 
 const PAYMENT_METHOD_COLORS = {
   "Online (Razorpay)": "#2a78d6",
@@ -153,6 +144,7 @@ const GRANULARITY_LABEL = { day: "Daily", week: "Weekly", month: "Monthly" };
 // it can be rendered standalone (below, at its own route) or embedded inside
 // another page without nesting a second Header/Sidebar.
 export const FinanceDashboardContent = () => {
+  const planColor = usePlanColor();
   const { preset, customRange, selectPreset, applyCustomRange, data, isLoading, error, refresh } = useFinanceDashboard();
 
   const [isCustomOpen, setIsCustomOpen] = useState(false);
@@ -207,9 +199,9 @@ export const FinanceDashboardContent = () => {
     actualProfitMargin: row.actualSale > 0 ? Math.round((row.actualProfit / row.actualSale) * 1000) / 10 : 0,
   }));
 
-  const planRevenueData = planBreakdown.map((p) => ({ label: p.plan, value: p.revenue, color: getPlanColor(p.plan) }));
-  const planActualSaleData = planBreakdown.map((p) => ({ label: p.plan, value: p.actualSale, color: getPlanColor(p.plan) }));
-  const planCountData = planBreakdown.map((p) => ({ label: p.plan, value: p.count, color: getPlanColor(p.plan) }));
+  const planRevenueData = planBreakdown.map((p) => ({ label: p.plan, value: p.revenue, color: planColor(p.plan) }));
+  const planActualSaleData = planBreakdown.map((p) => ({ label: p.plan, value: p.actualSale, color: planColor(p.plan) }));
+  const planCountData = planBreakdown.map((p) => ({ label: p.plan, value: p.count, color: planColor(p.plan) }));
   const paymentMethodData = paymentMethodBreakdown.map((p) => ({
     label: p.method,
     value: p.count,
