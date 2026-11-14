@@ -25,11 +25,6 @@ const arcPath = (startDeg, endDeg, outerR, innerR) => {
   );
 };
 
-// Donut chart in plain SVG. Slices below `otherThresholdPct` of the total are
-// folded into a single muted-gray "Other" slice, per the app's existing
-// convention for a non-categorical fold-in bucket (same as Expenses' own
-// "Other" category) — keeps the wheel readable regardless of how many real
-// categories/plans/methods exist.
 export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThresholdPct = 3 }) => {
   const [hoverKey, setHoverKey] = useState(null);
   const [showTable, setShowTable] = useState(false);
@@ -39,15 +34,12 @@ export const PieChart = ({ data, title, valueFormatter = (v) => v, otherThreshol
     return <p className="text-sm text-gray-500 py-8 text-center">No data for this range.</p>;
   }
 
-  const main = [];
-  let otherValue = 0;
-  data.forEach((d) => {
-    const pct = (d.value / total) * 100;
-    if (pct < otherThresholdPct) otherValue += d.value;
-    else main.push(d);
-  });
-  const slices = [...main.sort((a, b) => b.value - a.value)];
-  if (otherValue > 0) slices.push({ label: OTHER_LABEL, value: otherValue, color: OTHER_COLOR });
+  const positive = data.filter((d) => d.value > 0);
+  const small = positive.filter((d) => (d.value / total) * 100 < otherThresholdPct);
+  const foldSmall = small.length > 1;
+  const main = foldSmall ? positive.filter((d) => !small.includes(d)) : positive;
+  const slices = [...main].sort((a, b) => b.value - a.value);
+  if (foldSmall) slices.push({ label: OTHER_LABEL, value: small.reduce((sum, d) => sum + d.value, 0), color: OTHER_COLOR });
 
   const gapTotal = GAP_DEG * slices.length;
   let cursor = 0;
