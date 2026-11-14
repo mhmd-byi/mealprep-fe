@@ -1,22 +1,57 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Check, ChevronRight, Info } from "lucide-react";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import {
+  FILTER_HINTS,
   formatDateKey,
   formatDateTime,
   formatINR,
   inputClass,
   NEXT_ACTIONS,
   ORDER_STATUS,
+  ORDER_STEPS,
   outlineButton,
+  primaryButton,
   STATUS_FILTERS,
+  STEP_HINTS,
 } from "./alacarteDisplay";
+import { OrderItemPopup } from "./OrderItemPopup";
 import { errorText, useAdminOrders, useAlacarteActions } from "./useAlacarteAdmin";
 
 const UNPAID = ["pending_payment", "expired"];
 
-const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment }) => {
+const STEP_CIRCLE = {
+  done: "bg-theme-color-1 text-white",
+  current: "bg-white text-theme-color-1 ring-2 ring-theme-color-1",
+  upcoming: "bg-gray-100 text-gray-400",
+};
+
+const OrderSteps = ({ order }) => {
+  const current = ORDER_STEPS.findIndex((step) => step.status === order.status);
+  const timeOf = (status) => (order.history || []).find((entry) => entry.status === status)?.at;
+
+  return (
+    <ol className="flex items-start">
+      {ORDER_STEPS.map((step, index) => {
+        const state = index < current || (index === current && order.status === "delivered") ? "done" : index === current ? "current" : "upcoming";
+        const at = timeOf(step.status);
+        return (
+          <li key={step.status} className="relative flex-1 text-center">
+            {index > 0 && <span className={`absolute top-3 right-1/2 w-full h-0.5 ${index <= current ? "bg-theme-color-1" : "bg-gray-200"}`} />}
+            <span className={`inline-flex relative justify-center items-center w-6 h-6 text-xs font-bold rounded-full ${STEP_CIRCLE[state]}`}>
+              {state === "done" ? <Check className="w-3.5 h-3.5" /> : index + 1}
+            </span>
+            <p className={`mt-1 text-xs font-semibold ${state === "upcoming" ? "text-gray-400" : "text-gray-800"}`}>{step.label}</p>
+            <p className="text-[11px] text-gray-400">{at ? formatDateTime(at) : state === "done" ? "skipped" : ""}</p>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
+
+const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment, onViewItem }) => {
   const status = ORDER_STATUS[order.status] || { label: order.status, style: "bg-gray-100 text-gray-700" };
   const actions = NEXT_ACTIONS[order.status] || [];
   const isUnpaid = UNPAID.includes(order.status);
@@ -58,6 +93,18 @@ const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment }) => {
         </div>
       )}
 
+      {!isUnpaid && (
+        <div className="space-y-3">
+          <OrderSteps order={order} />
+          {STEP_HINTS[order.status] && (
+            <div className="flex gap-2 items-start p-3 text-sm text-blue-800 bg-blue-50 rounded-lg">
+              <Info className="flex-shrink-0 mt-0.5 w-4 h-4" />
+              <p>{STEP_HINTS[order.status]}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
         <div>
           <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">Customer</p>
@@ -75,21 +122,32 @@ const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment }) => {
         </div>
       </div>
 
-      <ul className="divide-y divide-gray-100 border-y border-gray-100">
-        {order.items.map((item) => (
-          <li key={item.productId} className="flex gap-3 items-center py-2 text-sm">
-            {item.image ? (
-              <img src={item.image} alt={item.name} className="object-cover w-10 h-10 rounded-lg" />
-            ) : (
-              <div className="w-10 h-10 bg-gray-100 rounded-lg" />
-            )}
-            <span className="flex-1 text-gray-900">
-              {item.name} <span className="text-gray-500">× {item.quantity}</span>
-            </span>
-            <span className="font-semibold text-gray-900">{formatINR(item.unitPrice * item.quantity)}</span>
-          </li>
-        ))}
-      </ul>
+      <div>
+        <p className="mb-1 text-xs text-gray-400">Click an item to see its product details.</p>
+        <ul className="divide-y divide-gray-100 border-y border-gray-100">
+          {order.items.map((item) => (
+            <li key={item.productId}>
+              <button
+                type="button"
+                onClick={() => onViewItem(item)}
+                title="See product details"
+                className="flex gap-3 items-center py-2 w-full text-sm text-left rounded-lg hover:bg-gray-50"
+              >
+                {item.image ? (
+                  <img src={item.image} alt={item.name} className="object-cover w-10 h-10 rounded-lg" />
+                ) : (
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg" />
+                )}
+                <span className="flex-1 text-gray-900">
+                  {item.name} <span className="text-gray-500">× {item.quantity}</span>
+                </span>
+                <span className="font-semibold text-gray-900">{formatINR(item.unitPrice * item.quantity)}</span>
+                <ChevronRight className="flex-shrink-0 w-4 h-4 text-gray-400" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex flex-wrap gap-3 justify-between items-center">
         <div className="text-sm text-gray-600">
@@ -99,8 +157,8 @@ const OrderCard = ({ order, onStatus, onClearAttention, onCheckPayment }) => {
         </div>
         {actions.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {actions.map((action) => (
-              <button key={action.status} type="button" className={outlineButton} onClick={() => onStatus(order, action.status)}>
+            {actions.map((action, index) => (
+              <button key={action.status} type="button" className={index === 0 ? primaryButton : outlineButton} onClick={() => onStatus(order, action.status)}>
                 {action.label}
               </button>
             ))}
@@ -118,6 +176,7 @@ export const OrdersTab = () => {
   const [attentionOnly, setAttentionOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [viewedItem, setViewedItem] = useState(null);
   const { setOrderStatus, clearAttention, checkPayment } = useAlacarteActions();
 
   const params = { status, page, limit: rowsPerPage };
@@ -175,6 +234,7 @@ export const OrdersTab = () => {
           </button>
         ))}
       </div>
+      <p className="text-sm text-gray-500">{FILTER_HINTS[status]}</p>
 
       <div className="flex flex-wrap gap-3 items-center">
         <input
@@ -215,10 +275,13 @@ export const OrdersTab = () => {
               onStatus={handleStatus}
               onClearAttention={handleClearAttention}
               onCheckPayment={handleCheckPayment}
+              onViewItem={setViewedItem}
             />
           ))}
         </div>
       )}
+
+      {viewedItem && <OrderItemPopup item={viewedItem} onClose={() => setViewedItem(null)} />}
 
       {(data?.total || 0) > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
