@@ -17,7 +17,7 @@ import userProfileImg from "../../../assets/images/user/user-placeholder.png";
 const Sidebar = ({ closeSidebar }) => {
   const { userDetails, isLoading: isUserLoading } = useDashboard();
   const { logout } = useHeader();
-  const { isSubscribed, currentPlan, isLoading: isSubscriptionLoading } = useSubscription();
+  const { isSubscribed, currentPlan, currentPlans, isLoading: isSubscriptionLoading } = useSubscription();
 
   const isLoading = isUserLoading || isSubscriptionLoading;
 
@@ -104,6 +104,9 @@ const Sidebar = ({ closeSidebar }) => {
       return false;
     }
     if (item.requiresSubscription && (mealConditions)) {
+      return false;
+    }
+    if (item.requiresBothPlan && !(currentPlans || []).some((plan) => plan.mealType === "both")) {
       return false;
     }
     if (item.adminOnly && userRole !== "admin") {

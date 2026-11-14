@@ -1,10 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { UtensilsCrossed, Activity, XCircle, Settings2, Receipt, ClipboardList, HelpCircle, MessageCircle } from "lucide-react";
+import {
+  UtensilsCrossed,
+  ShoppingBasket,
+  Activity,
+  XCircle,
+  Settings2,
+  CalendarClock,
+  Flame,
+  Receipt,
+  ClipboardList,
+  HelpCircle,
+  MessageCircle,
+} from "lucide-react";
 import useSubscription from "../../Plans/useSubscription";
 
 export const Services = () => {
   const navigate = useNavigate();
-  const { currentPlan } = useSubscription();
+  const { currentPlan, currentPlans } = useSubscription();
+  const hasBothMealTypePlan = (currentPlans || []).some((plan) => plan.mealType === "both");
 
   const checkForMeals = () => {
     if (currentPlan) {
@@ -22,13 +35,16 @@ export const Services = () => {
 
   const services = [
     { name: "Food Menu", path: "/dashboard/food-menu", icon: UtensilsCrossed, tone: "bg-green-50 text-theme-color-1", showOnlyToSubscribed: false },
+    { name: "À la carte", path: "/dashboard/a-la-carte", icon: ShoppingBasket, tone: "bg-pink-50 text-pink-600", showOnlyToSubscribed: false },
     { name: "Meal Trackings", path: "/dashboard/meal-tracking", icon: Activity, tone: "bg-blue-50 text-blue-600", showOnlyToSubscribed: false },
     { name: "Cancel Meal Request", path: "/dashboard/cancel-request", icon: XCircle, tone: "bg-red-50 text-red-600", showOnlyToSubscribed: true },
     { name: "Customized Meal", path: "/dashboard/customize-your-meal", icon: Settings2, tone: "bg-amber-50 text-amber-600", showOnlyToSubscribed: true },
+    { name: "Meal Schedule", path: "/dashboard/meal-schedule", icon: CalendarClock, tone: "bg-sky-50 text-sky-600", showOnlyToSubscribed: true, requiresBothPlan: true },
+    { name: "Taste Preferences", path: "/dashboard/my-taste-preferences", icon: Flame, tone: "bg-orange-50 text-orange-600", showOnlyToSubscribed: true },
     { name: "My Billings", path: "/dashboard/my-billing", icon: Receipt, tone: "bg-purple-50 text-purple-600", showOnlyToSubscribed: true },
     { name: "Subscription Plans", path: "/dashboard/plans", icon: ClipboardList, tone: "bg-teal-50 text-teal-600", showOnlyToSubscribed: false },
-    { name: "FAQs", path: "/dashboard/help", icon: HelpCircle, tone: "bg-indigo-50 text-indigo-600", showOnlyToSubscribed: false },
     { name: "Chat on WhatsApp", path: "https://wa.me/+919826157131", icon: MessageCircle, tone: "bg-green-50 text-green-600", showOnlyToSubscribed: false },
+    { name: "FAQs", path: "/dashboard/help", icon: HelpCircle, tone: "bg-indigo-50 text-indigo-600", showOnlyToSubscribed: false },
   ];
 
   const handleClick = (path) => {
@@ -40,7 +56,9 @@ export const Services = () => {
   };
 
   const visibleServices = services.filter(
-    (service) => service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)
+    (service) =>
+      (service.showOnlyToSubscribed === false || (showServices && service.showOnlyToSubscribed)) &&
+      (!service.requiresBothPlan || hasBothMealTypePlan)
   );
 
   return (

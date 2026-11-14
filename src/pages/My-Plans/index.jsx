@@ -1,20 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import DashboardLayoutComponent from "../../components/common/Dashboard/Dashboard";
 import useSubscription from "../Plans/useSubscription";
-import { useMealSchedule } from "./useMealSchedule";
 import { useCarbLookup } from "../../carbTypes";
-import { formatTastePreference, sameFlavours } from "../../tastePreferences";
-import { useTasteOptions } from "../../useTasteOptions";
-import { TastePreferenceFields } from "../../components/common/TastePreferenceFields/TastePreferenceFields";
-import { CreditCard, Clock, Utensils, Sun, Moon, Lock, Info, Flame } from "lucide-react";
-
-const formatDayLabel = (dateStr) => {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-};
+import { formatTastePreference } from "../../tastePreferences";
+import { subscriptionEndLabel } from "../../subscriptionUtils";
+import { downloadInvoice, invoiceErrorText, useBillingHistory } from "./useBillingHistory";
+import { CreditCard, Clock, Download, History, Info, Loader2, Moon, Sun } from "lucide-react";
 
 const formatDate = (dateValue) => {
   if (!dateValue) return "—";
@@ -25,121 +17,129 @@ const formatDate = (dateValue) => {
   });
 };
 
-const DietToggle = ({ value, locked, isSaving, onSelect }) => {
-  if (locked) {
-    return (
-      <span
-        className={`inline-flex gap-1 items-center px-2 py-1 rounded-full text-xs font-semibold ${
-          value === "non-veg" ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"
-        }`}
-        title="Locked — within 3 days of delivery, already planned for"
-      >
-        <Lock className="w-3 h-3" />
-        {value === "non-veg" ? "Non-Veg" : "Veg"}
-      </span>
-    );
-  }
-  return (
-    <div className="inline-flex overflow-hidden text-xs rounded-lg border border-gray-300">
-      <button
-        type="button"
-        disabled={isSaving}
-        onClick={() => value !== "veg" && onSelect("veg")}
-        className={`px-2 py-1 font-semibold ${
-          value === "veg" ? "bg-theme-color-1 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
-        }`}
-      >
-        Veg
-      </button>
-      <button
-        type="button"
-        disabled={isSaving}
-        onClick={() => value !== "non-veg" && onSelect("non-veg")}
-        className={`px-2 py-1 font-semibold border-l border-gray-300 ${
-          value === "non-veg" ? "bg-orange-500 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
-        }`}
-      >
-        Non-Veg
-      </button>
-    </div>
-  );
+const formatAmount = (amount) => `₹${Number(amount || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+
+const STATUS_BADGES = {
+  active: { label: "Active", style: "bg-green-100 text-green-700" },
+  queued: { label: "Queued", style: "bg-amber-100 text-amber-700" },
+  completed: { label: "Completed", style: "bg-gray-100 text-gray-700" },
+  cancelled: { label: "Cancelled", style: "bg-red-100 text-red-700" },
 };
 
-const PlanTastePreference = ({ plan, statusLabel }) => {
-  const initial = { spiceLevel: plan.spiceLevel || "", flavourPreferences: plan.flavourPreferences || [] };
-  const [saved, setSaved] = useState(initial);
-  const [draft, setDraft] = useState(initial);
-  const [isSaving, setIsSaving] = useState(false);
+const MEAL_TYPE_LABELS = { veg: "Veg", "non-veg": "Non-veg", both: "Veg & non-veg" };
 
-  const isChanged =
-    draft.spiceLevel !== saved.spiceLevel || !sameFlavours(draft.flavourPreferences, saved.flavourPreferences);
+const InvoiceButton = ({ subscription }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const handleSave = async () => {
+  if (subscription.refunded) return <span className="text-xs font-semibold text-red-600">Refunded</span>;
+  if (!subscription.invoiceAvailable) return <span className="text-xs text-gray-400">—</span>;
+
+  const handleDownload = async () => {
     try {
-      setIsSaving(true);
-      const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}subscription/${plan._id}/taste-preference`,
-        draft,
-        { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }
-      );
-      setSaved(response.data);
-      setDraft(response.data);
-      toast.success("Taste preference saved.");
-    } catch (err) {
-      console.error("Error saving taste preference:", err);
-      toast.error(err.response?.data?.message || "Failed to save taste preference.");
+      setIsDownloading(true);
+      await downloadInvoice(subscription);
+    } catch (error) {
+      toast.error(await invoiceErrorText(error));
     } finally {
-      setIsSaving(false);
+      setIsDownloading(false);
     }
   };
 
   return (
-    <div className="p-4 space-y-4 rounded-xl border border-gray-100">
-      <div className="flex justify-between items-center">
-        <p className="font-semibold text-gray-900">{plan.plan}</p>
-        <span className="px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">{statusLabel}</span>
-      </div>
-      <TastePreferenceFields
-        spiceLevel={draft.spiceLevel}
-        flavourPreferences={draft.flavourPreferences}
-        onChange={setDraft}
-        disabled={isSaving}
-      />
-      <div className="flex gap-3 items-center">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isChanged || isSaving}
-          className="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black disabled:opacity-50"
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </button>
-        {!isChanged && formatTastePreference(saved) && (
-          <p className="text-xs text-gray-400">Saved: {formatTastePreference(saved)}</p>
-        )}
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={handleDownload}
+      disabled={isDownloading}
+      title={`Download invoice ${subscription.invoiceNumber}`}
+      className="inline-flex gap-1.5 items-center px-3 py-1.5 text-xs font-semibold bg-white rounded-lg border-2 text-theme-color-1 border-theme-color-1 hover:bg-theme-color-1 hover:text-white disabled:opacity-50 whitespace-nowrap"
+    >
+      {isDownloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+      Invoice PDF
+    </button>
   );
 };
 
-const TastePreferenceCard = ({ plans }) => {
-  const { spiceOptions, flavourOptions } = useTasteOptions();
-  if (plans.length === 0 || (spiceOptions.length === 0 && flavourOptions.length === 0)) return null;
+const SubscriptionHistory = () => {
+  const carbs = useCarbLookup();
+  const { data: history, isLoading, isError } = useBillingHistory();
 
   return (
-    <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
-      <p className="flex gap-2 items-center mb-2 text-base font-bold text-gray-900">
-        <Flame className="w-5 h-5 text-theme-color-1" />
-        Taste Preference
-      </p>
-      <p className="mb-4 text-sm text-gray-500">
-        Tell our kitchen how you like your food. Changes apply to meals we prepare from now on.
-      </p>
-      <div className="space-y-4">
-        {plans.map(({ plan, statusLabel }) => (
-          <PlanTastePreference key={plan._id} plan={plan} statusLabel={statusLabel} />
-        ))}
+    <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex justify-between items-center p-5 border-b border-gray-100">
+        <p className="flex gap-2 items-center text-base font-bold text-gray-900">
+          <History className="w-5 h-5 text-theme-color-1" />
+          All your subscriptions
+        </p>
+        {history && history.length > 0 && <span className="text-sm text-gray-500">{history.length} subscription{history.length === 1 ? "" : "s"}</span>}
       </div>
+
+      {isLoading ? (
+        <p className="p-8 text-sm text-center text-gray-500">Loading your billing history...</p>
+      ) : isError ? (
+        <p className="p-8 text-sm text-center text-red-600">We could not load your billing history. Please try again in a moment.</p>
+      ) : history.length === 0 ? (
+        <p className="p-8 text-sm text-center text-gray-500">You haven&apos;t bought a subscription yet.</p>
+      ) : (
+        <>
+          <p className="px-5 pt-4 text-sm text-gray-500">Every plan you have bought, newest first. Download a PDF invoice for any paid plan.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {["Plan", "Purchased", "Plan period", "Meals", "Amount", "Status", "Invoice"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase whitespace-nowrap">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {history.map((subscription) => {
+                  const badge = STATUS_BADGES[subscription.status] || { label: subscription.status, style: "bg-gray-100 text-gray-700" };
+                  return (
+                    <tr key={subscription._id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <p className="font-semibold text-gray-900">{subscription.plan}</p>
+                        <p className="text-xs text-gray-400">
+                          {MEAL_TYPE_LABELS[subscription.mealType] || subscription.mealType} · {carbs.label(subscription.carbType)}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{formatDate(subscription.createdAt)}</td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                        {subscription.status === "queued" ? (
+                          <span className="text-gray-500">Starts after your current plan</span>
+                        ) : (
+                          <>
+                            <p>Start: {formatDate(subscription.subscriptionStartDate)}</p>
+                            <p className="text-xs text-gray-500">End: {subscriptionEndLabel(subscription, formatDate)}</p>
+                          </>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{subscription.totalMeals}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        {subscription.amount > 0 ? (
+                          <>
+                            <p className={`font-semibold ${subscription.refunded ? "text-gray-400 line-through" : "text-gray-900"}`}>{formatAmount(subscription.amount)}</p>
+                            {subscription.paymentMethod && <p className="text-xs text-gray-400">{subscription.paymentMethod}</p>}
+                          </>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${badge.style}`}>{badge.label}</span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <InvoiceButton subscription={subscription} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -147,13 +147,6 @@ const TastePreferenceCard = ({ plans }) => {
 export const MyPlan = () => {
   const carbs = useCarbLookup();
   const { isSubscribed, currentPlans, nextPlan, hasQueuedPlan } = useSubscription();
-  const tastePlans = [
-    ...currentPlans.map((plan) => ({ plan, statusLabel: "Active" })),
-    ...(hasQueuedPlan && nextPlan?._id ? [{ plan: nextPlan, statusLabel: "Queued" }] : []),
-  ];
-  const isBothMealType = currentPlans.some((p) => p.mealType === "both");
-  const { days, applicable, isLoading: isScheduleLoading, error: scheduleError, savingKey, updatePreference } =
-    useMealSchedule(isBothMealType);
 
   const totalMealsLeft = (plan) =>
     ((plan?.lunchMeals || 0) +
@@ -167,11 +160,12 @@ export const MyPlan = () => {
         <div className="mx-auto space-y-6 max-w-5xl">
           <div>
             <p className="text-sm text-gray-500">Dashboard &rsaquo; My Billing</p>
-            <h2 className="text-2xl font-bold text-gray-900">My Billing &amp; Plan</h2>
-            <p className="text-sm text-gray-500">Your active subscription, meal schedule and anything queued up next.</p>
+            <h2 className="text-2xl font-bold text-gray-900">My Billing</h2>
+            <p className="text-sm text-gray-500">Your current subscription, everything you have bought before, and your invoices.</p>
           </div>
 
-          {/* ── Current Plan(s) ── */}
+          <h3 className="pt-2 text-lg font-bold text-gray-900">Current subscription</h3>
+
           {(isSubscribed && currentPlans.length > 0) ? (
             <div className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center p-5 border-b border-gray-100">
@@ -233,87 +227,6 @@ export const MyPlan = () => {
             </div>
           )}
 
-          <TastePreferenceCard plans={tastePlans} />
-
-          {/* ── Meal Schedule (Veg / Non-Veg per day, only for "Both" plans) ── */}
-          {isSubscribed && isBothMealType && (
-            <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <p className="flex gap-2 items-center mb-2 text-base font-bold text-gray-900">
-                <Utensils className="w-5 h-5 text-theme-color-1" />
-                Meal Schedule
-              </p>
-              <p className="mb-4 text-sm text-gray-500">
-                Choose Veg or Non-Veg for each upcoming day — any future day can be changed any
-                time. Today locks per meal once its cutoff passes (10:30 AM for lunch, 4:00 PM for
-                dinner), same as cancellations.
-              </p>
-
-              {scheduleError && <p className="mb-3 text-sm text-red-600">{scheduleError}</p>}
-
-              {isScheduleLoading ? (
-                <p className="text-sm text-gray-500">Loading schedule…</p>
-              ) : applicable && days.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Date</th>
-                        {days.some((d) => d.lunch) && (
-                          <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
-                            <span className="flex gap-1 items-center"><Sun className="w-3.5 h-3.5 text-amber-500" />Lunch</span>
-                          </th>
-                        )}
-                        {days.some((d) => d.dinner) && (
-                          <th className="px-3 py-2 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
-                            <span className="flex gap-1 items-center"><Moon className="w-3.5 h-3.5 text-indigo-500" />Dinner</span>
-                          </th>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {days.map((day) => (
-                        <tr key={day.date}>
-                          <td className="px-3 py-3 font-medium text-gray-900 whitespace-nowrap">{formatDayLabel(day.date)}</td>
-                          {days.some((d) => d.lunch) && (
-                            <td className="px-3 py-3">
-                              {day.lunch ? (
-                                <DietToggle
-                                  value={day.lunch}
-                                  locked={day.lunchLocked}
-                                  isSaving={savingKey === `${day.date}_lunch`}
-                                  onSelect={(pref) => updatePreference(day.date, "lunch", pref)}
-                                />
-                              ) : (
-                                <span className="text-xs text-gray-300">—</span>
-                              )}
-                            </td>
-                          )}
-                          {days.some((d) => d.dinner) && (
-                            <td className="px-3 py-3">
-                              {day.dinner ? (
-                                <DietToggle
-                                  value={day.dinner}
-                                  locked={day.dinnerLocked}
-                                  isSaving={savingKey === `${day.date}_dinner`}
-                                  onSelect={(pref) => updatePreference(day.date, "dinner", pref)}
-                                />
-                              ) : (
-                                <span className="text-xs text-gray-300">—</span>
-                              )}
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">No upcoming delivery days to schedule yet.</p>
-              )}
-            </div>
-          )}
-
-          {/* ── Next (Queued) Plan ── */}
           {hasQueuedPlan && nextPlan ? (
             <div className="overflow-hidden bg-white rounded-2xl border-l-4 border-amber-400 shadow-sm">
               <div className="flex justify-between items-center p-5 border-b border-gray-100">
@@ -364,6 +277,9 @@ export const MyPlan = () => {
               </p>
             </div>
           ) : null}
+
+          <h3 className="pt-4 text-lg font-bold text-gray-900">Subscription history</h3>
+          <SubscriptionHistory />
         </div>
       </div>
     </DashboardLayoutComponent>

@@ -9,6 +9,8 @@ import { DashboardPage } from "./pages/Dashboard";
 import { MealCalendar } from "./pages/Meal-Calendar";
 import { HelpPage } from "./pages/Help";
 import { MyPlan } from "./pages/My-Plans";
+import { MyMealSchedule } from "./pages/My-Schedule";
+import { MyTastePreferences } from "./pages/My-Taste";
 import AddMeal from "./pages/Admin/Add-Meal";
 import MealLibrary from "./pages/Admin/Meal-Library";
 import MealCategories from "./pages/Admin/Meal-Categories";
@@ -100,6 +102,16 @@ export const routes = [
   {
     path: "/dashboard/my-billing",
     component: MyPlan,
+    exact: true,
+  },
+  {
+    path: "/dashboard/meal-schedule",
+    component: MyMealSchedule,
+    exact: true,
+  },
+  {
+    path: "/dashboard/my-taste-preferences",
+    component: MyTastePreferences,
     exact: true,
   },
   {

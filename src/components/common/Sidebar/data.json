@@ -34,6 +34,21 @@
     "userOnly": true
   },
   {
+    "name": "Meal Schedule",
+    "icon": "CalendarClock",
+    "path": "/dashboard/meal-schedule",
+    "requiresSubscription": true,
+    "requiresBothPlan": true,
+    "userOnly": true
+  },
+  {
+    "name": "Taste Preferences",
+    "icon": "Flame",
+    "path": "/dashboard/my-taste-preferences",
+    "requiresSubscription": true,
+    "userOnly": true
+  },
+  {
     "name": "My billing",
     "icon": "Receipt",
     "path": "/dashboard/my-billing",
@@ -48,13 +63,6 @@
     "userOnly": true
   },
   {
-    "name": "FAQs",
-    "icon": "HelpCircle",
-    "path": "/dashboard/help",
-    "requiresSubscription": false,
-    "userOnly": true
-  },
-  {
     "name": "Meal Trackings",
     "icon": "Activity",
     "path": "/dashboard/meal-tracking",
@@ -65,6 +73,13 @@
     "name": "Chat on WhatsApp",
     "icon": "MessageCircle",
     "path": "https://wa.me/+919826157131",
+    "requiresSubscription": false,
+    "userOnly": true
+  },
+  {
+    "name": "FAQs",
+    "icon": "HelpCircle",
+    "path": "/dashboard/help",
     "requiresSubscription": false,
     "userOnly": true
   },

@@ -7,7 +7,7 @@ export const faqData = [
     {
       question: "What Is My Billings Feature?",
       answer:
-        "Dear customer, with the help of My billings feature you can check all the details of the transaction you have made for the paln subscription.",
+        "Dear customer, with the help of My billing you can see your current subscription, your full subscription history with the amount paid for each plan, and download a PDF invoice for any paid subscription. Your meal schedule and taste preferences have their own pages in the menu.",
     },
     {
       question: "What Is Meal Trackings Feature?",
