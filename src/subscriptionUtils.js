@@ -157,12 +157,20 @@ export const calculateSubEndDate = (user, holidayDateKeys = new Set()) => {
   const { year, month, day, minutesSinceMidnight } = getTodayISTCalendarDate();
   const currentDate = new Date(year, month - 1, day, 0, 0, 0, 0);
 
+  const startKey =
+    (user.subscriptions || [])
+      .filter((sub) => sub.status === 'active' && sub.subscriptionStartDate)
+      .map((sub) => toCalendarKey(sub.subscriptionStartDate))
+      .filter(Boolean)
+      .sort()[0] || null;
+  const hasStartedToday = !startKey || dateKeyLocal(currentDate) >= startKey;
+
   const lunchCutoffPassed = minutesSinceMidnight > LUNCH_CUTOFF_MINUTES;
   const dinnerCutoffPassed = minutesSinceMidnight > DINNER_CUTOFF_MINUTES;
   const isTodaySunday = currentDate.getDay() === 0;
   const isTodayHoliday = holidayDateKeys.has(dateKeyLocal(currentDate));
 
-  if (!isTodaySunday && !isTodayHoliday) {
+  if (!isTodaySunday && !isTodayHoliday && hasStartedToday) {
     if (lunchLeft > 0 && !lunchCutoffPassed && !isCancelled(currentDate, 'lunch')) lunchLeft -= 1;
     if (dinnerLeft > 0 && !dinnerCutoffPassed && !isCancelled(currentDate, 'dinner')) dinnerLeft -= 1;
   }
@@ -182,8 +190,9 @@ export const calculateSubEndDate = (user, holidayDateKeys = new Set()) => {
 
     const isSunday = nextDate.getDay() === 0;
     const isHoliday = holidayDateKeys.has(dateKeyLocal(nextDate));
+    const isBeforeStart = Boolean(startKey) && dateKeyLocal(nextDate) < startKey;
 
-    if (!isSunday && !isHoliday) {
+    if (!isSunday && !isHoliday && !isBeforeStart) {
       if (lunchLeft > 0 && !isCancelled(nextDate, 'lunch')) lunchLeft -= 1;
       if (dinnerLeft > 0 && !isCancelled(nextDate, 'dinner')) dinnerLeft -= 1;
     }
