@@ -8,6 +8,7 @@ import {
   Utensils,
   UserCog,
   ClipboardList,
+  ShoppingBag,
   RefreshCw,
   ChevronDown,
   ChevronUp,
@@ -30,8 +31,18 @@ const STATUS_STYLES = {
   indigo: "bg-indigo-100 text-indigo-700",
 };
 
-const getActivityStatus = (category, description) => {
+const ALACARTE_STATUS = {
+  placed: { label: "Placed", color: "blue" },
+  confirmed: { label: "Confirmed", color: "amber" },
+  out_for_delivery: { label: "Out for delivery", color: "indigo" },
+  delivered: { label: "Delivered", color: "green" },
+};
+
+const getActivityStatus = (category, description, item) => {
   switch (category) {
+    case "alacarte":
+      if (item?.needsAttention) return { label: "Needs attention", color: "orange" };
+      return ALACARTE_STATUS[item?.status] || { label: "Logged", color: "gray" };
     case "account":
       return { label: "Verified", color: "blue" };
     case "subscription":
@@ -74,6 +85,7 @@ const CATEGORIES = [
   { key: "account", label: "Account Created", icon: UserPlus, tone: "bg-purple-100 text-purple-600" },
   { key: "subscription", label: "New Subscription", icon: CreditCard, tone: "bg-teal-100 text-teal-600" },
   { key: "renewal", label: "Renewals", icon: RefreshCw, tone: "bg-indigo-100 text-indigo-600" },
+  { key: "alacarte", label: "À la carte", icon: ShoppingBag, tone: "bg-pink-100 text-pink-600" },
   { key: "cancellation", label: "Cancellations", icon: CalendarX, tone: "bg-red-100 text-red-600" },
   { key: "customisation", label: "Customisation", icon: SlidersHorizontal, tone: "bg-orange-100 text-orange-600" },
   { key: "profile", label: "Profile Update", icon: UserCog, tone: "bg-blue-100 text-blue-600" },
@@ -120,7 +132,7 @@ const ActivityTable = ({ rows }) => (
       </thead>
       <tbody className="divide-y divide-gray-100">
         {rows.map((item) => {
-          const status = getActivityStatus(item.category, item.description);
+          const status = getActivityStatus(item.category, item.description, item);
           return (
             <tr key={item._id}>
               <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatRelativeTime(item.createdAt)}</td>
