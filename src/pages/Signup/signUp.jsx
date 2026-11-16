@@ -144,6 +144,15 @@ const Signup = () => {
           disabled={!otpVerified}
         />
 
+        <ProfileDetailsFields
+          gender={formData.gender}
+          genderOther={formData.genderOther}
+          profession={formData.profession}
+          professionOther={formData.professionOther}
+          onChange={updateFormData}
+          disabled={!otpVerified}
+        />
+
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <Input
             id="newPassword"
@@ -193,15 +202,6 @@ const Signup = () => {
             disabled={!otpVerified}
           />
         </div>
-
-        <ProfileDetailsFields
-          gender={formData.gender}
-          genderOther={formData.genderOther}
-          profession={formData.profession}
-          professionOther={formData.professionOther}
-          onChange={updateFormData}
-          disabled={!otpVerified}
-        />
 
         {errMsg.length > 1 && (
           <div className="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">

@@ -35,7 +35,7 @@ export const ProfileDetailsFields = ({
             name="gender"
             value={gender}
             disabled={disabled}
-            placeholder={showLabels ? "Select gender" : "Gender (optional)"}
+            placeholder={showLabels ? "Select gender" : "Gender"}
             options={GENDER_OPTIONS}
             onChange={(e) =>
               onChange({ gender: e.target.value, genderOther: e.target.value === "other" ? genderOther : "" })
@@ -66,7 +66,7 @@ export const ProfileDetailsFields = ({
             name="profession"
             value={profession}
             disabled={disabled}
-            placeholder={showLabels ? "Select profession" : "Profession (optional)"}
+            placeholder={showLabels ? "Select profession" : "Profession"}
             options={professionChoices}
             onChange={(e) =>
               onChange({
