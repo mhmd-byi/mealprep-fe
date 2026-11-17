@@ -4,7 +4,7 @@ import { Button, Input, MealprepLogo } from "../../components";
 import { AuthLayout } from "../../components/common/AuthLayout/AuthLayout";
 import { ProfileDetailsFields } from "../../components/common/ProfileDetailsFields/ProfileDetailsFields";
 import { useSignup } from "./useSignup";
-import usePasswordValidation from "../../hooks/usePasswordValidation";
+import { PasswordMatchMessage } from "../../components/common/PasswordMatchMessage/PasswordMatchMessage";
 import { useRef } from "react";
 import usePincodeValidation from "./usePincodeValidation";
 import { ShieldCheck, AlertTriangle } from "lucide-react";
@@ -28,11 +28,6 @@ const Signup = () => {
   } = useSignup();
 
   const formRef = useRef(null);
-  const { ValidationMessage } = usePasswordValidation(
-    formRef,
-    "newPassword",
-    "confirmNewPassword",
-  );
   const { PincodeValidationMessage, pincodeValid } =
     usePincodeValidation(formRef);
 
@@ -173,7 +168,7 @@ const Signup = () => {
               onChange={handleChange}
               disabled={!otpVerified}
             />
-            <ValidationMessage />
+            <PasswordMatchMessage password={formData.password} confirmPassword={formData.confirmPassword} />
           </div>
         </div>
 
