@@ -3,10 +3,12 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { CategoriesTab } from "./CategoriesTab";
 import { OrdersTab } from "./OrdersTab";
 import { ProductsTab } from "./ProductsTab";
+import { SalesTab } from "./SalesTab";
 import { SettingsTab } from "./SettingsTab";
 
 const TABS = [
   { key: "orders", label: "Orders" },
+  { key: "sales", label: "Sales" },
   { key: "products", label: "Products" },
   { key: "categories", label: "Categories" },
   { key: "settings", label: "Delivery settings" },
@@ -40,6 +42,7 @@ export const Alacarte = () => {
           </div>
 
           {tab === "orders" && <OrdersTab />}
+          {tab === "sales" && <SalesTab />}
           {tab === "products" && <ProductsTab />}
           {tab === "categories" && <CategoriesTab />}
           {tab === "settings" && <SettingsTab />}

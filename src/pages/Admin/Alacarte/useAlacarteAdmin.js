@@ -29,6 +29,15 @@ export const useAdminOrders = (params) =>
     refetchInterval: 30 * 1000,
   });
 
+export const useAlacarteSales = (range, enabled = true) =>
+  useQuery({
+    queryKey: ["alacarte", "sales", range],
+    enabled,
+    queryFn: async () => (await axios.get(`${base()}admin/alacarte/sales`, { ...auth(), params: range })).data,
+    placeholderData: keepPreviousData,
+    refetchInterval: 60 * 1000,
+  });
+
 export const useAlacarteSettings = () =>
   useQuery({
     queryKey: ["alacarte", "settings"],
