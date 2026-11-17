@@ -22,7 +22,7 @@ const mealsText = (count) => `${count} ${count === 1 ? "meal" : "meals"}`;
 const STATUS_BADGES = {
   active: { label: "Active", style: "bg-green-100 text-green-700" },
   queued: { label: "Queued", style: "bg-amber-100 text-amber-700" },
-  completed: { label: "Completed", style: "bg-gray-100 text-gray-700" },
+  completed: { label: "Completed", style: "bg-red-100 text-red-700" },
   cancelled: { label: "Cancelled", style: "bg-red-100 text-red-700" },
 };
 
