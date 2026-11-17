@@ -6,6 +6,7 @@ import { VegNonVegIcon } from "../../components/common/VegNonVegIcon/VegNonVegIc
 import { useCarbLookup } from "../../carbTypes";
 import { useMealTracking } from "./useMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../activityCategories";
+import { useTrackingSummary, trackingTiles } from "../../useTrackingSummary";
 import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities, subscriptionEndLabel } from "../../subscriptionUtils";
 import {
   CalendarDays,
@@ -122,13 +123,14 @@ const SubscriptionField = ({ icon: Icon, label, children }) => (
   </div>
 );
 
-const StatTile = ({ icon: Icon, tone, label, value }) => (
+const StatTile = ({ icon: Icon, tone, label, value, note }) => (
   <div className="flex flex-col gap-1 p-3 bg-gray-50 rounded-xl border border-gray-100">
     <div className={`flex justify-center items-center w-8 h-8 rounded-lg ${tone}`}>
       <Icon className="w-4 h-4" />
     </div>
     <p className="text-lg font-bold text-gray-900">{value}</p>
-    <p className="text-xs text-gray-500">{label}</p>
+    <p className="text-xs font-semibold text-gray-600">{label}</p>
+    {note && <p className="text-[11px] leading-tight text-gray-400">{note}</p>}
   </div>
 );
 
@@ -192,23 +194,8 @@ export const MealTracking = () => {
   const userStatus = userDetail ? getUserStatus(userDetail) : null;
   const subEnd = userDetail ? calculateSubEndDate(userDetail, holidayDateKeys) : null;
 
-  const now = new Date();
-  const monthRecords = activityRecords.filter((r) => {
-    const d = new Date(r.date);
-    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-  });
-  const deliveredCount = monthRecords.filter((r) => r.category === "meal_count" && /delivered on/i.test(r.description)).length;
-  const cancelledCount = monthRecords.filter((r) => r.category === "cancellation").length;
-  const holidaysCount = monthRecords.filter((r) => r.category === "holiday").length;
-
-  const planDeliveredCount = latestSub
-    ? activityRecords.filter((r) => {
-        if (r.category !== "meal_count" || !/delivered on/i.test(r.description)) return false;
-        return new Date(r.date) >= new Date(latestSub.subscriptionStartDate);
-      }).length
-    : 0;
-  const completionRate =
-    latestSub?.totalMeals > 0 ? Math.round((planDeliveredCount / latestSub.totalMeals) * 100) : null;
+  const { data: trackingSummary } = useTrackingSummary(userDetail?._id);
+  const tiles = trackingTiles(trackingSummary);
 
   const combinedCancellations = useMemo(() => {
     const fromUser = userDetail?.cancellations || [];
@@ -361,10 +348,10 @@ export const MealTracking = () => {
                 </div>
 
                 <div className="grid grid-cols-4 gap-2">
-                  <StatTile icon={Utensils} tone="bg-green-50 text-theme-color-1" label="Delivered" value={deliveredCount} />
-                  <StatTile icon={X} tone="bg-red-50 text-red-600" label="Cancelled" value={cancelledCount} />
-                  <StatTile icon={CalendarDays} tone="bg-purple-50 text-purple-600" label="Holidays" value={holidaysCount} />
-                  <StatTile icon={Percent} tone="bg-blue-50 text-blue-600" label="Plan Completion" value={completionRate === null ? "—" : `${completionRate}%`} />
+                  <StatTile icon={Utensils} tone="bg-green-50 text-theme-color-1" label="Delivered" value={tiles.delivered.value} note={tiles.delivered.note} />
+                  <StatTile icon={X} tone="bg-red-50 text-red-600" label="Cancelled" value={tiles.cancelled.value} note={tiles.cancelled.note} />
+                  <StatTile icon={CalendarDays} tone="bg-purple-50 text-purple-600" label="Holidays" value={tiles.holidays.value} note={tiles.holidays.note} />
+                  <StatTile icon={Percent} tone="bg-blue-50 text-blue-600" label="Plan Completion" value={tiles.completion.value} note={tiles.completion.note} />
                 </div>
 
                 <div className="p-4 bg-green-50 rounded-xl border border-green-100">
