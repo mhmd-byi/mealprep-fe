@@ -10,6 +10,7 @@ import { useUserMealTracking } from "./useUserMealTracking";
 import { ACTIVITY_CATEGORY_LABELS } from "../../../activityCategories";
 import { formatTastePreference } from "../../../tastePreferences";
 import { useTrackingSummary, trackingTiles } from "../../../useTrackingSummary";
+import { SubscriptionField } from "../../../components/common/SubscriptionField/SubscriptionField";
 import { calculateSubEndDate, holidayDateKeysFrom, calculateNextDelivery, parseCancellationsFromActivities, subscriptionEndLabel } from "../../../subscriptionUtils";
 import {
   CalendarDays,
@@ -117,14 +118,6 @@ const getRecordStatus = (record) => {
   if (category === "account") return { label: "Account", style: "bg-blue-100 text-blue-700" };
   return { label: "Other", style: "bg-gray-100 text-gray-500" };
 };
-
-const SubscriptionField = ({ icon: Icon, label, children }) => (
-  <div className="flex gap-3 items-center">
-    <Icon className="w-4 h-4 text-gray-500 flex-shrink-0" />
-    <span className="w-28 text-sm text-gray-500 flex-shrink-0">{label}</span>
-    <div className="text-sm font-semibold text-gray-900">{children}</div>
-  </div>
-);
 
 const StatTile = ({ icon: Icon, tone, label, value, note }) => (
   <div className="flex flex-col gap-1 p-3 bg-gray-50 rounded-xl border border-gray-100">

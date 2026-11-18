@@ -13,6 +13,7 @@ import {
   percentChange,
 } from "../../../components/common/ChangeBadge/ChangeBadge";
 import { PlanBadge } from "../../../components/common/PlanBadge/PlanBadge";
+import { SubscriptionField } from "../../../components/common/SubscriptionField/SubscriptionField";
 import { usePlans } from "../../../plans";
 import { CarbTypeBadge } from "../../../components/common/CarbTypeBadge/CarbTypeBadge";
 import {
@@ -137,14 +138,6 @@ const DetailRow = ({ label, children }) => (
   <div>
     <p className="text-xs text-gray-500">{label}</p>
     <div className="font-semibold text-gray-900 break-words">{children}</div>
-  </div>
-);
-
-const SubscriptionField = ({ icon: Icon, label, children }) => (
-  <div className="flex gap-3 items-center">
-    <Icon className="flex-shrink-0 w-4 h-4 text-gray-500" />
-    <span className="flex-shrink-0 w-24 text-sm text-gray-500">{label}</span>
-    <div className="text-sm font-semibold text-gray-900">{children}</div>
   </div>
 );
 

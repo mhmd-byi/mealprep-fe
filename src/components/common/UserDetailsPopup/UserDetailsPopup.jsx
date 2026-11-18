@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import Popup from "../Popup/Popup";
 import { VegNonVegIcon } from "../VegNonVegIcon/VegNonVegIcon";
 import { PlanBadge } from "../PlanBadge/PlanBadge";
+import { SubscriptionField } from "../SubscriptionField/SubscriptionField";
 import { CarbTypeBadge } from "../CarbTypeBadge/CarbTypeBadge";
 import { MealSlotIcon } from "../MealSlotIcon/MealSlotIcon";
 import { formatTastePreference } from "../../../tastePreferences";
@@ -41,14 +42,6 @@ const DetailRow = ({ label, children }) => (
   <div>
     <p className="text-xs text-gray-500">{label}</p>
     <div className="font-semibold text-gray-900 break-words">{children}</div>
-  </div>
-);
-
-const SubscriptionField = ({ icon: Icon, label, children }) => (
-  <div className="flex gap-3 items-center">
-    <Icon className="flex-shrink-0 w-4 h-4 text-gray-500" />
-    <span className="flex-shrink-0 w-24 text-sm text-gray-500">{label}</span>
-    <div className="text-sm font-semibold text-gray-900">{children}</div>
   </div>
 );
 
