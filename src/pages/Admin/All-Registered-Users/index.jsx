@@ -1017,8 +1017,14 @@ export const AllRegisteredUsers = () => {
                               <span className="font-medium text-gray-500">
                                 Current Plan:
                               </span>
-                              <span className="text-gray-900 text-right break-words max-w-[60%]">
-                                {latestSub?.plan || "No active plan"}
+                              <span className="text-right max-w-[60%]">
+                                {latestSub ? (
+                                  <PlanBadge plan={latestSub.plan} />
+                                ) : (
+                                  <span className="text-gray-400">
+                                    No active plan
+                                  </span>
+                                )}
                               </span>
                             </div>
                             {latestSub && (
