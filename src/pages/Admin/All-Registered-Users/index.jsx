@@ -36,7 +36,7 @@ import {
   CalendarDays,
   Utensils,
 } from "lucide-react";
-import { calculateSubEndDate, subscriptionEndLabel } from "../../../subscriptionUtils";
+import { calculateSubEndDate, statusCountsAsOf, subscriptionEndLabel } from "../../../subscriptionUtils";
 import { formatTastePreference } from "../../../tastePreferences";
 import { formatGender, formatProfession } from "../../../profileFields";
 
@@ -281,13 +281,9 @@ export const AllRegisteredUsers = () => {
     ]),
   );
 
-  // Registration dates are immutable, so both of these can be reconstructed
-  // exactly from createdAt. Active/Inactive/Completed can't get the same
-  // treatment — subscription status is overwritten in place with no history,
-  // so "how many were active 30 days ago" isn't answerable without a new
-  // daily-snapshot job.
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const monthAgoCounts = statusCountsAsOf(allRegisteredUsers, thirtyDaysAgo);
   const usersThirtyDaysAgoCount = allRegisteredUsers.filter((u) => {
     const created = new Date(u.createdAt || u.created_date);
     return !Number.isNaN(created.getTime()) && created <= thirtyDaysAgo;
@@ -310,6 +306,8 @@ export const AllRegisteredUsers = () => {
       value: tabCounts.active,
       icon: UserCheck,
       tabKey: "active",
+      change: percentChange(tabCounts.active, monthAgoCounts.active),
+      changeSuffix: "vs last month",
     },
     {
       label: "Total Users",
@@ -324,12 +322,18 @@ export const AllRegisteredUsers = () => {
       value: tabCounts.inactive,
       icon: PauseCircle,
       tabKey: "inactive",
+      change: percentChange(tabCounts.inactive, monthAgoCounts.inactive),
+      changeSuffix: "vs last month",
+      goodWhenUp: false,
     },
     {
       label: "Completed",
       value: tabCounts.completed,
       icon: History,
       tabKey: "completed",
+      change: percentChange(tabCounts.completed, monthAgoCounts.completed),
+      changeSuffix: "vs last month",
+      goodWhenUp: false,
     },
     {
       label: "New This Month",
@@ -588,6 +592,7 @@ export const AllRegisteredUsers = () => {
                       <ChangeBadge
                         change={card.change}
                         suffix={card.changeSuffix}
+                        goodWhenUp={card.goodWhenUp}
                       />
                     )}
                   </div>

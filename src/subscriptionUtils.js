@@ -277,3 +277,25 @@ export const calculateNextDelivery = ({
 
   return null;
 };
+
+export const statusCountsAsOf = (users, asOf) => {
+  const counts = { active: 0, inactive: 0, completed: 0 };
+  const existedBy = (value) => new Date(value) <= asOf;
+  const isAlive = (sub) => existedBy(sub.createdAt) && !(sub.endedAt && existedBy(sub.endedAt));
+
+  users.forEach((user) => {
+    if (!existedBy(user.createdAt || user.created_date)) return;
+    const subs = (user.subscriptions || []).filter((sub) => existedBy(sub.createdAt));
+    if (subs.length === 0) {
+      counts.inactive += 1;
+      return;
+    }
+    if (subs.some((sub) => sub.status !== "queued" && existedBy(sub.subscriptionStartDate) && isAlive(sub))) {
+      counts.active += 1;
+      return;
+    }
+    if (!subs.some(isAlive)) counts.completed += 1;
+  });
+
+  return counts;
+};
