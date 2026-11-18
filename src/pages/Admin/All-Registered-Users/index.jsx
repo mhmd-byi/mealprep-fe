@@ -99,8 +99,8 @@ const isNewThisMonth = (user) => {
 };
 
 const STATUS_TABS = [
-  { key: "all", label: "All Users", match: () => true },
   { key: "active", label: "Active", match: (u) => getStatus(u) === "Active" },
+  { key: "all", label: "All Users", match: () => true },
   // Checked directly against the raw subscriptions, not getStatus(u) — a
   // queued plan normally coexists with an active one (queuing only happens
   // when there's already an overlapping active plan), and getStatus()
@@ -197,7 +197,7 @@ export const AllRegisteredUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [showZeroMeals, setShowZeroMeals] = useState(false);
-  const [statusTab, setStatusTab] = useState("all");
+  const [statusTab, setStatusTab] = useState("active");
   const [dietFilter, setDietFilter] = useState("All");
   const [allergyFilter, setAllergyFilter] = useState("All");
   const [coverageFilter, setCoverageFilter] = useState("All");
@@ -259,7 +259,7 @@ export const AllRegisteredUsers = () => {
 
   const handleReset = () => {
     setSearchQuery("");
-    setStatusTab("all");
+    setStatusTab("active");
     setDietFilter("All");
     setAllergyFilter("All");
     setCoverageFilter("All");
@@ -306,18 +306,18 @@ export const AllRegisteredUsers = () => {
 
   const statCards = [
     {
+      label: "Active Subscribers",
+      value: tabCounts.active,
+      icon: UserCheck,
+      tabKey: "active",
+    },
+    {
       label: "Total Users",
       value: allRegisteredUsers.length,
       icon: Users,
       tabKey: "all",
       change: percentChange(allRegisteredUsers.length, usersThirtyDaysAgoCount),
       changeSuffix: "vs last month",
-    },
-    {
-      label: "Active Subscribers",
-      value: tabCounts.active,
-      icon: UserCheck,
-      tabKey: "active",
     },
     {
       label: "Inactive",
