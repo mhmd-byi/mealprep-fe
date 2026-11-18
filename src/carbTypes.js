@@ -57,6 +57,7 @@ export const buildCarbLookup = (carbTypes = []) => {
     find: (slug) => bySlug.get(slug) || null,
     label: (slug) => (slug ? bySlug.get(slug)?.name || titleCase(slug) : "—"),
     color: (slug) => bySlug.get(slug)?.color || FALLBACK_COLOR,
+    description: (slug) => bySlug.get(slug)?.websiteBlurb || "",
     shortCode: (slug) => bySlug.get(slug)?.shortCode || (slug || "").replace(/-/g, "").slice(0, 4).toUpperCase() || "—",
     nutritionLine,
     labelMacros,

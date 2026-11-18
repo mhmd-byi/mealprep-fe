@@ -288,6 +288,9 @@ const PlansContent = ({ plans, carbTypes }) => {
                           </option>
                         ))}
                       </select>
+                      {carbs.description(currentPlanDetails.carbType) && (
+                        <p className="mt-1 text-xs text-gray-500">{carbs.description(currentPlanDetails.carbType)}</p>
+                      )}
                       {carbs.nutritionLine(currentPlanDetails.carbType) && (
                         <p className="mt-1 text-xs text-gray-400">{carbs.nutritionLine(currentPlanDetails.carbType)} (per meal)</p>
                       )}
