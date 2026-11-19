@@ -5,6 +5,8 @@ import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashb
 import { formatINR } from "../../../alacarteDisplay";
 import { planBadgeStyle } from "../../../plans";
 import { PlanFormPopup } from "./PlanFormPopup";
+import { CatalogLogList } from "../CatalogLog/CatalogLogList";
+import { PLAN_MODULES } from "../CatalogLog/catalogLogDisplay";
 import { errorText, useAdminPlans, usePlanActions } from "./usePlansAdmin";
 
 const primaryButton = "px-4 py-2 text-sm font-semibold text-white rounded-lg bg-theme-color-1 hover:bg-black disabled:opacity-50 whitespace-nowrap";
@@ -18,6 +20,7 @@ export const ManagePlans = () => {
   const { setupPlans, savePlan, setPlanActive, deletePlan } = usePlanActions();
   const [form, setForm] = useState(null);
   const [isSettingUp, setIsSettingUp] = useState(false);
+  const [tab, setTab] = useState("plans");
 
   const plans = data?.plans || [];
   const needsSetup = Boolean(data?.needsSetup);
@@ -76,6 +79,28 @@ export const ManagePlans = () => {
             )}
           </div>
 
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { key: "plans", label: "Plans" },
+              { key: "history", label: "History" },
+            ].map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setTab(item.key)}
+                className={`px-4 py-2 text-sm font-semibold rounded-lg ${
+                  tab === item.key ? "bg-theme-color-1 text-white" : "bg-white text-gray-700 border border-gray-200 hover:border-theme-color-1"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          {tab === "history" ? (
+            <CatalogLogList modules={PLAN_MODULES} />
+          ) : (
+            <>
           {needsSetup && (
             <div className="p-5 space-y-3 bg-amber-50 rounded-2xl border border-amber-200">
               <p className="font-bold text-amber-900">Save your current plans first</p>
@@ -149,6 +174,8 @@ export const ManagePlans = () => {
                 </div>
               ))}
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

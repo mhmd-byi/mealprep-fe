@@ -38,6 +38,7 @@ import { Expenses } from "./pages/Admin/Expenses";
 import { ManageSubscriptions } from "./pages/Admin/Manage-Subscriptions";
 import { FinanceDashboard } from "./pages/Admin/Finance-Dashboard";
 import { AuditLog } from "./pages/Admin/Audit-Log";
+import CatalogLog from "./pages/Admin/CatalogLog";
 export const routes = [
   {
     path: "/",
@@ -247,6 +248,11 @@ export const routes = [
   {
     path: "/dashboard/audit-log",
     component: AuditLog,
+    exact: true,
+  },
+  {
+    path: "/dashboard/catalog-log",
+    component: CatalogLog,
     exact: true,
   }
 ];

@@ -4,6 +4,7 @@ import { ImagePlus, Loader2, X } from "lucide-react";
 import Popup from "../../../components/common/Popup/Popup";
 import { CUTOFF_DAY_OPTIONS, DAY_OPTIONS, DIET_OPTIONS, inputClass } from "./alacarteDisplay";
 import { errorText, uploadProductImage } from "./useAlacarteAdmin";
+import { PriceTimeline } from "../CatalogLog/PriceTimeline";
 
 const MAX_IMAGES = 5;
 
@@ -142,6 +143,7 @@ export const ProductFormPopup = ({ product, categories, onClose, onSave }) => {
               />
             </div>
           </div>
+          {isEditing && <PriceTimeline itemId={product._id} />}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>

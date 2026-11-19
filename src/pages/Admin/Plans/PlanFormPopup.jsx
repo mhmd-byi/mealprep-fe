@@ -5,6 +5,7 @@ import Popup from "../../../components/common/Popup/Popup";
 import { PLAN_COLOR_CHOICES } from "../../../plans";
 import { uploadAdminImage } from "../../../utils/imageUpload";
 import { errorText } from "./usePlansAdmin";
+import { PriceTimeline } from "../CatalogLog/PriceTimeline";
 
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -125,6 +126,7 @@ export const PlanFormPopup = ({ plan, onClose, onSave }) => {
               {subscribers} customer{subscribers === 1 ? " has" : "s have"} subscribed to this plan. Their revenue stays at the price they paid.
             </p>
           )}
+          {isEditing && plan._id && <PriceTimeline itemId={plan._id} />}
 
           <div>
             <Label>Short description</Label>

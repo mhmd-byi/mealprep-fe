@@ -1,5 +1,7 @@
 import { useState } from "react";
 import DashboardLayoutComponent from "../../../components/common/Dashboard/Dashboard";
+import { CatalogLogList } from "../CatalogLog/CatalogLogList";
+import { ALACARTE_MODULES } from "../CatalogLog/catalogLogDisplay";
 import { CategoriesTab } from "./CategoriesTab";
 import { OrdersTab } from "./OrdersTab";
 import { ProductsTab } from "./ProductsTab";
@@ -12,6 +14,7 @@ const TABS = [
   { key: "products", label: "Products" },
   { key: "categories", label: "Categories" },
   { key: "settings", label: "Delivery settings" },
+  { key: "history", label: "History" },
 ];
 
 export const Alacarte = () => {
@@ -46,6 +49,7 @@ export const Alacarte = () => {
           {tab === "products" && <ProductsTab />}
           {tab === "categories" && <CategoriesTab />}
           {tab === "settings" && <SettingsTab />}
+          {tab === "history" && <CatalogLogList modules={ALACARTE_MODULES} />}
         </div>
       </div>
     </DashboardLayoutComponent>

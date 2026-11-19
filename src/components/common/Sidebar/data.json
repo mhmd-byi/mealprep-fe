@@ -203,6 +203,13 @@
     "adminOnly": true
   },
   {
+    "name": "Catalogue Log",
+    "icon": "ClipboardList",
+    "path": "/dashboard/catalog-log",
+    "requiresSubscription": false,
+    "adminOnly": true
+  },
+  {
     "name": "Notes",
     "icon": "StickyNote",
     "path": "/dashboard/notes",
