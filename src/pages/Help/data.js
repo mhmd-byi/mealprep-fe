@@ -17,12 +17,12 @@ export const faqData = [
     {
       question: "What Is Cancel Meal Request Feature?",
       answer:
-        "Dear customer, with cancel meal request feature you can raise a request to cancel the meal for that day and future dates. please note you can raise cancel request from 12 Mid Night To Morning 11 for lunch & 12 Mid Night Till 4:30 PM for dinner.",
+        "Dear customer, with cancel meal request feature you can raise a request to cancel the meal for that day and future dates. please note you can raise cancel request from 12 Mid Night Till 10:30 AM for lunch & 12 Mid Night Till 4:00 PM for dinner.",
     },
     {
       question: "What Is Customize Meal Feature?",
       answer:
-        "Dear customer, customize meal feature , when you want to get something changed in you dish from today menu but please note you can raise cancel request from 12 Mid Night To Morning 11 for lunch & 12 Mid Night Till 4:30 PM for dinner.",
+        "Dear customer, customize meal feature , when you want to get something changed in you dish from today menu but please note you can raise cancel request from 12 Mid Night Till 10:30 AM for lunch & 12 Mid Night Till 4:00 PM for dinner.",
     },
     {
       question: "What Is Subscription Plans Feature?",

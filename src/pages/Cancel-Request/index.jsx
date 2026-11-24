@@ -6,6 +6,7 @@ import { sendEmail } from "../../utils";
 import useSubscription from "../Plans/useSubscription";
 import { CalendarDays, Utensils, Info, CheckCircle2, AlertTriangle } from "lucide-react";
 import { MealSlotIcon } from "../../components/common/MealSlotIcon/MealSlotIcon";
+import { DINNER_CUTOFF_MINUTES, getTodayISTCalendarDate, LUNCH_CUTOFF_MINUTES } from "../../subscriptionUtils";
 
 const inputClass =
   "w-full px-3 py-2 text-sm text-gray-700 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-theme-color-1";
@@ -48,8 +49,8 @@ const CancelRequest = () => {
         We have received your meal cancellation request.\n
         With our cancel meal request feature, you can cancel meals for today or future dates as per your convenience.\n
         ⏳ Cancellation Timings:\n
-        Lunch: 12 Midnight – 11:00 AM\n
-        Dinner: 12 Midnight – 4:30 PM\n
+        Lunch: 12 Midnight – 10:30 AM\n
+        Dinner: 12 Midnight – 4:00 PM\n
         For any queries, feel free to contact us.\n\n
         Team Mealprep\n
           `);
@@ -65,19 +66,12 @@ const CancelRequest = () => {
   };
 
   const isValidTimeForCancellation = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    const minutes = now.getMinutes();
-    const today = now.toISOString().split('T')[0];
+    const { year, month, day, minutesSinceMidnight } = getTodayISTCalendarDate();
+    const today = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
     if (startDate === today) {
-        if (mealType === "lunch" && hour >= 11) {
-            return false;
-        }
-        // Check if current time is after 4:30 PM
-        if (mealType === "dinner" && (hour > 16 || (hour === 16 && minutes >= 30))) {
-            return false;
-        }
+      if (mealType === "lunch" && minutesSinceMidnight > LUNCH_CUTOFF_MINUTES) return false;
+      if (mealType === "dinner" && minutesSinceMidnight > DINNER_CUTOFF_MINUTES) return false;
     }
     return true;
   };
@@ -110,7 +104,7 @@ const CancelRequest = () => {
                 <li>Submit the request</li>
               </ol>
               <p className="flex flex-wrap gap-1 items-center mt-2">
-                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><strong>Lunch:</strong></span> request accepted from 12 midnight to 10:00 AM.
+                <span className="inline-flex items-center gap-1"><MealSlotIcon slot="lunch" /><strong>Lunch:</strong></span> request accepted from 12 midnight to 10:30 AM.
                 <span className="inline-flex items-center gap-1"><MealSlotIcon slot="dinner" /><strong>Dinner:</strong></span> request accepted from 12 midnight to 4:00 PM.
               </p>
             </div>

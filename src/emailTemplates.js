@@ -117,8 +117,8 @@ Thank you for subscribing to our ${planName}! 🥗 Your healthy meals are now ta
 Important Information:
 ✅ Mealprep Kitchen operates from Monday to Saturday.
 ✅ Meal Cancellation & Customization Requests:
-Lunch: 12 Midnight – 11:00 AM
-Dinner: 12 Midnight – 4:30 PM
+Lunch: 12 Midnight – 10:30 AM
+Dinner: 12 Midnight – 4:00 PM
 
 For any assistance, feel free to reach out.
 Wishing you a delicious and healthy journey!
