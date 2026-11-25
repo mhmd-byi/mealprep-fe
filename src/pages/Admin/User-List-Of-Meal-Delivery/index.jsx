@@ -698,7 +698,7 @@ const ScheduledMealDeliveryList = () => {
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Address:</span>
-                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.postalAddress}</span>
+                                  <span className="text-gray-900 text-right break-words max-w-[60%]">{meal.address}</span>
                                 </div>
                                 <div className="flex justify-between pb-2 border-b">
                                   <span className="font-medium text-gray-500">Meal Type:</span>
