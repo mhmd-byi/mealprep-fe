@@ -3,7 +3,6 @@ import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { notifyUsersChanged } from "../../../utils/crossTabSync";
 import { sendEmail } from "../../../utils";
-import { getActiveEmailTemplate, getQueuedEmailTemplate } from "../../../emailTemplates";
 import { formatTastePreference } from "../../../tastePreferences";
 
 const authHeaders = () => ({
@@ -142,17 +141,12 @@ export const useManageSubscriptions = () => {
       `Reason: ${payload.reason}\n\n` +
       `${isQueued ? "This plan is QUEUED and will activate when the user's current plan runs out." : "This plan is ACTIVE."}`;
 
-    // Fire-and-forget — an email hiccup shouldn't fail the subscription that
-    // already saved successfully, same as the customer purchase flow.
-    if (isQueued) {
-      const queuedTpl = getQueuedEmailTemplate(payload.plan, userName);
-      sendEmail(payload.userId, "", queuedTpl.subject, queuedTpl.text).catch((e) => console.error("Error sending customer email:", e));
-      sendEmail(ADMIN_NOTIFICATION_EMAIL, "Admin", `Queued Subscription: ${userName}`, adminNoticeBody).catch((e) => console.error("Error sending admin email:", e));
-    } else {
-      const activeTpl = getActiveEmailTemplate(payload.plan, userName);
-      sendEmail(payload.userId, "", activeTpl.subject, activeTpl.text).catch((e) => console.error("Error sending customer email:", e));
-      sendEmail(ADMIN_NOTIFICATION_EMAIL, "Admin", `New Subscription: ${userName}`, adminNoticeBody).catch((e) => console.error("Error sending admin email:", e));
-    }
+    sendEmail(
+      ADMIN_NOTIFICATION_EMAIL,
+      "Admin",
+      `${isQueued ? "Queued Subscription" : "New Subscription"}: ${userName}`,
+      adminNoticeBody
+    ).catch((e) => console.error("Error sending admin email:", e));
   };
 
   const updateSubscription = async (subscriptionId, payload) => {
