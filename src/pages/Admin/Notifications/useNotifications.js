@@ -56,7 +56,7 @@ export const useCustomerList = (enabled) =>
   useQuery({
     queryKey: ["notifications", "customers"],
     queryFn: async () => {
-      const response = await axios.get(`${base()}user/all`, auth());
+      const response = await axios.get(`${base()}admin/notifications/customers`, auth());
       return Array.isArray(response.data) ? response.data : [];
     },
     enabled,
