@@ -51,7 +51,7 @@ export const UserListWithCustomisationRequest = () => {
           return aDate > bDate ? 1 : -1;
         });
         const usrToRequestInfo = new Map();
-        resData.forEach((info) => usrToRequestInfo.set(info.userId, info))
+        resData.forEach((info) => usrToRequestInfo.set(`${info.userId}-${info.mealType}`, info))
         setCustomisationRequests(Array.from(usrToRequestInfo.values()));
         setError(null);
       } else {
